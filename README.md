@@ -12,15 +12,16 @@ This project consists of two main components:
 ## Tech Stack
 
 ### Backend
-- **Language**: Java 17
+- **Language**: Java 21
 - **Framework**: Quarkus
 - **Build Tool**: Gradle
 - **Features**:
-  - REST API endpoints
+  - REST API endpoints with virtual threads
   - WebSocket support
   - Native compilation
   - Kubernetes deployment configuration
   - Docker containerization
+  - Dev services for testing
 
 ### Frontend
 - **Language**: TypeScript
@@ -34,7 +35,7 @@ This project consists of two main components:
 ## Running Locally
 
 ### Prerequisites
-- JDK 17+
+- JDK 21
 - Node.js 18+
 - Docker (optional, for containerized deployment)
 
@@ -80,6 +81,8 @@ Run the backend tests:
 cd backend
 ../gradlew test
 ```
+
+The backend uses Quarkus Dev Services for testing, which automatically provides containerized services (databases, message brokers, etc.) during test execution without manual setup.
 
 ### Frontend
 
