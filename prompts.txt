@@ -12,3 +12,9 @@ Ensure the resulting changes build.
 
 ## Third Prompt
 Review the guidelines document and make sure the current projects align with those guidelines.
+
+## Fourth Prompt
+Confirm that the FE project builds correctly with the intended output for a react build
+
+## Fifth Prompt
+Given the FE build no longer need to be packaged with docker, please clean up the docker resources, update the readme and ensure that the github workflows build the project correctly.
