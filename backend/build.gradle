@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id 'io.quarkus' version '3.6.0'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    // Quarkus BOM
+    implementation enforcedPlatform("io.quarkus:quarkus-bom:3.6.0")
+
+    // Core dependencies
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-resteasy-reactive'
+    implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
+
+    // WebSocket support
+    implementation 'io.quarkus:quarkus-websockets'
+
+    // Kubernetes deployment
+    implementation 'io.quarkus:quarkus-kubernetes'
+    implementation 'io.quarkus:quarkus-container-image-docker'
+
+    // Health checks for Kubernetes
+    implementation 'io.quarkus:quarkus-smallrye-health'
+
+    // Metrics for monitoring
+    implementation 'io.quarkus:quarkus-micrometer'
+
+    // Testing
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+// Basic Quarkus configuration
+// We'll add more detailed native build configuration later
+
+// Configure build tasks
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+// Configure test tasks
+test {
+    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+}
