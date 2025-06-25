@@ -17,7 +17,8 @@ Replace this text with any project-level instructions for Junie, e.g.:
 * The front-end project can use React 
 * The backend project must be in java
 * The front-end project must be in TypeScript
-* Both FE and backend must be deployed in docker containers
+* The Backend must be deployed in docker container
+* The FE must build to a set of files that can be deployed to a web server (E.g. an S3 bucket)
 * Both should have a GitHub workflow that aligns with the best practice CI/CD for each projects technology
 * Each workflow should run on any push to the repo 
   * Perform basic builds and unit tests, linting

@@ -8,7 +8,6 @@ This is the frontend component of the Robot Wars application, built with React a
 - REST API client to communicate with the backend
 - WebSocket client for real-time communication
 - Responsive design
-- Docker containerization
 
 ## Tech Stack
 
@@ -86,21 +85,6 @@ npm run build
 
 This creates a production-ready build in the `build` directory.
 
-## Docker
-
-Build a Docker image:
-
-```bash
-docker build -t robot-wars-frontend .
-```
-
-Run the container:
-
-```bash
-docker run -p 80:80 robot-wars-frontend
-```
-
-This will start the application in a Docker container, accessible at http://localhost.
 
 ## Connecting to the Backend
 

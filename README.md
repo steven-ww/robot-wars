@@ -30,7 +30,6 @@ This project consists of two main components:
 - **Features**:
   - REST API client
   - WebSocket client
-  - Docker containerization
 
 ## Running Locally
 
@@ -132,13 +131,6 @@ cd backend
 docker build -f src/main/docker/Dockerfile.native -t quarkus/robot-wars-backend-native .
 ```
 
-### Frontend
-
-Build the frontend Docker image:
-```bash
-cd frontend
-docker build -t robot-wars-frontend .
-```
 
 ## API Overview
 
@@ -156,7 +148,7 @@ docker build -t robot-wars-frontend .
 This project includes GitHub Actions workflows for continuous integration and deployment:
 
 - **Backend CI**: Builds, tests, and creates a Docker image for the backend
-- **Frontend CI**: Builds, tests, and creates a Docker image for the frontend
+- **Frontend CI**: Builds, tests, and lints the frontend code
 
 ## License
 
