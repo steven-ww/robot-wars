@@ -1,0 +1,8 @@
+# Prompts Received
+
+## Initial Prompt
+Junie, generate a Quarkus sub project following the guidelines.
+
+This quarkus project will need to be deployed to k8s, have a native build, support rest api endpoints and possibly need to interact with a fe via websockets.
+
+Generate the basic foundation for this.

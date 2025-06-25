@@ -1,0 +1,34 @@
+####
+# This Dockerfile is used to build a container that runs the Quarkus application in JVM mode
+#
+# Before building the container image run:
+#
+# ./gradlew build
+#
+# Then, build the image with:
+#
+# docker build -f src/main/docker/Dockerfile.jvm -t quarkus/robot-wars-backend-jvm .
+#
+# Then run the container using:
+#
+# docker run -i --rm -p 8080:8080 quarkus/robot-wars-backend-jvm
+#
+###
+FROM registry.access.redhat.com/ubi8/openjdk-17:latest
+
+ENV LANGUAGE='en_US:en'
+ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+
+# Configure the JAVA_OPTIONS, you can add -XshowSettings:vm to also display the heap size.
+ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+
+# We make four distinct layers so if there are application changes the library layers can be reused
+COPY --chown=185 build/quarkus-app/lib/ /deployments/lib/
+COPY --chown=185 build/quarkus-app/*.jar /deployments/
+COPY --chown=185 build/quarkus-app/app/ /deployments/app/
+COPY --chown=185 build/quarkus-app/quarkus/ /deployments/quarkus/
+
+EXPOSE 8080
+USER 185
+
+ENTRYPOINT [ "java", "-jar", "/deployments/quarkus-run.jar" ]

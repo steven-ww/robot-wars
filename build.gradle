@@ -1,0 +1,23 @@
+// Root build.gradle for multi-project setup
+plugins {
+    id 'base'
+}
+
+allprojects {
+    group = 'com.example'
+    version = '1.0.0-SNAPSHOT'
+}
+
+// Define subprojects
+subprojects {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
+// Configure Gradle wrapper
+wrapper {
+    gradleVersion = '8.5'
+    distributionType = 'bin'
+}

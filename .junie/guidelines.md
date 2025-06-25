@@ -12,6 +12,8 @@ Replace this text with any project-level instructions for Junie, e.g.:
 * The build tooling for the backend project if gradle
 * The build tooling for the FE project can be what bests works witht he tools
 * The backend project must use quarkus
+  * With java 21
+  * With Virtual threads when appropriate
 * The front-end project can use React 
 * The backend project must be in java
 * The front-end project must be in TypeScript
@@ -26,3 +28,11 @@ Replace this text with any project-level instructions for Junie, e.g.:
   * Make use of Quarkus Dev services as appropriate
   * Include unit tests 
 * Quarkus features and extensions should be used
+* Update the readme files, in the root directory and for each project (BE/FE) to reflect any changes made.
+  * This must include 
+    * How to run locally
+    * how to test locally
+    * Tech stack used
+    * Testing approach
+    * Overview of the api's provided/used
+* Record all prompts received in a prompts.txt file in the root folder
