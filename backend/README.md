@@ -4,30 +4,34 @@ This is the backend component of the Robot Wars application, built with Quarkus.
 
 ## Features
 
-- REST API endpoints
+- REST API endpoints with virtual threads for improved scalability
 - WebSocket support for real-time communication
 - Native compilation support
 - Kubernetes deployment configuration
 - Docker containerization
+- Virtual threads for high-throughput, low-latency applications
+- Dev services for automated testing with containerized dependencies
 
 ## Tech Stack
 
-- **Language**: Java 17
+- **Language**: Java 21
 - **Framework**: Quarkus
 - **Build Tool**: Gradle
 - **Extensions**:
-  - RESTEasy Reactive for REST endpoints
+  - RESTEasy Reactive for REST endpoints with virtual threads
   - WebSockets for real-time communication
+  - Virtual Threads for improved scalability
   - Kubernetes for deployment
   - Container Image Docker for containerization
   - SmallRye Health for health checks
   - Micrometer for metrics
+  - Dev Services for testing
 
 ## Development
 
 ### Prerequisites
 
-- JDK 17+
+- JDK 21
 - Docker (optional, for containerized builds and deployment)
 
 ### Running the Application
@@ -49,6 +53,8 @@ Run the tests:
 ```bash
 ../gradlew test
 ```
+
+The application uses Quarkus Dev Services for testing, which automatically provides containerized services (databases, message brokers, etc.) during test execution without manual setup. This ensures tests run in an environment similar to production with real dependencies.
 
 ## Building
 
@@ -120,7 +126,9 @@ The application configuration is in `src/main/resources/application.properties`.
 - HTTP port: 8080
 - CORS settings
 - WebSocket configuration
-- Native build settings
+- Virtual threads configuration for improved scalability
+- Dev services configuration for testing
+- Native build settings with Java 21 support
 - Container image settings
 - Kubernetes deployment configuration
 

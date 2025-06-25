@@ -30,14 +30,24 @@ dependencies {
     // Metrics for monitoring
     implementation 'io.quarkus:quarkus-micrometer'
 
+    // Virtual threads support
+    implementation 'io.quarkus:quarkus-virtual-threads'
+
+    // Dev services for testing (add specific ones as needed)
+    // implementation 'io.quarkus:quarkus-jdbc-postgresql'
+    // implementation 'io.quarkus:quarkus-mongodb'
+    // implementation 'io.quarkus:quarkus-redis-client'
+    // implementation 'io.quarkus:quarkus-kafka-client'
+
     // Testing
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
+    testImplementation 'io.quarkus:quarkus-test-common'
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 // Basic Quarkus configuration
