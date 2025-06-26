@@ -1,7 +1,11 @@
 package com.example.backend.websocket;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.websocket.*;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import java.util.Map;
@@ -15,12 +19,11 @@ import java.util.logging.Logger;
 @ServerEndpoint("/chat/{username}")
 @ApplicationScoped
 public class ChatSocket {
-    
+
     private static final Logger LOGGER = Logger.getLogger(ChatSocket.class.getName());
-    
+
     // Store active sessions
     private Map<String, Session> sessions = new ConcurrentHashMap<>();
-    
     /**
      * Called when a new WebSocket connection is established.
      *
@@ -33,7 +36,7 @@ public class ChatSocket {
         broadcast("User " + username + " joined the chat");
         LOGGER.info("New WebSocket connection: " + username);
     }
-    
+
     /**
      * Called when a WebSocket connection is closed.
      *
@@ -46,7 +49,7 @@ public class ChatSocket {
         broadcast("User " + username + " left the chat");
         LOGGER.info("WebSocket connection closed: " + username);
     }
-    
+
     /**
      * Called when an error occurs in the WebSocket connection.
      *
@@ -59,7 +62,7 @@ public class ChatSocket {
         sessions.remove(username);
         LOGGER.severe("WebSocket error for user " + username + ": " + throwable.getMessage());
     }
-    
+
     /**
      * Called when a message is received from a client.
      *
@@ -71,7 +74,7 @@ public class ChatSocket {
         broadcast(username + ": " + message);
         LOGGER.info("Message from " + username + ": " + message);
     }
-    
+
     /**
      * Broadcasts a message to all connected clients.
      *
