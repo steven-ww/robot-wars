@@ -9,3 +9,16 @@
 ✅ COMPLETED: Ensure linting forms part of the local build as default
      - Added 'check.dependsOn checkstyleMain, checkstyleTest' to build.gradle
      - Linting now runs automatically as part of ./gradlew build
+
+Part 2:
+✅ COMPLETED: The application.properties file contains the following props that aren't recognised by quarkus
+  ✅ quarkus.vertx.prefer-virtual-threads - REMOVED (not needed in Quarkus 3.6+ with Java 21)
+  ✅ quarkus.thread-pool.type - REMOVED (not needed in Quarkus 3.6+ with Java 21) 
+  ✅ quarkus.resteasy-reactive.virtual-threads - REMOVED (not needed in Quarkus 3.6+ with Java 21)
+  ✅ quarkus.kubernetes.expose - FIXED to use quarkus.kubernetes.ingress.expose
+✅ COMPLETED: The native build phase fails with outdated image
+  ✅ Updated quay.io/quarkus/ubi-quarkus-mandrel-builder-image from 22.3-java21 to 23.1-java21
+✅ COMPLETED: The build logs also contain this error. Fix this.
+  ✅ Fixed "Invalid AnsiLogger Stream" by setting quarkus.console.color=false
+✅ COMPLETED: The build logs contain this warning. Fix this.
+  ✅ Fixed "[WARN] Could not detect project version. Using 'latest'" by adding explicit version and group to build.gradle
