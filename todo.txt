@@ -1,0 +1,11 @@
+✅ COMPLETED: Lint in GitHub fails build with
+  ✅ Cannot locate tasks that match ':backend:checkstyleMain' as task 'checkstyleMain' not found in project ':backend'.
+     - Added Checkstyle plugin to backend/build.gradle
+     - Created checkstyle configuration file at backend/config/checkstyle/checkstyle.xml
+     - Fixed code formatting issues in Java files
+✅ COMPLETED: GitHub job for BE build fails with outdated actions/upload-artifact: v3
+     - Updated .github/workflows/backend-ci.yml to use actions/upload-artifact@v4
+     - Updated .github/workflows/frontend-ci.yml to use actions/upload-artifact@v4
+✅ COMPLETED: Ensure linting forms part of the local build as default
+     - Added 'check.dependsOn checkstyleMain, checkstyleTest' to build.gradle
+     - Linting now runs automatically as part of ./gradlew build

@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'io.quarkus' version '3.6.0'
+    id 'checkstyle'
 }
 
 repositories {
@@ -63,3 +64,14 @@ tasks.withType(JavaCompile) {
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
 }
+
+// Configure Checkstyle
+checkstyle {
+    toolVersion = '10.12.4'
+    configFile = file('config/checkstyle/checkstyle.xml')
+    ignoreFailures = false
+    maxWarnings = 0
+}
+
+// Make checkstyle part of the default build
+check.dependsOn checkstyleMain, checkstyleTest
