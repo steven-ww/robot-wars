@@ -21,3 +21,6 @@ Given the FE build no longer need to be packaged with docker, please clean up th
 
 ## Sixth Prompt - this time to Warp 2.0
 The todo.txt lists 3 items that need fixing. Can you review these issues and make the required changes to solve them?
+
+## Seventh Prompt - to Warp 2.0
+I've updated the todo.txt with additional items to address. Have a look at the file and implement the required updates. Also, update the prompts.txt with this prompt in order to keep a list of all prompts used for the project.

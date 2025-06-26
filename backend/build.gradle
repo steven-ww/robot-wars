@@ -4,6 +4,9 @@ plugins {
     id 'checkstyle'
 }
 
+version = '1.0.0-SNAPSHOT'
+group = 'com.example'
+
 repositories {
     mavenCentral()
     mavenLocal()
