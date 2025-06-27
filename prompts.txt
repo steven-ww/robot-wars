@@ -24,3 +24,9 @@ The todo.txt lists 3 items that need fixing. Can you review these issues and mak
 
 ## Seventh Prompt - to Warp 2.0
 I've updated the todo.txt with additional items to address. Have a look at the file and implement the required updates. Also, update the prompts.txt with this prompt in order to keep a list of all prompts used for the project.
+
+## Eighth Prompt - to Warp 2.0
+Remember to update the prompts file to reflect this prompt. Change the deployment of the docker container from github to use aws Elastic container registry instead. Use OIDC for authentication. Use a secret defined in GitHub secrets called "AWS_ACCOUNT_ID" for the value of the AWS account to use. The role to use is in a GitHub secret called AWS_ROLE_ARN. Use af-south-1 as the aws region to deploy to.
+
+## Ninth Prompt - to Warp 2.0
+Update the backend readme file to reflect the change to aws ecr and OIDC. (And update the prompts file with this prompt)
