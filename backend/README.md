@@ -108,6 +108,40 @@ Run the container:
 docker run -i --rm -p 8080:8080 quarkus/robot-wars-backend-native
 ```
 
+## Deployment
+
+### AWS ECR Deployment
+
+The application is automatically deployed to AWS Elastic Container Registry (ECR) in the `af-south-1` region when code is pushed to the main branch. The deployment uses:
+
+- **OIDC Authentication**: GitHub Actions authenticates with AWS using OpenID Connect (OIDC) for secure, token-based authentication without storing long-lived credentials
+- **AWS ECR**: Container images are pushed to AWS Elastic Container Registry
+- **Regional Deployment**: Deployed to the `af-south-1` (Africa - Cape Town) region
+
+#### Required GitHub Secrets
+
+The following secrets must be configured in the GitHub repository:
+
+- `AWS_ROLE_ARN`: The ARN of the AWS IAM role that GitHub Actions will assume
+- `AWS_ACCOUNT_ID`: The AWS account ID (referenced in the workflow configuration)
+
+#### ECR Repository
+
+The Docker images are pushed to the ECR repository: `robot-wars-backend`
+
+Images are tagged with:
+- `latest`: Always points to the most recent build
+- `<commit-sha>`: Specific commit hash for version tracking
+
+#### CI/CD Pipeline
+
+The automated deployment process:
+1. Builds and tests the application
+2. Runs code quality checks (Checkstyle)
+3. Creates a native Docker image
+4. Authenticates with AWS using OIDC
+5. Pushes the image to AWS ECR in af-south-1 region
+
 ## API Documentation
 
 ### REST Endpoints
