@@ -1,4 +1,4 @@
-package com.example.backend.rest;
+package za.co.sww.rwars.backend.rest;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
