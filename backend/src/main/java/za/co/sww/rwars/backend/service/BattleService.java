@@ -6,17 +6,16 @@ import za.co.sww.rwars.backend.model.Robot;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Service to manage battles and robots.
  */
 @ApplicationScoped
 public class BattleService {
-    
+
     private Battle currentBattle;
     private final Map<String, Robot> robotsByBattleId = new HashMap<>();
-    
+
     /**
      * Registers a robot for the battle.
      *
@@ -28,18 +27,18 @@ public class BattleService {
         if (currentBattle != null && currentBattle.getState() == Battle.BattleState.IN_PROGRESS) {
             throw new IllegalStateException("Cannot join a battle in progress");
         }
-        
+
         if (currentBattle == null) {
             currentBattle = new Battle();
         }
-        
+
         Robot robot = new Robot(robotName, currentBattle.getId());
         currentBattle.addRobot(robot);
         robotsByBattleId.put(robot.getBattleId(), robot);
-        
+
         return robot;
     }
-    
+
     /**
      * Gets the battle status.
      *
@@ -51,10 +50,10 @@ public class BattleService {
         if (currentBattle == null || !currentBattle.getId().equals(battleId)) {
             throw new IllegalArgumentException("Invalid battle ID");
         }
-        
+
         return currentBattle;
     }
-    
+
     /**
      * Starts the battle.
      *
@@ -67,15 +66,15 @@ public class BattleService {
         if (currentBattle == null || !currentBattle.getId().equals(battleId)) {
             throw new IllegalArgumentException("Invalid battle ID");
         }
-        
+
         if (currentBattle.getState() != Battle.BattleState.READY) {
             throw new IllegalStateException("Battle is not ready to start");
         }
-        
+
         currentBattle.startBattle();
         return currentBattle;
     }
-    
+
     /**
      * Checks if a battle ID is valid.
      *
@@ -85,7 +84,7 @@ public class BattleService {
     public boolean isValidBattleId(String battleId) {
         return currentBattle != null && currentBattle.getId().equals(battleId);
     }
-    
+
     /**
      * Gets the current battle.
      *
@@ -94,7 +93,7 @@ public class BattleService {
     public Battle getCurrentBattle() {
         return currentBattle;
     }
-    
+
     /**
      * Resets the current battle for testing purposes.
      */

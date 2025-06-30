@@ -12,7 +12,6 @@ import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import za.co.sww.rwars.backend.service.BattleService;
 
@@ -23,7 +22,7 @@ import java.util.Map;
 public class RobotSteps {
 
     @Inject
-    BattleService battleService;
+    private BattleService battleService;
 
     private Response response;
     private String battleId;
@@ -73,7 +72,7 @@ public class RobotSteps {
         if (battleService != null) {
             battleService.resetBattle();
         }
-        
+
         // First register two robots to create a battle and make it ready
         Map<String, String> robot1 = new HashMap<>();
         robot1.put("name", "FirstRobot");
@@ -89,11 +88,11 @@ public class RobotSteps {
         // Then start the battle to make it IN_PROGRESS
         Response startResponse = request.post("/api/robots/battle/" + firstBattleId + "/start");
         startResponse.then().statusCode(200);
-        
+
         // Verify the battle is actually started
         Response statusResponse = request.get("/api/robots/battle/" + firstBattleId);
         statusResponse.then().statusCode(200).body("state", Matchers.equalTo("IN_PROGRESS"));
-        
+
         // Store the battle status response to ensure it's available for subsequent steps
         response = statusResponse;
     }
@@ -103,7 +102,7 @@ public class RobotSteps {
         // Now try to register a robot when a battle is already in progress
         Map<String, String> robot = new HashMap<>();
         robot.put("name", "TestRobot");
-        
+
         Response registrationResponse = request.body(robot).post("/api/robots/register");
         registrationResponse.then().statusCode(409); // Conflict
         registrationResponse.then().body("message", Matchers.containsString("Cannot join a battle in progress"));
@@ -159,7 +158,7 @@ public class RobotSteps {
     @Then("the battle should have {int} or more robots")
     public void theBattleShouldHaveOrMoreRobots(int minCount) {
         int actualCount = response.jsonPath().getInt("robotCount");
-        Assertions.assertTrue(actualCount >= minCount, 
+        Assertions.assertTrue(actualCount >= minCount,
                 "Expected at least " + minCount + " robots, but found " + actualCount);
     }
 
