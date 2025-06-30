@@ -5,7 +5,7 @@ plugins {
 }
 
 version = '1.0.0-SNAPSHOT'
-group = 'com.example'
+group = 'za.co.sww.rwars'
 
 repositories {
     mavenCentral()
@@ -47,6 +47,12 @@ dependencies {
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
     testImplementation 'io.quarkus:quarkus-test-common'
+
+    // Cucumber for BDD testing
+    // Using Cucumber directly without Quarkus extension
+    testImplementation 'io.cucumber:cucumber-java:7.11.1'
+    testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.11.1'
+    testImplementation 'org.junit.platform:junit-platform-suite-api:1.9.2'
 }
 
 java {

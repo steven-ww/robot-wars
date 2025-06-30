@@ -30,3 +30,13 @@ Remember to update the prompts file to reflect this prompt. Change the deploymen
 
 ## Ninth Prompt - to Warp 2.0
 Update the backend readme file to reflect the change to aws ecr and OIDC. (And update the prompts file with this prompt)
+
+## Tenth Prompt
+For the backend quarkus project, I'm going to be using cucumber for BDD.
+
+Prepare the project for the use of Cucumber with Gherkin by adding the quarkus cucumber extension.
+
+Create the recommended folder structure for gherkin files and create a sample gherkin file.
+
+## Eleventh Prompt
+The project uses checkstyle. Validate that the checkstyle rules pass and make updates if they don't.
