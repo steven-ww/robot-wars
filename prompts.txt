@@ -45,3 +45,11 @@ The project uses checkstyle. Validate that the checkstyle rules pass and make up
 Using the cucumber feature file in the backend project, implement the cucumber step file and the rest API's to support the cucumber tests
 
 Ensure that tests execute and pass.
+
+## Thirteenth Prompt
+Quarkus is not starting for the Cucumber tests.
+Add the cucumber quarkus ext "io.quarkiverse.cucumber.quarkus-cucumber" and then use the CucumberQuarkusTest "test" to bootstrap cucumber in the project.
+
+## Fourteenth Prompt
+I'm having trouble using cucumber with Quarkus and the cucumber ext for Quarkus. It looks like my quarkus server is not starting so my calls to the rest endpoints fail. What could be the issue?
+
