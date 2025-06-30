@@ -1,4 +1,4 @@
-package com.example.backend.websocket;
+package za.co.sww.rwars.backend.websocket;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.websocket.OnClose;

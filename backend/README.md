@@ -26,6 +26,7 @@ This is the backend component of the Robot Wars application, built with Quarkus.
   - SmallRye Health for health checks
   - Micrometer for metrics
   - Dev Services for testing
+  - Cucumber for BDD testing
 
 ## Development
 
@@ -55,6 +56,27 @@ Run the tests:
 ```
 
 The application uses Quarkus Dev Services for testing, which automatically provides containerized services (databases, message brokers, etc.) during test execution without manual setup. This ensures tests run in an environment similar to production with real dependencies.
+
+#### BDD Testing with Cucumber
+
+The application uses Cucumber for Behavior-Driven Development (BDD) testing. The BDD tests are written in Gherkin syntax and executed using Cucumber with RestAssured for API testing.
+
+**Folder Structure:**
+- `src/test/resources/features/`: Contains Gherkin feature files
+- `src/test/java/za/co/sww/rwars/steps/`: Contains Java step definitions
+- `src/test/resources/cucumber.properties`: Cucumber configuration
+
+**Running BDD Tests:**
+```bash
+../gradlew test
+```
+
+This will run both unit tests and Cucumber BDD tests.
+
+**Writing BDD Tests:**
+1. Create a feature file in `src/test/resources/features/` using Gherkin syntax
+2. Implement step definitions in `src/test/java/za/co/sww/rwars/steps/`
+3. The test runner class `za.co.sww.rwars.CucumberTest` will automatically discover and run the tests
 
 ## Building
 
