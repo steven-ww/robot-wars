@@ -37,3 +37,7 @@ Replace this text with any project-level instructions for Junie, e.g.:
     * Testing approach
     * Overview of the api's provided/used
 * Record all prompts received in a prompts.txt file in the root folder
+* Cucumber will be used for BDD.
+  * The step definition files must be written in java and use RestAssured for api interactions.
+  * All tests should use Quarkus testing tools and strategies where possible.
+* After each change, validate that the checkstyle rules pass
