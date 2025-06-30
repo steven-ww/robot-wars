@@ -5,7 +5,6 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -13,6 +12,8 @@ import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
 import za.co.sww.rwars.backend.service.BattleService;
 
 import java.util.HashMap;
@@ -30,8 +31,6 @@ public class RobotSteps {
 
     @Before
     public void setup() {
-        // Use the configured Quarkus test URI
-        RestAssured.port = 8081;
         request = RestAssured.given();
         request.contentType(ContentType.JSON);
 
@@ -70,20 +69,44 @@ public class RobotSteps {
 
     @And("there is a battle currently in progress")
     public void thereIsABattleCurrentlyInProgress() {
-        // First register a robot to create a battle
-        Map<String, String> robot = new HashMap<>();
-        robot.put("name", "FirstRobot");
-        Response registerResponse = request.body(robot).post("/api/robots/register");
-        String firstBattleId = registerResponse.jsonPath().getString("battleId");
+        // Reset the battle service to ensure a clean state
+        if (battleService != null) {
+            battleService.resetBattle();
+        }
+        
+        // First register two robots to create a battle and make it ready
+        Map<String, String> robot1 = new HashMap<>();
+        robot1.put("name", "FirstRobot");
+        Response registerResponse1 = request.body(robot1).post("/api/robots/register");
+        String firstBattleId = registerResponse1.jsonPath().getString("battleId");
 
-        // Then start the battle
-        request.post("/api/robots/battle/" + firstBattleId + "/start");
+        // Register second robot to make battle ready
+        Map<String, String> robot2 = new HashMap<>();
+        robot2.put("name", "SecondRobot");
+        Response registerResponse2 = request.body(robot2).post("/api/robots/register");
+        registerResponse2.then().statusCode(200);
+
+        // Then start the battle to make it IN_PROGRESS
+        Response startResponse = request.post("/api/robots/battle/" + firstBattleId + "/start");
+        startResponse.then().statusCode(200);
+        
+        // Verify the battle is actually started
+        Response statusResponse = request.get("/api/robots/battle/" + firstBattleId);
+        statusResponse.then().statusCode(200).body("state", Matchers.equalTo("IN_PROGRESS"));
+        
+        // Store the battle status response to ensure it's available for subsequent steps
+        response = statusResponse;
     }
 
     @Then("I should receive an error code and description reflecting that I can't join an in progress battle")
     public void iShouldReceiveAnErrorCodeAndDescription() {
-        response.then().statusCode(409); // Conflict
-        response.then().body("message", Matchers.containsString("Cannot join a battle in progress"));
+        // Now try to register a robot when a battle is already in progress
+        Map<String, String> robot = new HashMap<>();
+        robot.put("name", "TestRobot");
+        
+        Response registrationResponse = request.body(robot).post("/api/robots/register");
+        registrationResponse.then().statusCode(409); // Conflict
+        registrationResponse.then().body("message", Matchers.containsString("Cannot join a battle in progress"));
     }
 
     @Given("I have registered my robot")
@@ -126,7 +149,11 @@ public class RobotSteps {
         Map<String, String> robot = new HashMap<>();
         robot.put("name", "OtherRobot");
 
-        request.body(robot).post("/api/robots/register");
+        // Store the response to ensure it's available if needed
+        Response otherRobotResponse = request.body(robot).post("/api/robots/register");
+        // We don't overwrite the main response here as it might be needed by other steps
+        // But we ensure the request completes successfully
+        otherRobotResponse.then().statusCode(200);
     }
 
     @Then("the battle should have {int} or more robots")
@@ -142,17 +169,23 @@ public class RobotSteps {
         Map<String, String> robot1 = new HashMap<>();
         robot1.put("name", "Robot1");
         Response response1 = request.body(robot1).post("/api/robots/register");
+        response1.then().statusCode(200);
         battleId = response1.jsonPath().getString("battleId");
 
         // Register second robot
         Map<String, String> robot2 = new HashMap<>();
         robot2.put("name", "Robot2");
-        request.body(robot2).post("/api/robots/register");
+        Response response2 = request.body(robot2).post("/api/robots/register");
+        response2.then().statusCode(200);
+
+        // We don't overwrite the main response here as it will be set in subsequent steps
     }
 
     @And("the battle administrator has started the battle")
     public void theBattleAdministratorHasStartedTheBattle() {
-        request.post("/api/robots/battle/" + battleId + "/start");
+        // Store the response to ensure it's available for subsequent steps
+        response = request.post("/api/robots/battle/" + battleId + "/start");
+        response.then().statusCode(200);
     }
 
     @Then("the battle status should be to {string}")
