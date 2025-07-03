@@ -68,6 +68,32 @@ public class RobotResource {
     }
 
     /**
+     * Gets the battle status for a specific robot.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @return The battle status
+     */
+    @GET
+    @Path("/battle/{battleId}/robot/{robotId}")
+    public Response getBattleStatusForRobot(@PathParam("battleId") String battleId,
+                                           @PathParam("robotId") String robotId) {
+        try {
+            if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .build();
+            }
+            Battle battle = battleService.getBattleStatusForRobot(battleId, robotId);
+            return Response.ok(battle).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
      * Starts the battle.
      *
      * @param battleId The battle ID

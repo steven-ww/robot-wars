@@ -1,3 +1,15 @@
+2025-07-03 - Please follow the guidelines in ./junie/guidelines.md for this task. The current implementation of the BE is based on the features defined in the feature file test/java/resource/features/add_a_robot.feature. The cucumber tests work, however, the implementation does not distinquise between a battle id (of the entire battle) and the id of a robot. Each robot should be provided it's own id for the battle and send that back on each request to the server. Update the feature file to make this more explicit, then update the tests and implementation to work with a battle id (for the battle) and a robot id for each robot.
+
+Completed:
+- Updated feature file to distinguish between battle ID and robot ID
+- Modified Robot model to include unique robot ID (UUID)
+- Updated BattleService to track robots by their unique IDs
+- Added new REST endpoint for battle status with robot ID validation
+- Updated step definitions to handle both battle and robot IDs
+- Fixed checkstyle violations
+- All Cucumber tests now pass
+- Build successful with all quality checks passing
+
 # Prompts Received
 
 ## Initial Prompt

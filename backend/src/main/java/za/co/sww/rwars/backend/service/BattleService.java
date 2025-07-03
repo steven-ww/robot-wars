@@ -14,7 +14,7 @@ import java.util.Map;
 public class BattleService {
 
     private Battle currentBattle;
-    private final Map<String, Robot> robotsByBattleId = new HashMap<>();
+    private final Map<String, Robot> robotsById = new HashMap<>();
 
     /**
      * Registers a robot for the battle.
@@ -34,7 +34,7 @@ public class BattleService {
 
         Robot robot = new Robot(robotName, currentBattle.getId());
         currentBattle.addRobot(robot);
-        robotsByBattleId.put(robot.getBattleId(), robot);
+        robotsById.put(robot.getId(), robot);
 
         return robot;
     }
@@ -49,6 +49,31 @@ public class BattleService {
     public Battle getBattleStatus(String battleId) {
         if (currentBattle == null || !currentBattle.getId().equals(battleId)) {
             throw new IllegalArgumentException("Invalid battle ID");
+        }
+
+        return currentBattle;
+    }
+
+    /**
+     * Gets the battle status for a specific robot.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @return The battle if found
+     * @throws IllegalArgumentException if the battle ID or robot ID is invalid
+     */
+    public Battle getBattleStatusForRobot(String battleId, String robotId) {
+        if (currentBattle == null || !currentBattle.getId().equals(battleId)) {
+            throw new IllegalArgumentException("Invalid battle ID");
+        }
+
+        if (!robotsById.containsKey(robotId)) {
+            throw new IllegalArgumentException("Invalid robot ID");
+        }
+
+        Robot robot = robotsById.get(robotId);
+        if (!robot.getBattleId().equals(battleId)) {
+            throw new IllegalArgumentException("Robot does not belong to this battle");
         }
 
         return currentBattle;
@@ -86,6 +111,31 @@ public class BattleService {
     }
 
     /**
+     * Checks if a robot ID is valid.
+     *
+     * @param robotId The robot ID to check
+     * @return true if the robot ID is valid, false otherwise
+     */
+    public boolean isValidRobotId(String robotId) {
+        return robotsById.containsKey(robotId);
+    }
+
+    /**
+     * Checks if a battle ID and robot ID combination is valid.
+     *
+     * @param battleId The battle ID to check
+     * @param robotId The robot ID to check
+     * @return true if both IDs are valid and match, false otherwise
+     */
+    public boolean isValidBattleAndRobotId(String battleId, String robotId) {
+        if (!isValidBattleId(battleId) || !isValidRobotId(robotId)) {
+            return false;
+        }
+        Robot robot = robotsById.get(robotId);
+        return robot.getBattleId().equals(battleId);
+    }
+
+    /**
      * Gets the current battle.
      *
      * @return The current battle, or null if no battle exists
@@ -99,6 +149,6 @@ public class BattleService {
      */
     public void resetBattle() {
         currentBattle = null;
-        robotsByBattleId.clear();
+        robotsById.clear();
     }
 }
