@@ -56,6 +56,28 @@ public class BattleSteps {
         response = request.body(battleRequest).post("/api/battles");
     }
 
+    @When("I create a new battle with name {string} and robot movement time {double} seconds")
+    public void iCreateANewBattleWithNameAndRobotMovementTime(String battleName, double movementTime) {
+        Map<String, Object> battleRequest = new HashMap<>();
+        battleRequest.put("name", battleName);
+        battleRequest.put("robotMovementTimeSeconds", movementTime);
+
+        response = request.body(battleRequest).post("/api/battles");
+    }
+
+    @When("I create a new battle with name {string} and dimensions {int}x{int} "
+            + "and robot movement time {double} seconds")
+    public void iCreateANewBattleWithNameAndDimensionsAndRobotMovementTime(
+            String battleName, int width, int height, double movementTime) {
+        Map<String, Object> battleRequest = new HashMap<>();
+        battleRequest.put("name", battleName);
+        battleRequest.put("width", width);
+        battleRequest.put("height", height);
+        battleRequest.put("robotMovementTimeSeconds", movementTime);
+
+        response = request.body(battleRequest).post("/api/battles");
+    }
+
     @When("I attempt to create a battle with name {string} and dimensions {int}x{int}")
     public void iAttemptToCreateABattleWithNameAndDimensions(String battleName, int width, int height) {
         Map<String, Object> battleRequest = new HashMap<>();
@@ -96,6 +118,30 @@ public class BattleSteps {
     public void theBattleShouldHaveAnArenaWithDimensions(int width, int height) {
         response.then().body("arenaWidth", Matchers.equalTo(width));
         response.then().body("arenaHeight", Matchers.equalTo(height));
+    }
+
+    @And("the robot movement time should be the default from server configuration")
+    public void theRobotMovementTimeShouldBeTheDefaultFromServerConfiguration() {
+        // We don't hardcode the default value here, just check that it's present and positive
+        response.then().body("robotMovementTimeSeconds", Matchers.greaterThan(0.0f));
+    }
+
+    @And("the robot movement time should be {double} seconds")
+    public void theRobotMovementTimeShouldBeSeconds(double movementTime) {
+        // Extract the value from the response
+        Object actualValue = response.jsonPath().get("robotMovementTimeSeconds");
+        System.out.println("[DEBUG_LOG] robotMovementTimeSeconds actual value: " + actualValue);
+        System.out.println("[DEBUG_LOG] robotMovementTimeSeconds actual value type: "
+                + (actualValue != null ? actualValue.getClass().getName() : "null"));
+
+        // Convert the value to a double and compare
+        if (actualValue instanceof Number) {
+            double actualDouble = ((Number) actualValue).doubleValue();
+            Assertions.assertEquals(movementTime, actualDouble, 0.001,
+                    "Robot movement time should be " + movementTime + " seconds");
+        } else {
+            Assertions.fail("Expected robotMovementTimeSeconds to be a number, but got: " + actualValue);
+        }
     }
 
     @Then("I should receive an error indicating the arena size is too small")

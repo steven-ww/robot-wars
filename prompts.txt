@@ -150,3 +150,18 @@ Remember to update the prompts.txt file. The updateRobotPosition api is still av
 
 ## Thirty-first Prompt
 Update the prompts.txt file with the previous prompt
+
+## Thirty-second Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Follow the guidelines in the .junie/guidelines.md file. 
+Update the feature files for creating a battle to allow the user to specify how much time it takes the robot to move a block. Load the default value of 1 second from the property file. Use a value of .5 seconds for all the test scenarios.
+
+update the feature file to reflect the above requirement. Update the tests to use the new .5 second value, update thie implementation to support the supplied value or fallback to the value from the configuration. 
+
+Update the prompts and run a root level build as per the guidelines to ensure everything still works.
+</issue_description>
+
+## Thirty-second Prompt
+Two tests are failing. Fix those. Remember to update the prompts.txt file

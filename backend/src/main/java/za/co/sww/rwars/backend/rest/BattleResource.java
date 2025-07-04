@@ -31,8 +31,14 @@ public class BattleResource {
     public Response createBattle(CreateBattleRequest request) {
         try {
             Battle battle;
-            if (request.getWidth() != null && request.getHeight() != null) {
+            if (request.getWidth() != null && request.getHeight() != null
+                    && request.getRobotMovementTimeSeconds() != null) {
+                battle = battleService.createBattle(request.getName(), request.getWidth(), request.getHeight(),
+                        request.getRobotMovementTimeSeconds());
+            } else if (request.getWidth() != null && request.getHeight() != null) {
                 battle = battleService.createBattle(request.getName(), request.getWidth(), request.getHeight());
+            } else if (request.getRobotMovementTimeSeconds() != null) {
+                battle = battleService.createBattle(request.getName(), request.getRobotMovementTimeSeconds());
             } else {
                 battle = battleService.createBattle(request.getName());
             }
@@ -55,6 +61,7 @@ public class BattleResource {
         private String name;
         private Integer width;
         private Integer height;
+        private Double robotMovementTimeSeconds;
 
         public CreateBattleRequest() {
         }
@@ -81,6 +88,14 @@ public class BattleResource {
 
         public void setHeight(Integer height) {
             this.height = height;
+        }
+
+        public Double getRobotMovementTimeSeconds() {
+            return robotMovementTimeSeconds;
+        }
+
+        public void setRobotMovementTimeSeconds(Double robotMovementTimeSeconds) {
+            this.robotMovementTimeSeconds = robotMovementTimeSeconds;
         }
     }
 
