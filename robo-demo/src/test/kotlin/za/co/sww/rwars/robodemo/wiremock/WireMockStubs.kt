@@ -304,10 +304,10 @@ class WireMockStubs {
      * @return The robot details
      */
     fun stubGetRobotDetailsWithPosition(
-        robotName: String, 
-        status: String = "IDLE", 
-        positionX: Int = 0, 
-        positionY: Int = 0
+        robotName: String,
+        status: String = "IDLE",
+        positionX: Int = 0,
+        positionY: Int = 0,
     ): Robot {
         val robotId = robotIds[robotName] ?: throw IllegalArgumentException("Robot not found: $robotName")
 

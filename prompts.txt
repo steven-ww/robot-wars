@@ -1,6 +1,6 @@
 # Prompts Received
 
-## Initial Prompt
+## First Prompt
 Junie, generate a Quarkus sub project following the guidelines.
 
 This quarkus project will need to be deployed to k8s, have a native build, support rest api endpoints and possibly need to interact with a fe via websockets.
@@ -163,10 +163,10 @@ update the feature file to reflect the above requirement. Update the tests to us
 Update the prompts and run a root level build as per the guidelines to ensure everything still works.
 </issue_description>
 
-## Thirty-second Prompt
+## Thirty-third Prompt
 Two tests are failing. Fix those. Remember to update the prompts.txt file
 
-## Thirty-third Prompt
+## Thirty-fourth Prompt
 Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
 <issue_description>
 ## 
@@ -191,7 +191,7 @@ requirements to be defined in the feature files and implemented and tested:
 * Update the prompts.txt with this prompt.
 </issue_description>
 
-## Thirty-fourth Prompt
+## Thirty-fifth Prompt
 Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
 <issue_description>
 ## 
@@ -202,21 +202,21 @@ Using wiremock, mockout the backend-server API's for the tests.
 update the prompts.txt and also create a readme for the robot-demo project
 </issue_description>
 
-## Thirty-fifth Prompt
+## Thirty-sixth Prompt
 Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
 <issue_description>
 ## 
 Update the prompts.txt for this task. Fix the linting issues in the robo-demo project.  Validate the results with a build 
 </issue_description>
 
-## Thirty-sixth Prompt
+## Thirty-seventh Prompt
 Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
 <issue_description>
 ## 
 Modify the start-battle script to reference gradlew from the parent directory. Update the prompts.txt
 </issue_description>
 
-## Thirty-seventh Prompt
+## Thirty-eighth Prompt
 Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
 <issue_description>
 ## 
@@ -226,7 +226,7 @@ Have it display the initial starting position of each robot.
 Render the arena in the output, showing the start position of each robot.
 </issue_description>
 
-## Thirty-eighth Prompt
+## Thirty-ninth Prompt
 Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
 <issue_description>
 ## 
@@ -237,11 +237,19 @@ Add a scenario to the move robot feature that allows the user to make a request 
 Add a scenario to the move robot feature that verifies that the initial location of the robot is randomly generated with the space of the arena. 
 </issue_description>
 
-## Thirty-ninth Prompt
+## Fortieth Prompt
 Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
 <issue_description>
 ## 
 Update the robo-demo to retrieve the status for each robot as it moves and rerender the arena with the new location displayed. A  Update the prompts.txt.
 
 Add a scenario to the Robot Battle feature that has the user tracking the movement of the robot to confirm that it is moving as expected. 
+</issue_description>
+
+## Forty-first Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the prompts.txt file with the last prompt. 
+Also fix the checkstyle issues in the backend project and update the prompts.txt file with this prompt
 </issue_description>
