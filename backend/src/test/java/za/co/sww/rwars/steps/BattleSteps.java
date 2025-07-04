@@ -70,7 +70,7 @@ public class BattleSteps {
     public void aBattleWithTheNameShouldBeCreated(String battleName) {
         response.then().statusCode(200);
         response.then().body("name", Matchers.equalTo(battleName));
-        
+
         // Store the battle ID for later use
         battleId = response.jsonPath().getString("id");
         Assertions.assertNotNull(battleId);

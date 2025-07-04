@@ -67,7 +67,7 @@ This document outlines the requirements and guidelines for the Robot Wars projec
   - Testing approach
   - Overview of APIs provided/used
 
-## 7. Process Requirements
+## 7. For each prompt, follow this process
 
 ### 7.1 Prompt Handling
 - Record all prompts in a `prompts.txt` file in the root folder
@@ -79,5 +79,6 @@ This document outlines the requirements and guidelines for the Robot Wars projec
   - Always append new prompts to the end of the file
 
 ### 7.2 Build Process
-- Build the project before submitting results
-- Ensure all tests pass during the build process
+- Build the project using the "./gradlew build command" at the top level 
+  - Ensure all tests pass during the build process
+  - Ensure all checkstyle rules pass
