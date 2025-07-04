@@ -215,3 +215,24 @@ Given the following issue description `<issue_description>`, could you help me i
 ## 
 Modify the start-battle script to reference gradlew from the parent directory. Update the prompts.txt
 </issue_description>
+
+## Thirty-seventh Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the prompts.txt.
+Update the robo-demo project to create a 20 * 20 arena.
+Have it display the initial starting position of each robot.
+Render the arena in the output, showing the start position of each robot.
+</issue_description>
+
+## Thirty-eighth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the prompts.txt, run a complete build for the backend including tests and linting for this task.
+
+Add a scenario to the move robot feature that allows the user to make a request to the API in order to get the details of the users Robot. This would be all the information for this users robot only. 
+
+Add a scenario to the move robot feature that verifies that the initial location of the robot is randomly generated with the space of the arena. 
+</issue_description>

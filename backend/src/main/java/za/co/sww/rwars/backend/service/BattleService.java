@@ -195,6 +195,18 @@ public class BattleService {
         }
 
         Robot robot = new Robot(robotName, currentBattle.getId());
+
+        // Randomly position the robot within the arena boundaries
+        int arenaWidth = currentBattle.getArenaWidth();
+        int arenaHeight = currentBattle.getArenaHeight();
+
+        // Generate random position within arena boundaries
+        int randomX = (int) (Math.random() * arenaWidth);
+        int randomY = (int) (Math.random() * arenaHeight);
+
+        robot.setPositionX(randomX);
+        robot.setPositionY(randomY);
+
         currentBattle.addRobot(robot);
         robotsById.put(robot.getId(), robot);
 

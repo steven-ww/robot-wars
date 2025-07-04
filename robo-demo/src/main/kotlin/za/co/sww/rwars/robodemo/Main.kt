@@ -12,6 +12,45 @@ import kotlin.system.exitProcess
 private val logger = LoggerFactory.getLogger("Main")
 
 /**
+ * Renders the arena with the robots' positions.
+ *
+ * @param width The width of the arena
+ * @param height The height of the arena
+ * @param robots The list of robots to display
+ */
+private fun renderArena(width: Int, height: Int, robots: List<Robot>) {
+    logger.info("Rendering arena (${width}x${height}):")
+
+    // Create a 2D array to represent the arena
+    val arena = Array(height) { Array(width) { "." } }
+
+    // Place robots on the arena
+    robots.forEachIndexed { index, robot ->
+        // Ensure robot position is within arena bounds
+        if (robot.positionX in 0 until width && robot.positionY in 0 until height) {
+            // Use the first letter of the robot's name as its marker
+            arena[robot.positionY][robot.positionX] = robot.name.first().toString()
+        }
+    }
+
+    // Print the arena
+    val horizontalBorder = "+${"-".repeat(width * 2 - 1)}+"
+    logger.info(horizontalBorder)
+
+    for (y in 0 until height) {
+        val row = arena[y].joinToString(" ")
+        logger.info("| $row |")
+    }
+
+    logger.info(horizontalBorder)
+
+    // Print legend
+    robots.forEach { robot ->
+        logger.info("${robot.name.first()} = ${robot.name} at (${robot.positionX}, ${robot.positionY})")
+    }
+}
+
+/**
  * Main entry point for the robo-demo application.
  * This application demonstrates the use of the Robot Wars API to:
  * 1. Create a new battle
@@ -29,10 +68,10 @@ fun main(args: Array<String>) = runBlocking {
     val robotApiClient = RobotApiClient(baseUrl)
 
     try {
-        // Create a new battle
-        logger.info("Creating a new battle")
-        val battle = battleApiClient.createBattle("Demo Battle")
-        logger.info("Battle created: ${battle.id} - ${battle.name}")
+        // Create a new battle with a 20x20 arena
+        logger.info("Creating a new battle with a 20x20 arena")
+        val battle = battleApiClient.createBattle("Demo Battle", 20, 20)
+        logger.info("Battle created: ${battle.id} - ${battle.name} - Arena size: ${battle.arenaWidth}x${battle.arenaHeight}")
 
         // Register robots
         logger.info("Registering robot 'Restro'")
@@ -47,6 +86,16 @@ fun main(args: Array<String>) = runBlocking {
         logger.info("Starting the battle")
         val startedBattle = robotApiClient.startBattle(battle.id)
         logger.info("Battle started: ${startedBattle.state}")
+
+        // Get robot details to display initial positions
+        val restroDetails = robotApiClient.getRobotDetails(battle.id, restro.id)
+        val reqBotDetails = robotApiClient.getRobotDetails(battle.id, reqBot.id)
+
+        logger.info("Initial position of ${restroDetails.name}: (${restroDetails.positionX}, ${restroDetails.positionY})")
+        logger.info("Initial position of ${reqBotDetails.name}: (${reqBotDetails.positionX}, ${reqBotDetails.positionY})")
+
+        // Render the arena showing the initial positions of the robots
+        renderArena(battle.arenaWidth, battle.arenaHeight, listOf(restroDetails, reqBotDetails))
 
         // Move robots until one crashes or time limit is reached
         moveRobotsUntilCrashOrTimeout(robotApiClient, battle.id, restro, reqBot)

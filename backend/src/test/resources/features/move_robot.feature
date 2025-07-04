@@ -41,3 +41,17 @@ Feature: Robot Movement
     Then the robot should move until it reaches the arena boundary
     And the robot should stop at the boundary
     And the robot status should be "crashed"
+
+  Scenario: Get robot details via API
+    Given I create a new battle with name "Robot Details Battle" and robot movement time 0.5 seconds
+    And I have registered my robot
+    And the battle has started
+    When I request the details of my robot via the API
+    Then I should receive all the information about my robot
+    And the information should include the robot's ID, name, position, direction, and status
+
+  Scenario: Verify random initial robot location
+    Given I create a new battle with name "Random Location Battle" and dimensions 20x20 and robot movement time 0.5 seconds
+    When I register multiple robots
+    Then each robot should have a different initial position
+    And all initial positions should be within the arena boundaries
