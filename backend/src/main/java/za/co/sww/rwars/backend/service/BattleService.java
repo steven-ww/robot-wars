@@ -435,11 +435,14 @@ public class BattleService {
                 newX--;
                 newY--;
                 break;
+            default:
+                // No movement for unknown direction
+                break;
         }
 
         // Check if the new position is within the arena boundaries
-        if (newX < 0 || newX >= currentBattle.getArenaWidth() || 
-            newY < 0 || newY >= currentBattle.getArenaHeight()) {
+        if (newX < 0 || newX >= currentBattle.getArenaWidth()
+            || newY < 0 || newY >= currentBattle.getArenaHeight()) {
             // Robot has crashed into the arena boundary
             robot.setStatus(RobotStatus.CRASHED);
             return;

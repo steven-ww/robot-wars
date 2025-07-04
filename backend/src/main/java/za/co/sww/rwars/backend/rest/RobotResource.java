@@ -4,7 +4,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -162,7 +161,11 @@ public class RobotResource {
                         .entity(new ErrorResponse("Invalid battle ID or robot ID"))
                         .build();
             }
-            Robot robot = battleService.moveRobot(battleId, robotId, moveRequest.getDirection(), moveRequest.getBlocks());
+            Robot robot = battleService.moveRobot(
+                    battleId,
+                    robotId,
+                    moveRequest.getDirection(),
+                    moveRequest.getBlocks());
             return Response.ok(robot).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
