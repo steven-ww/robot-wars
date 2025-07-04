@@ -66,3 +66,8 @@ I've updated the add_a_robot.feature file. It doesn't change the behavior of the
 For some reason, junie (you) is not following the guidlines defined in the .junie/guidelines.md file, specifically the one related to updating the prompts.txt with the prompts received.
 
 How can I improve the guidelines to make it clearer and easier for junie to use.
+
+## Nineteenth Prompt
+Review the .junie/guidelines.md file.
+
+Determine how to improve the structure of the guidelines to make them more meaningfull as guidelines to junie AI.
