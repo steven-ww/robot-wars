@@ -306,7 +306,9 @@ public class MovementSteps {
 
         // Verify the robot is at or near the boundary (it might be at arenaHeight-1 due to 0-based indexing)
         Assertions.assertTrue(finalY == arenaHeight - 1 || finalY == arenaHeight,
-                "Robot should be at or near the boundary. Expected: " + (arenaHeight - 1) + " or " + arenaHeight + ", but was: " + finalY);
+                "Robot should be at or near the boundary. Expected: "
+                + (arenaHeight - 1) + " or " + arenaHeight
+                + ", but was: " + finalY);
     }
 
     @And("the robot should stop at the boundary")

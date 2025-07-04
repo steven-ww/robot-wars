@@ -146,4 +146,7 @@ Following the .junie/guidelines.md file (spefically section 7) change the way yo
 </issue_description>
 
 ## Thirtieth Prompt
-Remember to update the prompts.txt file. The updateRobotPosition api is still available. This should have neen removed as part of the last prompts outcome.
+Remember to update the prompts.txt file. The updateRobotPosition api is still available. This should have been removed as part of the last prompts outcome.
+
+## Thirty-first Prompt
+Update the prompts.txt file with the previous prompt
