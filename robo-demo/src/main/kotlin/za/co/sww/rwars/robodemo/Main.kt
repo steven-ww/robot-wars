@@ -108,7 +108,50 @@ fun main(args: Array<String>) = runBlocking {
 }
 
 /**
+ * Tracks robot movement by polling its position during movement and rerendering the arena.
+ *
+ * @param robotApiClient The API client for interacting with the robot API
+ * @param battleId The ID of the battle
+ * @param movingRobotId The ID of the robot that is moving
+ * @param otherRobotId The ID of the other robot
+ * @param blocks The number of blocks the robot is moving
+ */
+private suspend fun trackRobotMovement(
+    robotApiClient: RobotApiClient,
+    battleId: String,
+    movingRobotId: String,
+    otherRobotId: String,
+    blocks: Int
+) {
+    // Get battle details to know arena dimensions
+    val battle = robotApiClient.getBattleStatus(battleId)
+
+    // Poll robot position every 200ms during movement
+    // Total movement time is blocks * 1000ms (1 second per block)
+    val pollInterval = 200L // milliseconds
+    val totalMovementTime = blocks * 1000L
+    var elapsedTime = 0L
+
+    while (elapsedTime < totalMovementTime) {
+        // Get current position of both robots
+        val movingRobot = robotApiClient.getRobotDetails(battleId, movingRobotId)
+        val otherRobot = robotApiClient.getRobotDetails(battleId, otherRobotId)
+
+        // Log current position of the moving robot
+        logger.info("${movingRobot.name} current position: (${movingRobot.positionX}, ${movingRobot.positionY}), status: ${movingRobot.status}")
+
+        // Rerender the arena with current positions
+        renderArena(battle.arenaWidth, battle.arenaHeight, listOf(movingRobot, otherRobot))
+
+        // Wait for the next poll
+        Thread.sleep(pollInterval)
+        elapsedTime += pollInterval
+    }
+}
+
+/**
  * Moves robots around the arena until one crashes or the time limit is reached.
+ * Periodically retrieves robot status and rerenders the arena.
  */
 private suspend fun moveRobotsUntilCrashOrTimeout(
     robotApiClient: RobotApiClient,
@@ -133,8 +176,9 @@ private suspend fun moveRobotsUntilCrashOrTimeout(
 
             try {
                 robotApiClient.moveRobot(battleId, robot1.id, direction1, blocks1)
-                // Wait for movement to complete
-                Thread.sleep(blocks1 * 1000L)
+
+                // Track robot movement by polling its position during movement
+                trackRobotMovement(robotApiClient, battleId, robot1.id, robot2.id, blocks1)
 
                 // Check if robot crashed
                 val robotStatus1 = robotApiClient.getRobotDetails(battleId, robot1.id)
@@ -156,8 +200,9 @@ private suspend fun moveRobotsUntilCrashOrTimeout(
 
             try {
                 robotApiClient.moveRobot(battleId, robot2.id, direction2, blocks2)
-                // Wait for movement to complete
-                Thread.sleep(blocks2 * 1000L)
+
+                // Track robot movement by polling its position during movement
+                trackRobotMovement(robotApiClient, battleId, robot2.id, robot1.id, blocks2)
 
                 // Check if robot crashed
                 val robotStatus2 = robotApiClient.getRobotDetails(battleId, robot2.id)

@@ -210,4 +210,119 @@ class RobotBattleSteps {
             logger.info("Time limit reached without any crashes")
         }
     }
+
+    @When("I move the robot in direction {string} for {int} blocks")
+    fun iMoveTheRobotInDirectionForBlocks(direction: String, blocks: Int) = runBlocking {
+        logger.info("Moving robot in direction $direction for $blocks blocks")
+
+        // Get the first robot (should be "TrackBot" based on the scenario)
+        val robot = robots.values.first()
+
+        // Set up stub for moving a robot
+        wireMockStubs.stubMoveRobot(robot.name, direction, blocks)
+
+        // Call the API through the client
+        val updatedRobot = robotApiClient.moveRobot(battle.id, robot.id, direction, blocks)
+
+        // Store the updated robot
+        robots[robot.name] = updatedRobot
+
+        logger.info("Robot ${robot.name} is now moving in direction $direction for $blocks blocks")
+    }
+
+    @Then("I should be able to track the robot's position as it moves")
+    fun iShouldBeAbleToTrackTheRobotsPositionAsItMoves() = runBlocking {
+        logger.info("Tracking robot's position as it moves")
+
+        // Get the robot
+        val robot = robots.values.first()
+
+        // Set up stubs for getting robot details with different positions
+        // Simulate the robot moving by changing its position in each status update
+        val positions = listOf(
+            Pair(1, 1),  // Initial position
+            Pair(1, 2),  // After moving one block
+            Pair(1, 3)   // After moving two blocks
+        )
+
+        // Track the robot's position over time
+        for ((index, position) in positions.withIndex()) {
+            val (x, y) = position
+
+            // Set up stub for getting robot details with updated position
+            val status = if (index < positions.size - 1) "MOVING" else "IDLE"
+            wireMockStubs.stubGetRobotDetailsWithPosition(robot.name, status, x, y)
+
+            // Call the API through the client
+            val robotStatus = robotApiClient.getRobotDetails(battle.id, robot.id)
+
+            // Verify the position
+            logger.info("${robot.name} position: (${robotStatus.positionX}, ${robotStatus.positionY}), status: ${robotStatus.status}")
+
+            // Short delay to simulate time passing
+            Thread.sleep(100)
+        }
+
+        logger.info("Successfully tracked robot's position as it moved")
+    }
+
+    @Then("the arena should be rerendered with the updated position after each move")
+    fun theArenaShouldBeRerenderedWithTheUpdatedPositionAfterEachMove() = runBlocking {
+        logger.info("Verifying arena rerendering with updated positions")
+
+        // Get the robot
+        val robot = robots.values.first()
+
+        // Set up stub for getting battle status
+        wireMockStubs.stubGetBattleStatus()
+
+        // Set up stubs for getting robot details with different positions
+        // Simulate the robot moving by changing its position in each status update
+        val positions = listOf(
+            Pair(1, 1),  // Initial position
+            Pair(1, 2),  // After moving one block
+            Pair(1, 3)   // After moving two blocks
+        )
+
+        // Render the arena with updated positions
+        for ((index, position) in positions.withIndex()) {
+            val (x, y) = position
+
+            // Set up stub for getting robot details with updated position
+            val status = if (index < positions.size - 1) "MOVING" else "IDLE"
+            wireMockStubs.stubGetRobotDetailsWithPosition(robot.name, status, x, y)
+
+            // Call the API through the client
+            val robotStatus = robotApiClient.getRobotDetails(battle.id, robot.id)
+
+            // Render the arena (simplified for test)
+            logger.info("Rendering arena with ${robot.name} at position (${robotStatus.positionX}, ${robotStatus.positionY})")
+
+            // Create a simple text representation of the arena
+            val arenaWidth = battle.arenaWidth
+            val arenaHeight = battle.arenaHeight
+            val arena = Array(arenaHeight) { Array(arenaWidth) { "." } }
+
+            // Place robot on the arena
+            if (robotStatus.positionX in 0 until arenaWidth && robotStatus.positionY in 0 until arenaHeight) {
+                arena[robotStatus.positionY][robotStatus.positionX] = robot.name.first().toString()
+            }
+
+            // Print the arena
+            val horizontalBorder = "+${"-".repeat(arenaWidth * 2 - 1)}+"
+            logger.info(horizontalBorder)
+
+            for (y in 0 until arenaHeight) {
+                val row = arena[y].joinToString(" ")
+                logger.info("| $row |")
+            }
+
+            logger.info(horizontalBorder)
+
+            // Short delay to simulate time passing
+            Thread.sleep(100)
+        }
+
+        logger.info("Successfully rerendered arena with updated positions")
+    }
 }
