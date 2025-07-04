@@ -236,3 +236,12 @@ Add a scenario to the move robot feature that allows the user to make a request 
 
 Add a scenario to the move robot feature that verifies that the initial location of the robot is randomly generated with the space of the arena. 
 </issue_description>
+
+## Thirty-ninth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the robo-demo to retrieve the status for each robot as it moves and rerender the arena with the new location displayed. A  Update the prompts.txt.
+
+Add a scenario to the Robot Battle feature that has the user tracking the movement of the robot to confirm that it is moving as expected. 
+</issue_description>

@@ -293,4 +293,47 @@ class WireMockStubs {
     fun getRobotId(robotName: String): String {
         return robotIds[robotName] ?: throw IllegalArgumentException("Robot not found: $robotName")
     }
+
+    /**
+     * Sets up a stub for getting robot details with a specific position.
+     *
+     * @param robotName The name of the robot
+     * @param status The status of the robot (IDLE, MOVING, CRASHED)
+     * @param positionX The X coordinate of the robot
+     * @param positionY The Y coordinate of the robot
+     * @return The robot details
+     */
+    fun stubGetRobotDetailsWithPosition(
+        robotName: String, 
+        status: String = "IDLE", 
+        positionX: Int = 0, 
+        positionY: Int = 0
+    ): Robot {
+        val robotId = robotIds[robotName] ?: throw IllegalArgumentException("Robot not found: $robotName")
+
+        val robot = Robot(
+            id = robotId,
+            name = robotName,
+            battleId = battleId,
+            positionX = positionX,
+            positionY = positionY,
+            direction = "NORTH",
+            status = status,
+            blocksRemaining = 0,
+            targetBlocks = 0,
+        )
+
+        WireMock.stubFor(
+            get(urlPathMatching("/api/robots/battle/$battleId/robot/$robotId/details"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(mapper.writeValueAsString(robot)),
+                ),
+        )
+
+        logger.info("Stubbed get robot details endpoint for robot: $robotName with status: $status at position: ($positionX, $positionY)")
+        return robot
+    }
 }
