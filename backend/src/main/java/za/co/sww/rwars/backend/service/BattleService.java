@@ -1,6 +1,8 @@
 package za.co.sww.rwars.backend.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
 
@@ -16,6 +18,68 @@ public class BattleService {
     private Battle currentBattle;
     private final Map<String, Robot> robotsById = new HashMap<>();
 
+    @Inject
+    @ConfigProperty(name = "battle.arena.default-width", defaultValue = "50")
+    int defaultArenaWidth;
+
+    @Inject
+    @ConfigProperty(name = "battle.arena.default-height", defaultValue = "50")
+    int defaultArenaHeight;
+
+    @Inject
+    @ConfigProperty(name = "battle.arena.min-width", defaultValue = "10")
+    int minArenaWidth;
+
+    @Inject
+    @ConfigProperty(name = "battle.arena.min-height", defaultValue = "10")
+    int minArenaHeight;
+
+    @Inject
+    @ConfigProperty(name = "battle.arena.max-width", defaultValue = "1000")
+    int maxArenaWidth;
+
+    @Inject
+    @ConfigProperty(name = "battle.arena.max-height", defaultValue = "1000")
+    int maxArenaHeight;
+
+    /**
+     * Creates a new battle with the given name and default arena dimensions.
+     *
+     * @param battleName The name of the battle
+     * @return The created battle
+     */
+    public Battle createBattle(String battleName) {
+        return createBattle(battleName, defaultArenaWidth, defaultArenaHeight);
+    }
+
+    /**
+     * Creates a new battle with the given name and arena dimensions.
+     *
+     * @param battleName The name of the battle
+     * @param width The width of the arena
+     * @param height The height of the arena
+     * @return The created battle
+     * @throws IllegalArgumentException if the arena dimensions are invalid
+     */
+    public Battle createBattle(String battleName, int width, int height) {
+        if (width < minArenaWidth || height < minArenaHeight) {
+            throw new IllegalArgumentException(
+                    String.format("Arena dimensions must be at least %dx%d", minArenaWidth, minArenaHeight));
+        }
+
+        if (width > maxArenaWidth || height > maxArenaHeight) {
+            throw new IllegalArgumentException(
+                    String.format("Arena dimensions must be at most %dx%d", maxArenaWidth, maxArenaHeight));
+        }
+
+        if (currentBattle != null && currentBattle.getState() == Battle.BattleState.IN_PROGRESS) {
+            throw new IllegalStateException("Cannot create a new battle while another is in progress");
+        }
+
+        currentBattle = new Battle(battleName, width, height);
+        return currentBattle;
+    }
+
     /**
      * Registers a robot for the battle.
      *
@@ -29,7 +93,8 @@ public class BattleService {
         }
 
         if (currentBattle == null) {
-            currentBattle = new Battle();
+            // Create a default battle with a generated name and default dimensions
+            currentBattle = new Battle("Default Battle", defaultArenaWidth, defaultArenaHeight);
         }
 
         Robot robot = new Robot(robotName, currentBattle.getId());

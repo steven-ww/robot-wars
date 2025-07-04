@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Represents a battle with its state and participating robots.
+ * Represents a battle with its state, arena dimensions, and participating robots.
  */
 public class Battle {
 
@@ -17,11 +17,23 @@ public class Battle {
     }
 
     private String id;
+    private String name;
+    private int arenaWidth;
+    private int arenaHeight;
     private List<Robot> robots;
     private BattleState state;
 
     public Battle() {
         this.id = UUID.randomUUID().toString();
+        this.robots = new ArrayList<>();
+        this.state = BattleState.WAITING_ON_ROBOTS;
+    }
+
+    public Battle(String name, int arenaWidth, int arenaHeight) {
+        this.id = UUID.randomUUID().toString();
+        this.name = name;
+        this.arenaWidth = arenaWidth;
+        this.arenaHeight = arenaHeight;
         this.robots = new ArrayList<>();
         this.state = BattleState.WAITING_ON_ROBOTS;
     }
@@ -53,6 +65,30 @@ public class Battle {
 
     public void setState(BattleState state) {
         this.state = state;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getArenaWidth() {
+        return arenaWidth;
+    }
+
+    public void setArenaWidth(int arenaWidth) {
+        this.arenaWidth = arenaWidth;
+    }
+
+    public int getArenaHeight() {
+        return arenaHeight;
+    }
+
+    public void setArenaHeight(int arenaHeight) {
+        this.arenaHeight = arenaHeight;
     }
 
     public int getRobotCount() {
