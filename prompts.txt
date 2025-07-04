@@ -80,3 +80,24 @@ Fix the checkstyle errors in the RobotSteps.java file. Rember to follow the guid
 
 ## Twenty-second Prompt
 When you updated the RobotSteps file, you broke the cucumber test. it no longer matches the gherkin file for the When "I register my Robot supplying it's name"
+
+## Twenty-third Prompt
+Create new feature file in backend project that deals with creating a battle.
+
+The following scenarios should be described in the feature file in the best practices for cucumber and gherkin.
+
+The features are realised by API calls onto the backend. 
+
+The arena is a map of blocks x * y in dimensions. It represents the playing field or board that robots will navgate during the battle.
+
+A user creates a new Battle by supplying the battle name, but without specifying a battle arena size. The server generates an arena with the size specified in the properties configuration of the server.
+The server returns the battleId for this new battle, along with details of the arena size and name and id. 
+
+A user creates a new Battle by supplying the battle name and the dimensions for the battle arena. It should be no smaller than 10 * 10 and no larger than 1000 * 1000.  The server returns the battleId for this new battle, along with details of the arena size and name and id. 
+
+Adjust the existing code that implements the existing features to align with the above without breaking the existing features and related tests. 
+
+Remember to follow the .junie/guidelines.md file off of the the rool folder.
+
+## Twenty-fourth Prompt
+You didn't update the prompts.txt file with the previous prompt. Please do so now.
