@@ -74,3 +74,6 @@ Determine how to improve the structure of the guidelines to make them more meani
 
 ## Twentieth Prompt
 On the last request, junie did not update the prompts file. This is a requirement of the .junie/guidelines.md. Are the guidelines not being applied and if so, why is that?
+
+## Twenty-first Prompt
+Fix the checkstyle errors in the RobotSteps.java file. Rember to follow the guidelines in the .junie/guidelines.md file
