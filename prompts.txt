@@ -101,3 +101,10 @@ Remember to follow the .junie/guidelines.md file off of the the rool folder.
 
 ## Twenty-fourth Prompt
 You didn't update the prompts.txt file with the previous prompt. Please do so now.
+
+## Twenty-fifth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Review the updated .junie/guidelines.md file section 7. Apply the process required.
+</issue_description>

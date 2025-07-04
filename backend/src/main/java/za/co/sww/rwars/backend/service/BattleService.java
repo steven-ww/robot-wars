@@ -20,27 +20,81 @@ public class BattleService {
 
     @Inject
     @ConfigProperty(name = "battle.arena.default-width", defaultValue = "50")
-    int defaultArenaWidth;
+    private int defaultArenaWidth;
 
     @Inject
     @ConfigProperty(name = "battle.arena.default-height", defaultValue = "50")
-    int defaultArenaHeight;
+    private int defaultArenaHeight;
 
     @Inject
     @ConfigProperty(name = "battle.arena.min-width", defaultValue = "10")
-    int minArenaWidth;
+    private int minArenaWidth;
 
     @Inject
     @ConfigProperty(name = "battle.arena.min-height", defaultValue = "10")
-    int minArenaHeight;
+    private int minArenaHeight;
 
     @Inject
     @ConfigProperty(name = "battle.arena.max-width", defaultValue = "1000")
-    int maxArenaWidth;
+    private int maxArenaWidth;
 
     @Inject
     @ConfigProperty(name = "battle.arena.max-height", defaultValue = "1000")
-    int maxArenaHeight;
+    private int maxArenaHeight;
+
+    /**
+     * Gets the default arena width.
+     *
+     * @return The default arena width
+     */
+    public int getDefaultArenaWidth() {
+        return defaultArenaWidth;
+    }
+
+    /**
+     * Gets the default arena height.
+     *
+     * @return The default arena height
+     */
+    public int getDefaultArenaHeight() {
+        return defaultArenaHeight;
+    }
+
+    /**
+     * Gets the minimum arena width.
+     *
+     * @return The minimum arena width
+     */
+    public int getMinArenaWidth() {
+        return minArenaWidth;
+    }
+
+    /**
+     * Gets the minimum arena height.
+     *
+     * @return The minimum arena height
+     */
+    public int getMinArenaHeight() {
+        return minArenaHeight;
+    }
+
+    /**
+     * Gets the maximum arena width.
+     *
+     * @return The maximum arena width
+     */
+    public int getMaxArenaWidth() {
+        return maxArenaWidth;
+    }
+
+    /**
+     * Gets the maximum arena height.
+     *
+     * @return The maximum arena height
+     */
+    public int getMaxArenaHeight() {
+        return maxArenaHeight;
+    }
 
     /**
      * Creates a new battle with the given name and default arena dimensions.
