@@ -40,7 +40,7 @@ public class RobotSteps {
         }
     }
 
-    @When("I register my Robot supplying it's name")
+@When("I register my Robot supplying it's name")
     public void iRegisterMyRobotSupplyingItsName() {
         Map<String, String> robot = new HashMap<>();
         robot.put("name", "TestRobot");
@@ -54,12 +54,15 @@ public class RobotSteps {
         // No specific action needed here
     }
 
-    @Then("a battle id should be generated for my robot")
-    public void aBattleIdShouldBeGeneratedForMyRobot() {
+@Then("a robot id should be generated for my robot")
+    public void aRobotIdShouldBeGeneratedForMyRobot() {
         response.then().statusCode(200);
+        robotId = response.jsonPath().getString("id");
+        Assertions.assertNotNull(robotId);
+        Assertions.assertFalse(robotId.isEmpty());
+
+        // Also set the battleId as it might be needed by subsequent steps
         battleId = response.jsonPath().getString("battleId");
-        Assertions.assertNotNull(battleId);
-        Assertions.assertFalse(battleId.isEmpty());
     }
 
     @And("I should receive the battle id and a unique robot id")
@@ -99,7 +102,7 @@ public class RobotSteps {
         statusResponse.then().statusCode(200).body("state", Matchers.equalTo("IN_PROGRESS"));
     }
 
-    @Then("I should receive an error code and description reflecting that I can't join an in progress battle")
+@Then("I should receive an error code and description reflecting that I can't join an in progress battle")
     public void iShouldReceiveAnErrorCodeAndDescription() {
         // Now try to register a robot when a battle is already in progress
         Map<String, String> robot = new HashMap<>();
@@ -168,7 +171,7 @@ public class RobotSteps {
         otherRobotResponse.then().statusCode(200);
     }
 
-    @Then("the battle should have {int} or more robots")
+@Then("the battle should have {int} or more robots")
     public void theBattleShouldHaveOrMoreRobots(int minCount) {
         int actualCount = response.jsonPath().getInt("robotCount");
         Assertions.assertTrue(actualCount >= minCount,
