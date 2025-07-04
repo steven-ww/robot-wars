@@ -47,6 +47,10 @@ public class BattleService {
     @ConfigProperty(name = "battle.arena.max-height", defaultValue = "1000")
     private int maxArenaHeight;
 
+    @Inject
+    @ConfigProperty(name = "battle.robot.movement-time-seconds", defaultValue = "1")
+    private double robotMovementTimeSeconds;
+
     /**
      * Gets the default arena width.
      *
@@ -102,13 +106,33 @@ public class BattleService {
     }
 
     /**
+     * Gets the robot movement time in seconds per block.
+     *
+     * @return The robot movement time in seconds per block
+     */
+    public double getRobotMovementTimeSeconds() {
+        return robotMovementTimeSeconds;
+    }
+
+    /**
      * Creates a new battle with the given name and default arena dimensions.
      *
      * @param battleName The name of the battle
      * @return The created battle
      */
     public Battle createBattle(String battleName) {
-        return createBattle(battleName, defaultArenaWidth, defaultArenaHeight);
+        return createBattle(battleName, defaultArenaWidth, defaultArenaHeight, robotMovementTimeSeconds);
+    }
+
+    /**
+     * Creates a new battle with the given name and custom robot movement time.
+     *
+     * @param battleName The name of the battle
+     * @param movementTimeSeconds The time in seconds it takes for a robot to move one block
+     * @return The created battle
+     */
+    public Battle createBattle(String battleName, double movementTimeSeconds) {
+        return createBattle(battleName, defaultArenaWidth, defaultArenaHeight, movementTimeSeconds);
     }
 
     /**
@@ -121,6 +145,20 @@ public class BattleService {
      * @throws IllegalArgumentException if the arena dimensions are invalid
      */
     public Battle createBattle(String battleName, int width, int height) {
+        return createBattle(battleName, width, height, robotMovementTimeSeconds);
+    }
+
+    /**
+     * Creates a new battle with the given name, arena dimensions, and robot movement time.
+     *
+     * @param battleName The name of the battle
+     * @param width The width of the arena
+     * @param height The height of the arena
+     * @param movementTimeSeconds The time in seconds it takes for a robot to move one block
+     * @return The created battle
+     * @throws IllegalArgumentException if the arena dimensions are invalid
+     */
+    public Battle createBattle(String battleName, int width, int height, double movementTimeSeconds) {
         if (width < minArenaWidth || height < minArenaHeight) {
             throw new IllegalArgumentException(
                     String.format("Arena dimensions must be at least %dx%d", minArenaWidth, minArenaHeight));
@@ -135,7 +173,7 @@ public class BattleService {
             throw new IllegalStateException("Cannot create a new battle while another is in progress");
         }
 
-        currentBattle = new Battle(battleName, width, height);
+        currentBattle = new Battle(battleName, width, height, movementTimeSeconds);
         return currentBattle;
     }
 
@@ -313,6 +351,23 @@ public class BattleService {
      * @throws IllegalStateException if the battle is not in progress
      */
     public Robot moveRobot(String battleId, String robotId, String directionStr, int blocks) {
+        return moveRobot(battleId, robotId, directionStr, blocks, robotMovementTimeSeconds);
+    }
+
+    /**
+     * Moves a robot in the specified direction for the specified number of blocks with a custom movement time.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param directionStr The direction to move
+     * @param blocks The number of blocks to move
+     * @param movementTimeSeconds The time in seconds it takes to move one block
+     * @return The robot with updated position
+     * @throws IllegalArgumentException if the battle ID or robot ID is invalid
+     * @throws IllegalStateException if the battle is not in progress
+     */
+    public Robot moveRobot(String battleId, String robotId, String directionStr, int blocks,
+                            double movementTimeSeconds) {
         if (!isValidBattleAndRobotId(battleId, robotId)) {
             throw new IllegalArgumentException("Invalid battle ID or robot ID");
         }
@@ -338,7 +393,7 @@ public class BattleService {
         robot.setBlocksRemaining(blocks);
 
         // Start the movement process
-        startRobotMovement(robot);
+        startRobotMovement(robot, movementTimeSeconds);
 
         return robot;
     }
@@ -371,10 +426,23 @@ public class BattleService {
      * @param robot The robot to move
      */
     private void startRobotMovement(Robot robot) {
+        startRobotMovement(robot, robotMovementTimeSeconds);
+    }
+
+    /**
+     * Starts the robot movement process with a custom movement time.
+     *
+     * @param robot The robot to move
+     * @param movementTimeSeconds The time in seconds it takes to move one block
+     */
+    private void startRobotMovement(Robot robot, double movementTimeSeconds) {
         // Create a scheduled executor to move the robot one block at a time
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-        // Schedule the movement task to run every second
+        // Convert movement time to milliseconds for more precise scheduling
+        long movementTimeMillis = (long) (movementTimeSeconds * 1000);
+
+        // Schedule the movement task to run at the specified rate
         executor.scheduleAtFixedRate(() -> {
             // Move the robot one block in the specified direction
             moveRobotOneBlock(robot);
@@ -389,7 +457,7 @@ public class BattleService {
                     robot.setStatus(RobotStatus.IDLE);
                 }
             }
-        }, 0, 1, TimeUnit.SECONDS);
+        }, 0, movementTimeMillis, TimeUnit.MILLISECONDS);
     }
 
     /**

@@ -113,9 +113,10 @@ public class MovementSteps {
 
     @Then("the robot should move {int} blocks in the {string} direction")
     public void theRobotShouldMoveBlocksInTheDirection(int blocks, String direction) {
-        // Wait for the movement to complete (blocks * 1 second per block)
+        // Wait for the movement to complete (blocks * 0.5 seconds per block)
         try {
-            TimeUnit.SECONDS.sleep(blocks + 1); // Add a small buffer
+            // Using milliseconds for more precise timing
+            TimeUnit.MILLISECONDS.sleep((long) (blocks * 500) + 500); // Add a small buffer
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -221,7 +222,7 @@ public class MovementSteps {
     public void iMoveMyRobotInDirectionForBlocksBeforeTheFirstMovementCompletes(String direction, int blocks) {
         // Wait a short time to ensure the first movement has started but not completed
         try {
-            TimeUnit.MILLISECONDS.sleep(500);
+            TimeUnit.MILLISECONDS.sleep(250); // Reduced to account for faster movement time
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -289,7 +290,7 @@ public class MovementSteps {
     public void theRobotShouldMoveUntilItReachesTheArenaBoundary() {
         // Wait for the movement to complete
         try {
-            TimeUnit.SECONDS.sleep(3); // Give enough time for the robot to reach the boundary
+            TimeUnit.MILLISECONDS.sleep(1500); // Reduced to account for faster movement time (0.5 seconds per block)
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

@@ -7,12 +7,28 @@ Feature: Battle Creation
     When I create a new battle with name "Epic Robot Showdown"
     Then a battle with the name "Epic Robot Showdown" should be created
     And the battle should have an arena with the default size from server configuration
+    And the robot movement time should be the default from server configuration
     And I should receive the battle details including id, name, and arena dimensions
 
   Scenario: Create a battle with custom arena size
     When I create a new battle with name "Custom Arena Battle" and dimensions 20x30
     Then a battle with the name "Custom Arena Battle" should be created
     And the battle should have an arena with dimensions 20x30
+    And the robot movement time should be the default from server configuration
+    And I should receive the battle details including id, name, and arena dimensions
+
+  Scenario: Create a battle with custom robot movement time
+    When I create a new battle with name "Custom Movement Battle" and robot movement time 0.5 seconds
+    Then a battle with the name "Custom Movement Battle" should be created
+    And the battle should have an arena with the default size from server configuration
+    And the robot movement time should be 0.5 seconds
+    And I should receive the battle details including id, name, and arena dimensions
+
+  Scenario: Create a battle with custom arena size and robot movement time
+    When I create a new battle with name "Custom Battle" and dimensions 20x30 and robot movement time 0.5 seconds
+    Then a battle with the name "Custom Battle" should be created
+    And the battle should have an arena with dimensions 20x30
+    And the robot movement time should be 0.5 seconds
     And I should receive the battle details including id, name, and arena dimensions
 
   Scenario: Create a battle with arena size below minimum
