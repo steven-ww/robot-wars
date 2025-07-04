@@ -5,9 +5,14 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
+import za.co.sww.rwars.backend.model.Robot.Direction;
+import za.co.sww.rwars.backend.model.Robot.RobotStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Service to manage battles and robots.
@@ -199,6 +204,31 @@ public class BattleService {
     }
 
     /**
+     * Gets a specific robot's details.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @return The robot if found
+     * @throws IllegalArgumentException if the battle ID or robot ID is invalid
+     */
+    public Robot getRobotDetails(String battleId, String robotId) {
+        if (currentBattle == null || !currentBattle.getId().equals(battleId)) {
+            throw new IllegalArgumentException("Invalid battle ID");
+        }
+
+        if (!robotsById.containsKey(robotId)) {
+            throw new IllegalArgumentException("Invalid robot ID");
+        }
+
+        Robot robot = robotsById.get(robotId);
+        if (!robot.getBattleId().equals(battleId)) {
+            throw new IllegalArgumentException("Robot does not belong to this battle");
+        }
+
+        return robot;
+    }
+
+    /**
      * Starts the battle.
      *
      * @param battleId The battle ID
@@ -269,5 +299,157 @@ public class BattleService {
     public void resetBattle() {
         currentBattle = null;
         robotsById.clear();
+    }
+
+    /**
+     * Moves a robot in the specified direction for the specified number of blocks.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param directionStr The direction to move
+     * @param blocks The number of blocks to move
+     * @return The robot with updated position
+     * @throws IllegalArgumentException if the battle ID or robot ID is invalid
+     * @throws IllegalStateException if the battle is not in progress
+     */
+    public Robot moveRobot(String battleId, String robotId, String directionStr, int blocks) {
+        if (!isValidBattleAndRobotId(battleId, robotId)) {
+            throw new IllegalArgumentException("Invalid battle ID or robot ID");
+        }
+
+        if (currentBattle.getState() != Battle.BattleState.IN_PROGRESS) {
+            throw new IllegalStateException("Battle is not in progress");
+        }
+
+        Robot robot = robotsById.get(robotId);
+
+        // Parse the direction
+        Direction direction;
+        try {
+            direction = Direction.valueOf(directionStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid direction: " + directionStr);
+        }
+
+        // Set the robot's direction and status
+        robot.setDirection(direction);
+        robot.setStatus(RobotStatus.MOVING);
+        robot.setTargetBlocks(blocks);
+        robot.setBlocksRemaining(blocks);
+
+        // Start the movement process
+        startRobotMovement(robot);
+
+        return robot;
+    }
+
+    /**
+     * Updates the position of a robot (for testing purposes only).
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param positionX The X coordinate
+     * @param positionY The Y coordinate
+     * @return The robot with updated position
+     * @throws IllegalArgumentException if the battle ID or robot ID is invalid
+     */
+    public Robot updateRobotPosition(String battleId, String robotId, int positionX, int positionY) {
+        if (!isValidBattleAndRobotId(battleId, robotId)) {
+            throw new IllegalArgumentException("Invalid battle ID or robot ID");
+        }
+
+        Robot robot = robotsById.get(robotId);
+        robot.setPositionX(positionX);
+        robot.setPositionY(positionY);
+
+        return robot;
+    }
+
+    /**
+     * Starts the robot movement process.
+     *
+     * @param robot The robot to move
+     */
+    private void startRobotMovement(Robot robot) {
+        // Create a scheduled executor to move the robot one block at a time
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+        // Schedule the movement task to run every second
+        executor.scheduleAtFixedRate(() -> {
+            // Move the robot one block in the specified direction
+            moveRobotOneBlock(robot);
+
+            // Check if the robot has reached its target or crashed
+            if (robot.getBlocksRemaining() <= 0 || robot.getStatus() == RobotStatus.CRASHED) {
+                // Stop the movement
+                executor.shutdown();
+
+                // Update the robot's status if it's not crashed
+                if (robot.getStatus() != RobotStatus.CRASHED) {
+                    robot.setStatus(RobotStatus.IDLE);
+                }
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Moves a robot one block in its current direction.
+     *
+     * @param robot The robot to move
+     */
+    private void moveRobotOneBlock(Robot robot) {
+        if (robot.getBlocksRemaining() <= 0) {
+            return;
+        }
+
+        int newX = robot.getPositionX();
+        int newY = robot.getPositionY();
+
+        // Calculate the new position based on the direction
+        switch (robot.getDirection()) {
+            case NORTH:
+                newY++;
+                break;
+            case SOUTH:
+                newY--;
+                break;
+            case EAST:
+                newX++;
+                break;
+            case WEST:
+                newX--;
+                break;
+            case NE:
+                newX++;
+                newY++;
+                break;
+            case NW:
+                newX--;
+                newY++;
+                break;
+            case SE:
+                newX++;
+                newY--;
+                break;
+            case SW:
+                newX--;
+                newY--;
+                break;
+        }
+
+        // Check if the new position is within the arena boundaries
+        if (newX < 0 || newX >= currentBattle.getArenaWidth() || 
+            newY < 0 || newY >= currentBattle.getArenaHeight()) {
+            // Robot has crashed into the arena boundary
+            robot.setStatus(RobotStatus.CRASHED);
+            return;
+        }
+
+        // Update the robot's position
+        robot.setPositionX(newX);
+        robot.setPositionY(newY);
+
+        // Decrement the blocks remaining
+        robot.setBlocksRemaining(robot.getBlocksRemaining() - 1);
     }
 }

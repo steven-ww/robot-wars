@@ -117,3 +117,23 @@ Update the add_a_robot.feature feature file to ensure that adding a robot does n
 
 Follow the process for prompts in section 7 of the .junie/guidelines.md file.
 </issue_description>
+
+## Twenty-seventh Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Add a new feature file for the backend project following the cucumber and gherkin best practices. The new feature set must support the following features.
+
+Allow a user to move the robot by specifying the id of the robot, the direction of the robot (North, south, east, west or nw, ne, sw, se) and how many blocks to move. Each block represents on block on the arena map.
+
+The instruction to the server to move the robot will start the move process. Each second (as the default from the configuration file), the robot can move one space in the requested direction. The position of the robot in the battle arena should be reflected based on this movement. The movement starts from the robots current position and replaces any other movements instructions that may still be running. 
+
+If the robot attempts to move past the last block of the arena, then it stops moving at that point and it's location is the last valid point. The status of the robot should then indicated "crashed".
+
+While the robot is moving, it's state should indicate "moving".
+
+Follow the guidelines in the .junie/guidelines.md file, specifically section 7 that defines what's required for each prompt.
+</issue_description>
+
+## Twenty-eighth Prompt
+The cucumber tests are not passing. Fix this.

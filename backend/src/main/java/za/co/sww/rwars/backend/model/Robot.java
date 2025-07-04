@@ -6,23 +6,70 @@ import java.util.UUID;
  * Represents a robot in the battle.
  */
 public class Robot {
+    /**
+     * Enum for robot status.
+     */
+    public enum RobotStatus {
+        IDLE,
+        MOVING,
+        CRASHED
+    }
+
+    /**
+     * Enum for robot direction.
+     */
+    public enum Direction {
+        NORTH,
+        SOUTH,
+        EAST,
+        WEST,
+        NE,
+        NW,
+        SE,
+        SW
+    }
+
     private String id;
     private String name;
     private String battleId;
+    private int positionX;
+    private int positionY;
+    private Direction direction;
+    private RobotStatus status;
+    private int targetBlocks;
+    private int blocksRemaining;
 
     public Robot() {
         this.id = UUID.randomUUID().toString();
+        this.positionX = 0;
+        this.positionY = 0;
+        this.direction = Direction.NORTH;
+        this.status = RobotStatus.IDLE;
+        this.targetBlocks = 0;
+        this.blocksRemaining = 0;
     }
 
     public Robot(String name) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
+        this.positionX = 0;
+        this.positionY = 0;
+        this.direction = Direction.NORTH;
+        this.status = RobotStatus.IDLE;
+        this.targetBlocks = 0;
+        this.blocksRemaining = 0;
     }
 
     public Robot(String name, String battleId) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.battleId = battleId;
+        this.positionX = 0;
+        this.positionY = 0;
+        this.direction = Direction.NORTH;
+        this.status = RobotStatus.IDLE;
+        this.targetBlocks = 0;
+        this.blocksRemaining = 0;
     }
 
     public String getId() {
@@ -47,5 +94,53 @@ public class Robot {
 
     public void setBattleId(String battleId) {
         this.battleId = battleId;
+    }
+
+    public int getPositionX() {
+        return positionX;
+    }
+
+    public void setPositionX(int positionX) {
+        this.positionX = positionX;
+    }
+
+    public int getPositionY() {
+        return positionY;
+    }
+
+    public void setPositionY(int positionY) {
+        this.positionY = positionY;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
+    public RobotStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RobotStatus status) {
+        this.status = status;
+    }
+
+    public int getTargetBlocks() {
+        return targetBlocks;
+    }
+
+    public void setTargetBlocks(int targetBlocks) {
+        this.targetBlocks = targetBlocks;
+    }
+
+    public int getBlocksRemaining() {
+        return blocksRemaining;
+    }
+
+    public void setBlocksRemaining(int blocksRemaining) {
+        this.blocksRemaining = blocksRemaining;
     }
 }

@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -94,6 +95,32 @@ public class RobotResource {
     }
 
     /**
+     * Gets a specific robot's details.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @return The robot details
+     */
+    @GET
+    @Path("/battle/{battleId}/robot/{robotId}/details")
+    public Response getRobotDetails(@PathParam("battleId") String battleId,
+                                   @PathParam("robotId") String robotId) {
+        try {
+            if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .build();
+            }
+            Robot robot = battleService.getRobotDetails(battleId, robotId);
+            return Response.ok(robot).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
      * Starts the battle.
      *
      * @param battleId The battle ID
@@ -111,6 +138,68 @@ public class RobotResource {
                     .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * Moves a robot in the specified direction for the specified number of blocks.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param moveRequest The move request containing direction and blocks
+     * @return The robot with updated position
+     */
+    @POST
+    @Path("/battle/{battleId}/robot/{robotId}/move")
+    public Response moveRobot(@PathParam("battleId") String battleId,
+                             @PathParam("robotId") String robotId,
+                             MoveRequest moveRequest) {
+        try {
+            if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .build();
+            }
+            Robot robot = battleService.moveRobot(battleId, robotId, moveRequest.getDirection(), moveRequest.getBlocks());
+            return Response.ok(robot).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * Updates the position of a robot (for testing purposes only).
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param positionRequest The position request containing X and Y coordinates
+     * @return The robot with updated position
+     */
+    @PUT
+    @Path("/battle/{battleId}/robot/{robotId}/position")
+    public Response updateRobotPosition(@PathParam("battleId") String battleId,
+                                      @PathParam("robotId") String robotId,
+                                      PositionRequest positionRequest) {
+        try {
+            if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .build();
+            }
+            Robot robot = battleService.updateRobotPosition(battleId, robotId, 
+                                                          positionRequest.getPositionX(), 
+                                                          positionRequest.getPositionY());
+            return Response.ok(robot).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
         }
@@ -135,6 +224,70 @@ public class RobotResource {
 
         public void setMessage(String message) {
             this.message = message;
+        }
+    }
+
+    /**
+     * Move request class.
+     */
+    public static class MoveRequest {
+        private String direction;
+        private int blocks;
+
+        public MoveRequest() {
+        }
+
+        public MoveRequest(String direction, int blocks) {
+            this.direction = direction;
+            this.blocks = blocks;
+        }
+
+        public String getDirection() {
+            return direction;
+        }
+
+        public void setDirection(String direction) {
+            this.direction = direction;
+        }
+
+        public int getBlocks() {
+            return blocks;
+        }
+
+        public void setBlocks(int blocks) {
+            this.blocks = blocks;
+        }
+    }
+
+    /**
+     * Position request class.
+     */
+    public static class PositionRequest {
+        private int positionX;
+        private int positionY;
+
+        public PositionRequest() {
+        }
+
+        public PositionRequest(int positionX, int positionY) {
+            this.positionX = positionX;
+            this.positionY = positionY;
+        }
+
+        public int getPositionX() {
+            return positionX;
+        }
+
+        public void setPositionX(int positionX) {
+            this.positionX = positionX;
+        }
+
+        public int getPositionY() {
+            return positionY;
+        }
+
+        public void setPositionY(int positionY) {
+            this.positionY = positionY;
         }
     }
 }
