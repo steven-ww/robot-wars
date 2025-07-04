@@ -57,7 +57,7 @@ I'm having trouble using cucumber with Quarkus and the cucumber ext for Quarkus.
 Fix the linting issues on the backend build
 
 ## Sixteenth Prompt (Warp)
-2025-07-03 - Please follow the guidelines in ./junie/guidelines.md for this task. The current implementation of the BE is based on the features defined in the feature file test/java/resource/features/add_a_robot.feature. The cucumber tests work, however, the implementation does not distinquise between a battle id (of the entire battle) and the id of a robot. Each robot should be provided it's own id for the battle and send that back on each request to the server. Update the feature file to make this more explicit, then update the tests and implementation to work with a battle id (for the battle) and a robot id for each robot.
+2025-07-03 - Please follow the guidelines in .junie/guidelines.md for this task. The current implementation of the BE is based on the features defined in the feature file test/java/resource/features/add_a_robot.feature. The cucumber tests work, however, the implementation does not distinquise between a battle id (of the entire battle) and the id of a robot. Each robot should be provided it's own id for the battle and send that back on each request to the server. Update the feature file to make this more explicit, then update the tests and implementation to work with a battle id (for the battle) and a robot id for each robot.
 
 ## Seventeenth Prompt
 I've updated the add_a_robot.feature file. It doesn't change the behavior of the solution, but does improve the language of the feature file. Apply the changes to the tests.
@@ -71,3 +71,6 @@ How can I improve the guidelines to make it clearer and easier for junie to use.
 Review the .junie/guidelines.md file.
 
 Determine how to improve the structure of the guidelines to make them more meaningfull as guidelines to junie AI.
+
+## Twentieth Prompt
+On the last request, junie did not update the prompts file. This is a requirement of the .junie/guidelines.md. Are the guidelines not being applied and if so, why is that?
