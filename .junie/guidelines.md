@@ -16,7 +16,7 @@ This document outlines the requirements and guidelines for the Robot Wars projec
 - **Java Version**: 21
 - **Framework**: Quarkus
   - Use Virtual Threads when appropriate
-  - Utilize Quarkus features and extensions
+  - Use Quarkus features and extensions
 - **Build Tool**: Gradle
   - - gradlew is available for use in the root folder, not directly in the backend project
 - **Deployment**: Docker container
