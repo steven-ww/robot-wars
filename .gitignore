@@ -46,3 +46,4 @@ nb-configuration.xml
 /frontend/build/
 /.gradle/
 /backend/build/
+/build/
