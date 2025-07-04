@@ -175,35 +175,6 @@ public class RobotResource {
         }
     }
 
-    /**
-     * Updates the position of a robot (for testing purposes only).
-     *
-     * @param battleId The battle ID
-     * @param robotId The robot ID
-     * @param positionRequest The position request containing X and Y coordinates
-     * @return The robot with updated position
-     */
-    @PUT
-    @Path("/battle/{battleId}/robot/{robotId}/position")
-    public Response updateRobotPosition(@PathParam("battleId") String battleId,
-                                      @PathParam("robotId") String robotId,
-                                      PositionRequest positionRequest) {
-        try {
-            if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
-                        .build();
-            }
-            Robot robot = battleService.updateRobotPosition(battleId, robotId, 
-                                                          positionRequest.getPositionX(), 
-                                                          positionRequest.getPositionY());
-            return Response.ok(robot).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
-                    .build();
-        }
-    }
 
     /**
      * Error response class.
@@ -259,35 +230,4 @@ public class RobotResource {
         }
     }
 
-    /**
-     * Position request class.
-     */
-    public static class PositionRequest {
-        private int positionX;
-        private int positionY;
-
-        public PositionRequest() {
-        }
-
-        public PositionRequest(int positionX, int positionY) {
-            this.positionX = positionX;
-            this.positionY = positionY;
-        }
-
-        public int getPositionX() {
-            return positionX;
-        }
-
-        public void setPositionX(int positionX) {
-            this.positionX = positionX;
-        }
-
-        public int getPositionY() {
-            return positionY;
-        }
-
-        public void setPositionY(int positionY) {
-            this.positionY = positionY;
-        }
-    }
 }

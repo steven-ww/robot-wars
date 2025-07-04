@@ -137,3 +137,13 @@ Follow the guidelines in the .junie/guidelines.md file, specifically section 7 t
 
 ## Twenty-eighth Prompt
 The cucumber tests are not passing. Fix this.
+
+## Twenty-ninth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Following the .junie/guidelines.md file (spefically section 7) change the way you've validated the move_robots.feature features. You've create an API to position the robot at a specific spot "public Response updateRobotPosition(@PathParam("battleId")..." This is ont an API that should be available to users and as such please use a different mechanism to position the robot for the related tests. 
+</issue_description>
+
+## Thirtieth Prompt
+Remember to update the prompts.txt file. The updateRobotPosition api is still available. This should have neen removed as part of the last prompts outcome.

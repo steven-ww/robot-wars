@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import io.quarkus.test.junit.QuarkusTest;
+import za.co.sww.rwars.backend.model.Robot;
 import za.co.sww.rwars.backend.service.BattleService;
 
 import java.util.HashMap;
@@ -88,14 +89,11 @@ public class MovementSteps {
         int arenaWidth = battleResponse.jsonPath().getInt("arenaWidth");
         int arenaHeight = battleResponse.jsonPath().getInt("arenaHeight");
 
-        // Position the robot in the middle of the arena
-        Map<String, Object> positionRequest = new HashMap<>();
-        positionRequest.put("positionX", arenaWidth / 2);
-        positionRequest.put("positionY", arenaHeight / 2);
-
-        // Update robot position
-        Response positionUpdateResponse = request.body(positionRequest).put("/api/robots/battle/" + battleId + "/robot/" + robotId + "/position");
-        positionUpdateResponse.then().statusCode(200);
+        // Position the robot in the middle of the arena using the BattleService directly
+        // This avoids using the public API endpoint that shouldn't be available to users
+        Robot robot = battleService.getRobotDetails(battleId, robotId);
+        robot.setPositionX(arenaWidth / 2);
+        robot.setPositionY(arenaHeight / 2);
 
         // Get the current position of the robot before moving
         Response positionResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
@@ -189,14 +187,11 @@ public class MovementSteps {
         int arenaWidth = battleResponse.jsonPath().getInt("arenaWidth");
         int arenaHeight = battleResponse.jsonPath().getInt("arenaHeight");
 
-        // Position the robot in the middle of the arena
-        Map<String, Object> positionRequest = new HashMap<>();
-        positionRequest.put("positionX", arenaWidth / 2);
-        positionRequest.put("positionY", arenaHeight / 2);
-
-        // Update robot position
-        Response positionUpdateResponse = request.body(positionRequest).put("/api/robots/battle/" + battleId + "/robot/" + robotId + "/position");
-        positionUpdateResponse.then().statusCode(200);
+        // Position the robot in the middle of the arena using the BattleService directly
+        // This avoids using the public API endpoint that shouldn't be available to users
+        Robot robot = battleService.getRobotDetails(battleId, robotId);
+        robot.setPositionX(arenaWidth / 2);
+        robot.setPositionY(arenaHeight / 2);
 
         // Get the current position of the robot before moving
         Response positionResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
@@ -267,14 +262,11 @@ public class MovementSteps {
         int arenaWidth = battleResponse.jsonPath().getInt("arenaWidth");
         int arenaHeight = battleResponse.jsonPath().getInt("arenaHeight");
 
-        // Move the robot to a position near the edge
-        Map<String, Object> positionRequest = new HashMap<>();
-        positionRequest.put("positionX", arenaWidth - 2);
-        positionRequest.put("positionY", arenaHeight - 2);
-
-        // Update robot position (this is a test-only endpoint that would need to be implemented)
-        response = request.body(positionRequest).put("/api/robots/battle/" + battleId + "/robot/" + robotId + "/position");
-        response.then().statusCode(200);
+        // Move the robot to a position near the edge using the BattleService directly
+        // This avoids using the public API endpoint that shouldn't be available to users
+        Robot robot = battleService.getRobotDetails(battleId, robotId);
+        robot.setPositionX(arenaWidth - 2);
+        robot.setPositionY(arenaHeight - 2);
 
         // Update the initial position
         initialX = arenaWidth - 2;
