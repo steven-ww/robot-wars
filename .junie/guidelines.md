@@ -37,6 +37,12 @@ Replace this text with any project-level instructions for Junie, e.g.:
     * Testing approach
     * Overview of the api's provided/used
 * Record all prompts received in a prompts.txt file in the root folder
+  * Update this file immediately upon receiving each new prompt
+  * Use a consistent format: "## [Number] Prompt" as the heading (e.g., "## First Prompt", "## Second Prompt")
+  * Include the full text of the prompt
+  * Do not include implementation details or responses in this file
+  * Ensure sequential numbering of prompts (First, Second, Third, etc.)
+  * Always append new prompts to the end of the file
 * Cucumber will be used for BDD.
   * The step definition files must be written in java and use RestAssured for api interactions.
   * All tests should use Quarkus testing tools and strategies where possible.
