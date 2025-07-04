@@ -40,7 +40,7 @@ public class RobotSteps {
         }
     }
 
-    @When("I register my Robot supplying its name")
+    @When("I register my Robot supplying it's name")
     public void iRegisterMyRobotSupplyingItsName() {
         Map<String, String> robot = new HashMap<>();
         robot.put("name", "TestRobot");

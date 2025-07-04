@@ -77,3 +77,6 @@ On the last request, junie did not update the prompts file. This is a requiremen
 
 ## Twenty-first Prompt
 Fix the checkstyle errors in the RobotSteps.java file. Rember to follow the guidelines in the .junie/guidelines.md file
+
+## Twenty-second Prompt
+When you updated the RobotSteps file, you broke the cucumber test. it no longer matches the gherkin file for the When "I register my Robot supplying it's name"
