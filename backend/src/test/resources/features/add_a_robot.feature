@@ -6,7 +6,7 @@ Feature: Robot Registration
   Scenario: Register my robot as a participant in the battle
     When I register my Robot supplying it's name
     And there is no battle currently in progress
-    Then a battle id should be generated for my robot
+    Then a robot id should be generated for my robot
     And I should receive the battle id and a unique robot id
 
   Scenario: Register my robot as a participant in the battle
