@@ -18,6 +18,7 @@ This document outlines the requirements and guidelines for the Robot Wars projec
   - Use Virtual Threads when appropriate
   - Utilize Quarkus features and extensions
 - **Build Tool**: Gradle
+  - - gradlew is available for use in the root folder, not directly in the backend project
 - **Deployment**: Docker container
   - Native executable for production deployment
 

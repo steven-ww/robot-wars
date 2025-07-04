@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'io.quarkus' version '3.6.0'
+    id 'io.quarkus' version '3.20.0'
     id 'checkstyle'
 }
 
@@ -14,12 +14,12 @@ repositories {
 
 dependencies {
     // Quarkus BOM
-    implementation enforcedPlatform("io.quarkus:quarkus-bom:3.6.0")
+    implementation enforcedPlatform("io.quarkus:quarkus-bom:3.20.0")
 
     // Core dependencies
     implementation 'io.quarkus:quarkus-arc'
-    implementation 'io.quarkus:quarkus-resteasy-reactive'
-    implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
+    implementation 'io.quarkus:quarkus-rest'
+    implementation 'io.quarkus:quarkus-rest-jackson'
 
     // WebSocket support
     implementation 'io.quarkus:quarkus-websockets'
