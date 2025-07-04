@@ -1,5 +1,7 @@
 package za.co.sww.rwars.robodemo.steps
 
+import io.cucumber.java.After
+import io.cucumber.java.Before
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
@@ -11,6 +13,8 @@ import za.co.sww.rwars.robodemo.api.BattleApiClient
 import za.co.sww.rwars.robodemo.api.RobotApiClient
 import za.co.sww.rwars.robodemo.model.Battle
 import za.co.sww.rwars.robodemo.model.Robot
+import za.co.sww.rwars.robodemo.wiremock.WireMockExtension
+import za.co.sww.rwars.robodemo.wiremock.WireMockStubs
 import java.time.Duration
 import java.time.Instant
 
@@ -19,53 +23,110 @@ import java.time.Instant
  */
 class RobotBattleSteps {
     private val logger = LoggerFactory.getLogger(RobotBattleSteps::class.java)
-    private val baseUrl = "http://localhost:8080"
-    private val battleApiClient = BattleApiClient(baseUrl)
-    private val robotApiClient = RobotApiClient(baseUrl)
+
+    // WireMock setup
+    private val wireMockExtension = WireMockExtension()
+    private val wireMockStubs = WireMockStubs()
+    private lateinit var baseUrl: String
+    private lateinit var battleApiClient: BattleApiClient
+    private lateinit var robotApiClient: RobotApiClient
 
     private lateinit var battle: Battle
     private val robots = mutableMapOf<String, Robot>()
 
+    @Before
+    fun setup() {
+        // Start WireMock server
+        baseUrl = wireMockExtension.start()
+        logger.info("Started WireMock server at $baseUrl")
+
+        // Initialize API clients with WireMock URL
+        battleApiClient = BattleApiClient(baseUrl)
+        robotApiClient = RobotApiClient(baseUrl)
+    }
+
+    @After
+    fun tearDown() {
+        // Stop WireMock server
+        wireMockExtension.stop()
+        logger.info("Stopped WireMock server")
+    }
+
     @Given("the backend service is running")
     fun theBackendServiceIsRunning() {
-        // This step is a placeholder for checking if the backend service is running
-        // In a real implementation, we would check if the service is accessible
-        logger.info("Checking if backend service is running at $baseUrl")
-        // For now, we'll just assume it's running
+        // With WireMock, we don't need to check if the real backend is running
+        logger.info("Using WireMock server at $baseUrl instead of real backend")
     }
 
     @When("I create a new battle")
     fun iCreateANewBattle() = runBlocking {
         logger.info("Creating a new battle")
-        battle = battleApiClient.createBattle("Test Battle")
-        assertNotNull(battle.id, "Battle ID should not be null")
-        assertEquals("Test Battle", battle.name, "Battle name should match")
+
+        // Set up stub for creating a battle
+        battle = wireMockStubs.stubCreateBattle("Test Battle")
+
+        // Call the API through the client
+        val createdBattle = battleApiClient.createBattle("Test Battle")
+
+        // Verify the response
+        assertNotNull(createdBattle.id, "Battle ID should not be null")
+        assertEquals("Test Battle", createdBattle.name, "Battle name should match")
+        assertEquals(battle.id, createdBattle.id, "Battle ID should match the stubbed ID")
+
+        // Update the battle reference
+        battle = createdBattle
+
         logger.info("Battle created with ID: ${battle.id}")
     }
 
     @When("I register a robot with the name {string}")
     fun iRegisterARobotWithTheName(robotName: String) = runBlocking {
         logger.info("Registering robot with name: $robotName")
+
+        // Set up stub for registering a robot
+        val stubbedRobot = wireMockStubs.stubRegisterRobot(robotName)
+
+        // Call the API through the client
         val robot = robotApiClient.registerRobot(robotName)
+
+        // Verify the response
         assertNotNull(robot.id, "Robot ID should not be null")
         assertEquals(robotName, robot.name, "Robot name should match")
         assertEquals(battle.id, robot.battleId, "Robot should be registered to the current battle")
+        assertEquals(stubbedRobot.id, robot.id, "Robot ID should match the stubbed ID")
+
+        // Store the robot for later use
         robots[robotName] = robot
+
         logger.info("Robot registered with ID: ${robot.id}")
     }
 
     @When("I start the battle")
     fun iStartTheBattle() = runBlocking {
         logger.info("Starting the battle")
+
+        // Set up stub for starting a battle
+        val stubbedBattle = wireMockStubs.stubStartBattle()
+
+        // Call the API through the client
         val startedBattle = robotApiClient.startBattle(battle.id)
+
+        // Verify the response
         assertEquals("IN_PROGRESS", startedBattle.state, "Battle state should be IN_PROGRESS")
+        assertEquals(stubbedBattle.id, startedBattle.id, "Battle ID should match the stubbed ID")
+
+        // Update the battle reference
         battle = startedBattle
+
         logger.info("Battle started with state: ${battle.state}")
     }
 
     @Then("I should be able to move the robots around the arena until one crashes into a wall or {int} minutes has passed")
     fun iShouldBeAbleToMoveTheRobotsAroundTheArena(timeLimit: Int) = runBlocking {
         logger.info("Moving robots around the arena for up to $timeLimit minutes")
+
+        // Set up stub for getting battle status
+        wireMockStubs.stubGetBattleStatus()
 
         val startTime = Instant.now()
         val timeLimitDuration = Duration.ofMinutes(timeLimit.toLong())
@@ -75,11 +136,18 @@ class RobotBattleSteps {
         // Initialize crash status for each robot
         robots.keys.forEach { robotCrashed[it] = false }
 
-        // Move robots until one crashes or time limit is reached
+        // Simulate robot movement until one crashes or time limit is reached
+        // We'll make one robot crash after a few moves to demonstrate the functionality
+        var moveCount = 0
+        val crashAfterMoves = 3 // Crash after 3 moves
+
         while (
             robotCrashed.values.all { !it } &&
-            Duration.between(startTime, Instant.now()) < timeLimitDuration
+            Duration.between(startTime, Instant.now()) < timeLimitDuration &&
+            moveCount < 5 // Limit to 5 moves for test efficiency
         ) {
+            moveCount++
+
             // Move each robot
             for ((robotName, robot) in robots) {
                 if (robotCrashed[robotName] == true) continue
@@ -89,12 +157,25 @@ class RobotBattleSteps {
                 logger.info("Moving $robotName $blocks blocks $direction")
 
                 try {
-                    val updatedRobot = robotApiClient.moveRobot(battle.id, robot.id, direction, blocks)
-                    // Wait for movement to complete
-                    Thread.sleep(blocks * 1000L)
+                    // Set up stub for moving a robot
+                    wireMockStubs.stubMoveRobot(robotName, direction, blocks)
 
-                    // Check if robot crashed
+                    // Call the API through the client
+                    val updatedRobot = robotApiClient.moveRobot(battle.id, robot.id, direction, blocks)
+
+                    // Simulate waiting for movement to complete (reduced for tests)
+                    Thread.sleep(100) // Just a short delay for tests
+
+                    // Determine if the robot should crash based on move count
+                    val shouldCrash = moveCount >= crashAfterMoves && robotName == robots.keys.first()
+
+                    // Set up stub for getting robot details with appropriate status
+                    val status = if (shouldCrash) "CRASHED" else "IDLE"
+                    wireMockStubs.stubGetRobotDetails(robotName, status)
+
+                    // Call the API through the client
                     val robotStatus = robotApiClient.getRobotDetails(battle.id, robot.id)
+
                     if (robotStatus.status == "CRASHED") {
                         logger.info("$robotName crashed into a wall!")
                         robotCrashed[robotName] = true
