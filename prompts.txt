@@ -165,3 +165,28 @@ Update the prompts and run a root level build as per the guidelines to ensure ev
 
 ## Thirty-second Prompt
 Two tests are failing. Fix those. Remember to update the prompts.txt file
+
+## Thirty-third Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Create a new sub-project called robo-demo in the robot-wars project.
+This one must use Kotlin as the language.
+It must form part of the existing gradle build.
+It must use a kotlin linter
+Create github workflow for this project that will build, test and Lint this project.
+
+It will use Cucumber and Gherkin files to define the behaviour and execute those to verify the behaviour.
+
+requirements to be defined in the feature files and implemented and tested:
+* Using the backend project API's
+* Create a new Battle
+* Register a Robot with the name "Restro"
+* Register a second Robot called "ReqBot"
+* Start the Battle
+* Move the robots around the arena until such time 
+**  as one crashes into a wall.
+** more than 5 minutes has passed 
+* Create a script that will start the backend service localy. (Using quarkus dev mode), then start the battle as above 
+* Update the prompts.txt with this prompt.
+</issue_description>

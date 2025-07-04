@@ -3,3 +3,4 @@ rootProject.name = 'robot-wars'
 // Include subprojects
 include 'backend'
 include 'frontend'
+include 'robo-demo'
