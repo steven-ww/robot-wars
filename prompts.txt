@@ -108,3 +108,12 @@ Given the following issue description `<issue_description>`, could you help me i
 ## 
 Review the updated .junie/guidelines.md file section 7. Apply the process required.
 </issue_description>
+
+## Twenty-sixth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the add_a_robot.feature feature file to ensure that adding a robot does not create a battle, but requires that one has already been created. That is, using the features in the create_a_battle.feature file, a battle would have been created. Only then can a user add a robot to the battle. 
+
+Follow the process for prompts in section 7 of the .junie/guidelines.md file.
+</issue_description>
