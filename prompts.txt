@@ -208,3 +208,10 @@ Given the following issue description `<issue_description>`, could you help me i
 ## 
 Update the prompts.txt for this task. Fix the linting issues in the robo-demo project.  Validate the results with a build 
 </issue_description>
+
+## Thirty-sixth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Modify the start-battle script to reference gradlew from the parent directory. Update the prompts.txt
+</issue_description>

@@ -24,7 +24,7 @@ cd "$(dirname "$0")/.."
 echo "Starting backend service in dev mode..."
 # Start the backend service in dev mode in the background
 cd backend
-./gradlew quarkusDev &
+../gradlew quarkusDev &
 BACKEND_PID=$!
 cd ..
 
