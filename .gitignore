@@ -47,3 +47,4 @@ nb-configuration.xml
 /.gradle/
 /backend/build/
 /build/
+/robo-demo/build/

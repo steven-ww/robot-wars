@@ -1,0 +1,78 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.9.22'
+    id 'org.jlleitschuh.gradle.ktlint' version '11.6.1'
+    id 'application'
+}
+
+group = 'za.co.sww.rwars.robodemo'
+version = '1.0.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    // Kotlin standard library
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+
+    // HTTP client for API interactions
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.9.0'
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3'
+
+    // Coroutines for async operations
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
+
+    // Logging
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'ch.qos.logback:logback-classic:1.4.14'
+
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+
+    // Cucumber for BDD testing
+    testImplementation 'io.cucumber:cucumber-java:7.14.0'
+    testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.14.0'
+    testImplementation 'org.junit.platform:junit-platform-suite:1.10.1'
+    testImplementation 'org.junit.platform:junit-platform-launcher:1.10.1'
+}
+
+kotlin {
+    jvmToolchain(21)
+}
+
+application {
+    mainClass = 'za.co.sww.rwars.robodemo.MainKt'
+}
+
+test {
+    useJUnitPlatform()
+
+    // Include Cucumber tests
+    systemProperty "cucumber.junit-platform.naming-strategy", "long"
+
+    // Show test output in the console
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = true
+    }
+}
+
+// Configure ktlint
+ktlint {
+    version = "0.50.0"
+    verbose = true
+    outputToConsole = true
+    enableExperimentalRules = true
+    disabledRules = []
+    reporters {
+        reporter "plain"
+        reporter "checkstyle"
+        reporter "html"
+    }
+}
+
+// Make ktlint part of the default build
+check.dependsOn ktlintCheck
