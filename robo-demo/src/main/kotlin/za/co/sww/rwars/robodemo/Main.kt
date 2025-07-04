@@ -19,7 +19,7 @@ private val logger = LoggerFactory.getLogger("Main")
  * @param robots The list of robots to display
  */
 private fun renderArena(width: Int, height: Int, robots: List<Robot>) {
-    logger.info("Rendering arena (${width}x${height}):")
+    logger.info("Rendering arena ($width x $height):")
 
     // Create a 2D array to represent the arena
     val arena = Array(height) { Array(width) { "." } }
@@ -121,7 +121,7 @@ private suspend fun trackRobotMovement(
     battleId: String,
     movingRobotId: String,
     otherRobotId: String,
-    blocks: Int
+    blocks: Int,
 ) {
     // Get battle details to know arena dimensions
     val battle = robotApiClient.getBattleStatus(battleId)

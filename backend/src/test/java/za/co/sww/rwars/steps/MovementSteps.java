@@ -420,8 +420,8 @@ public class MovementSteps {
 
         for (int i = 0; i < robotPositions.size(); i++) {
             for (int j = i + 1; j < robotPositions.size(); j++) {
-                if (robotPositions.get(i)[0] != robotPositions.get(j)[0] || 
-                    robotPositions.get(i)[1] != robotPositions.get(j)[1]) {
+                if (robotPositions.get(i)[0] != robotPositions.get(j)[0]
+                        || robotPositions.get(i)[1] != robotPositions.get(j)[1]) {
                     hasDifferentPositions = true;
                     break;
                 }
@@ -447,10 +447,10 @@ public class MovementSteps {
             int posX = position[0];
             int posY = position[1];
 
-            Assertions.assertTrue(posX >= 0 && posX < arenaWidth, 
-                "Position X (" + posX + ") is outside arena width (0-" + (arenaWidth-1) + ")");
-            Assertions.assertTrue(posY >= 0 && posY < arenaHeight, 
-                "Position Y (" + posY + ") is outside arena height (0-" + (arenaHeight-1) + ")");
+            Assertions.assertTrue(posX >= 0 && posX < arenaWidth,
+                "Position X (" + posX + ") is outside arena width (0-" + (arenaWidth - 1) + ")");
+            Assertions.assertTrue(posY >= 0 && posY < arenaHeight,
+                "Position Y (" + posY + ") is outside arena height (0-" + (arenaHeight - 1) + ")");
         }
     }
 

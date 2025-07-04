@@ -240,9 +240,9 @@ class RobotBattleSteps {
         // Set up stubs for getting robot details with different positions
         // Simulate the robot moving by changing its position in each status update
         val positions = listOf(
-            Pair(1, 1),  // Initial position
-            Pair(1, 2),  // After moving one block
-            Pair(1, 3)   // After moving two blocks
+            Pair(1, 1), // Initial position
+            Pair(1, 2), // After moving one block
+            Pair(1, 3), // After moving two blocks
         )
 
         // Track the robot's position over time
@@ -279,9 +279,9 @@ class RobotBattleSteps {
         // Set up stubs for getting robot details with different positions
         // Simulate the robot moving by changing its position in each status update
         val positions = listOf(
-            Pair(1, 1),  // Initial position
-            Pair(1, 2),  // After moving one block
-            Pair(1, 3)   // After moving two blocks
+            Pair(1, 1), // Initial position
+            Pair(1, 2), // After moving one block
+            Pair(1, 3), // After moving two blocks
         )
 
         // Render the arena with updated positions
