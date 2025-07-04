@@ -190,3 +190,21 @@ requirements to be defined in the feature files and implemented and tested:
 * Create a script that will start the backend service localy. (Using quarkus dev mode), then start the battle as above 
 * Update the prompts.txt with this prompt.
 </issue_description>
+
+## Thirty-fourth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+The tests are failing because they require the backend-api to be running.
+
+Using wiremock, mockout the backend-server API's for the tests.
+
+update the prompts.txt and also create a readme for the robot-demo project
+</issue_description>
+
+## Thirty-fifth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the prompts.txt for this task. Fix the linting issues in the robo-demo project.  Validate the results with a build 
+</issue_description>
