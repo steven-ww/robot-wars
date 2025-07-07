@@ -46,7 +46,9 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
       }
 
       // Create a new WebSocket connection
-      const ws = new WebSocket(`ws://${window.location.host}/battle-state/${battleId}`);
+      const ws = new WebSocket(
+        `ws://${window.location.host}/battle-state/${battleId}`
+      );
 
       // Set up event handlers
       ws.onopen = () => {
@@ -54,7 +56,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
         console.log('Connected to battle state WebSocket');
       };
 
-      ws.onmessage = (event) => {
+      ws.onmessage = event => {
         try {
           const data = JSON.parse(event.data);
           console.log('Received battle state:', data);
@@ -73,7 +75,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
         }
       };
 
-      ws.onerror = (event) => {
+      ws.onerror = event => {
         console.error('WebSocket error:', event);
         setError('WebSocket connection error');
         setIsConnected(false);
@@ -87,7 +89,9 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
       // Store the WebSocket reference
       webSocketRef.current = ws;
     } catch (err) {
-      setError(`Failed to connect: ${err instanceof Error ? err.message : String(err)}`);
+      setError(
+        `Failed to connect: ${err instanceof Error ? err.message : String(err)}`
+      );
       console.error('Error connecting to WebSocket:', err);
     }
   }, [battleId]);
@@ -125,9 +129,9 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
     };
 
     return (
-      <div 
-        key={robot.id} 
-        className={`robot robot-${robot.status.toLowerCase()}`} 
+      <div
+        key={robot.id}
+        className={`robot robot-${robot.status.toLowerCase()}`}
         style={style}
         data-testid={`robot-${robot.id}`}
         data-x={robot.positionX}
@@ -158,26 +162,28 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
         <div className="battle-info">
           <h3>{battleState.battleName}</h3>
           <p>Battle State: {battleState.battleState}</p>
-          <p>Arena Size: {battleState.arenaWidth}x{battleState.arenaHeight}</p>
+          <p>
+            Arena Size: {battleState.arenaWidth}x{battleState.arenaHeight}
+          </p>
           <p>Robots: {battleState.robots.length}</p>
           <button onClick={requestUpdate}>Refresh</button>
         </div>
       )}
 
       {isConnected && battleState && (
-        <div 
-          className="arena-grid" 
+        <div
+          className="arena-grid"
           data-testid="arena-grid"
           data-width={battleState.arenaWidth}
           data-height={battleState.arenaHeight}
-          style={{ 
+          style={{
             aspectRatio: `${battleState.arenaWidth} / ${battleState.arenaHeight}`,
             position: 'relative',
             border: '1px solid #333',
             backgroundColor: '#f0f0f0',
             width: '100%',
             maxWidth: '800px',
-            margin: '0 auto'
+            margin: '0 auto',
           }}
         >
           {battleState.robots.map(renderRobot)}

@@ -21,7 +21,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "format:check": "prettier --check 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "eslintConfig": {
     "extends": [
@@ -47,7 +49,8 @@
     "eslint": "^8.48.0",
     "eslint-plugin-react": "^7.33.2",
     "jest-cucumber": "^3.0.1",
-    "jest-websocket-mock": "^2.5.0"
+    "jest-websocket-mock": "^2.5.0",
+    "prettier": "^3.6.2"
   },
   "proxy": "http://localhost:8080"
 }

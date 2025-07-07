@@ -24,7 +24,9 @@ const GreetingComponent: React.FC = () => {
       const text = await response.text();
       setTextGreeting(text);
     } catch (err) {
-      setError(`Failed to fetch text greeting: ${err instanceof Error ? err.message : String(err)}`);
+      setError(
+        `Failed to fetch text greeting: ${err instanceof Error ? err.message : String(err)}`
+      );
       console.error('Error fetching text greeting:', err);
     } finally {
       setLoading(false);
@@ -43,7 +45,9 @@ const GreetingComponent: React.FC = () => {
       const data = await response.json();
       setJsonGreeting(data);
     } catch (err) {
-      setError(`Failed to fetch JSON greeting: ${err instanceof Error ? err.message : String(err)}`);
+      setError(
+        `Failed to fetch JSON greeting: ${err instanceof Error ? err.message : String(err)}`
+      );
       console.error('Error fetching JSON greeting:', err);
     } finally {
       setLoading(false);
@@ -60,7 +64,8 @@ const GreetingComponent: React.FC = () => {
     <div className="greeting-container">
       <h2>REST API Demo</h2>
       <p className="description">
-        This component demonstrates communication with the Quarkus backend using REST API calls.
+        This component demonstrates communication with the Quarkus backend using
+        REST API calls.
       </p>
 
       <div className="greeting-section">
