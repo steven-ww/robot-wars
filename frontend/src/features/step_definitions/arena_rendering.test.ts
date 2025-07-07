@@ -96,9 +96,11 @@ defineFeature(feature, (test) => {
     then('I should see the arena with dimensions 20x20', async () => {
       await waitFor(() => {
         expect(screen.getByTestId('arena-grid')).toBeInTheDocument();
-        expect(screen.getByTestId('arena-grid')).toHaveAttribute('data-width', '20');
-        expect(screen.getByTestId('arena-grid')).toHaveAttribute('data-height', '20');
       });
+      
+      const arenaGrid = screen.getByTestId('arena-grid');
+      expect(arenaGrid).toHaveAttribute('data-width', '20');
+      expect(arenaGrid).toHaveAttribute('data-height', '20');
     });
 
     and('I should see 2 robots on the arena', async () => {
@@ -110,15 +112,16 @@ defineFeature(feature, (test) => {
 
     and('each robot should be displayed at its correct position', async () => {
       await waitFor(() => {
-        const robot1 = screen.getByTestId('robot-robot-1');
-        const robot2 = screen.getByTestId('robot-robot-2');
-
-        expect(robot1).toHaveAttribute('data-x', '5');
-        expect(robot1).toHaveAttribute('data-y', '5');
-
-        expect(robot2).toHaveAttribute('data-x', '15');
-        expect(robot2).toHaveAttribute('data-y', '15');
+        expect(screen.getByTestId('robot-robot-1')).toBeInTheDocument();
       });
+      
+      const robot1 = screen.getByTestId('robot-robot-1');
+      const robot2 = screen.getByTestId('robot-robot-2');
+
+      expect(robot1).toHaveAttribute('data-x', '5');
+      expect(robot1).toHaveAttribute('data-y', '5');
+      expect(robot2).toHaveAttribute('data-x', '15');
+      expect(robot2).toHaveAttribute('data-y', '15');
     });
   });
 
@@ -175,11 +178,11 @@ defineFeature(feature, (test) => {
 
     then('the robot\'s position on the arena should be updated', async () => {
       await waitFor(() => {
-        const robot1 = screen.getByTestId('robot-robot-1');
-
-        expect(robot1).toHaveAttribute('data-x', '6');
-        expect(robot1).toHaveAttribute('data-y', '6');
+        expect(screen.getByTestId('robot-robot-1')).toHaveAttribute('data-x', '6');
       });
+      
+      const robot1 = screen.getByTestId('robot-robot-1');
+      expect(robot1).toHaveAttribute('data-y', '6');
     });
   });
 
@@ -234,11 +237,10 @@ defineFeature(feature, (test) => {
 
     then('the robot should be displayed with a "MOVING" indicator', async () => {
       await waitFor(() => {
-        const robot1 = screen.getByTestId('robot-robot-1');
-
-        expect(robot1).toHaveAttribute('data-status', 'MOVING');
-        expect(screen.getByText('MOVING')).toBeInTheDocument();
+        expect(screen.getByTestId('robot-robot-1')).toHaveAttribute('data-status', 'MOVING');
       });
+      
+      expect(screen.getByText('MOVING')).toBeInTheDocument();
     });
   });
 

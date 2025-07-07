@@ -386,5 +386,9 @@ Given the following issue description `<issue_description>`, could you help me i
 Enhance the github action for the Front-end to run the cucumber tests and also not to fail the existing test step "npm test -- --watchAll=false" if there are not tests to run yet.
 </issue_description>
 
+Switched to Warp 2.0 (Out of June credits)
 ## Fifty-eighth Prompt
 Given the issues with trying to mock out the websocket, can you rather convert the tests to use the "jest-websocket-mock" library for the websocket mocks. Follow the guidelines in the ../junie/guidelines.md and update the ../prompts.txt file with all prompts you receive.
+
+## Fifty-ninth Prompt
+Fix the eslint errors
