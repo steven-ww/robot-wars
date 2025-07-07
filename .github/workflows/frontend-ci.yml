@@ -40,7 +40,12 @@ jobs:
     - name: Run tests
       run: |
         cd frontend
-        npm test -- --watchAll=false
+        npm test -- --watchAll=false --passWithNoTests
+
+    - name: Run Cucumber tests
+      run: |
+        cd frontend
+        npm test -- --testMatch="**/*.steps.ts" --watchAll=false
 
     - name: Build
       run: |
