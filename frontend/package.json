@@ -46,7 +46,8 @@
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.48.0",
     "eslint-plugin-react": "^7.33.2",
-    "jest-cucumber": "^3.0.1"
+    "jest-cucumber": "^3.0.1",
+    "jest-websocket-mock": "^2.5.0"
   },
   "proxy": "http://localhost:8080"
 }

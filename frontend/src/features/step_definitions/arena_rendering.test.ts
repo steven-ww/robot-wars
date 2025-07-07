@@ -1,94 +1,9 @@
 import { defineFeature, loadFeature } from 'jest-cucumber';
 import { render, screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import React from 'react';
 import ArenaComponent from '../../components/ArenaComponent';
-
-// Mock WebSocket
-class MockWebSocket implements WebSocket {
-  // Required WebSocket properties
-  binaryType: BinaryType = 'blob';
-  bufferedAmount: number = 0;
-  extensions: string = '';
-  protocol: string = '';
-  readyState: number = 0; // CONNECTING
-  url: string;
-
-  // Event handlers
-  onopen: ((this: WebSocket, ev: Event) => any) | null = null;
-  onmessage: ((this: WebSocket, ev: MessageEvent) => any) | null = null;
-  onerror: ((this: WebSocket, ev: Event) => any) | null = null;
-  onclose: ((this: WebSocket, ev: CloseEvent) => any) | null = null;
-
-  // Required constants from WebSocket interface
-  readonly CONNECTING: number = 0;
-  readonly OPEN: number = 1;
-  readonly CLOSING: number = 2;
-  readonly CLOSED: number = 3;
-
-  constructor(url: string) {
-    this.url = url;
-    // Simulate immediate connection
-    setTimeout(() => {
-      this.readyState = this.OPEN;
-    }, 0);
-  }
-
-  send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
-    // Mock implementation
-  }
-
-  close(code?: number, reason?: string): void {
-    // Mock implementation
-    this.readyState = this.CLOSED;
-  }
-
-  // Event listener methods
-  addEventListener<K extends keyof WebSocketEventMap>(
-    type: K, 
-    listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any, 
-    options?: boolean | AddEventListenerOptions
-  ): void {
-    // Mock implementation
-  }
-
-  removeEventListener<K extends keyof WebSocketEventMap>(
-    type: K, 
-    listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any, 
-    options?: boolean | EventListenerOptions
-  ): void {
-    // Mock implementation
-  }
-
-  dispatchEvent(event: Event): boolean {
-    return true; // Mock implementation
-  }
-
-  // Helper method to simulate receiving a message
-  mockReceiveMessage(data: any): void {
-    if (this.onmessage) {
-      const messageEvent = new MessageEvent('message', {
-        data: JSON.stringify(data)
-      });
-      this.onmessage(messageEvent);
-    }
-  }
-
-  // Helper method to simulate connection open
-  mockOpen(): void {
-    if (this.onopen) {
-      const openEvent = new Event('open');
-      this.onopen(openEvent);
-    }
-  }
-
-  // Helper method to simulate error
-  mockError(): void {
-    if (this.onerror) {
-      const errorEvent = new Event('error');
-      this.onerror(errorEvent);
-    }
-  }
-}
+import WS from 'jest-websocket-mock';
 
 // Load the feature file
 const feature = loadFeature('./src/features/arena_rendering.feature');
@@ -127,20 +42,31 @@ const mockBattleState = {
   ]
 };
 
-// Mock the WebSocket constructor
-global.WebSocket = MockWebSocket as any;
+// WebSocket server mock
+let server: WS;
 
 defineFeature(feature, (test) => {
-  beforeEach(() => {
-    // Reset mocks between tests
-    jest.clearAllMocks();
+  beforeEach(async () => {
+    // Mock window.location.host for the component
+    Object.defineProperty(window, 'location', {
+      value: {
+        host: 'localhost'
+      },
+      writable: true
+    });
+    
+    // Create a mock WebSocket server
+    server = new WS('ws://localhost/battle-state/test-battle-id');
+  });
+
+  afterEach(() => {
+    // Clean up the mock server
+    WS.clean();
   });
 
   test('Render the initial arena state', ({ given, when, then, and }) => {
-    let mockWs: MockWebSocket;
-
     given('the battle state websocket is available', () => {
-      // This is handled by the mock WebSocket
+      // This is handled by the mock WebSocket server
     });
 
     and('a battle with ID "test-battle-id" exists on the server', () => {
@@ -159,15 +85,12 @@ defineFeature(feature, (test) => {
       render(React.createElement(ArenaComponent, { battleId: "test-battle-id" }));
     });
 
-    and('I connect to the battle state websocket', () => {
-      // Get the mock WebSocket instance
-      mockWs = (global.WebSocket as any).mock.instances[0];
-
-      // Simulate connection open
-      mockWs.mockOpen();
-
-      // Simulate receiving battle state
-      mockWs.mockReceiveMessage(mockBattleState);
+    and('I connect to the battle state websocket', async () => {
+      // Wait for the WebSocket connection to be established
+      await server.connected;
+      
+      // Send the mock battle state to the client
+      server.send(JSON.stringify(mockBattleState));
     });
 
     then('I should see the arena with dimensions 20x20', async () => {
@@ -199,20 +122,31 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test('Update the arena when robot positions change', ({ given, when, then }) => {
-    let mockWs: MockWebSocket;
+  test('Update the arena when robot positions change', ({ given, and, when, then }) => {
+    given('the battle state websocket is available', () => {
+      // This is handled by the mock WebSocket server
+    });
+
+    and('a battle with ID "test-battle-id" exists on the server', () => {
+      // This is handled by the mock data
+    });
+
+    and('the battle has an arena with dimensions 20x20', () => {
+      // This is handled by the mock data
+    });
+
+    and('the battle has 2 robots registered', () => {
+      // This is handled by the mock data
+    });
 
     given('I am viewing the arena', async () => {
       render(React.createElement(ArenaComponent, { battleId: "test-battle-id" }));
 
-      // Get the mock WebSocket instance
-      mockWs = (global.WebSocket as any).mock.instances[0];
-
-      // Simulate connection open
-      mockWs.mockOpen();
-
-      // Simulate receiving battle state
-      mockWs.mockReceiveMessage(mockBattleState);
+      // Wait for the WebSocket connection to be established
+      await server.connected;
+      
+      // Send the initial battle state
+      server.send(JSON.stringify(mockBattleState));
 
       // Wait for the arena to render
       await waitFor(() => {
@@ -235,8 +169,8 @@ defineFeature(feature, (test) => {
         ]
       };
 
-      // Simulate receiving updated battle state
-      mockWs.mockReceiveMessage(updatedBattleState);
+      // Send the updated battle state
+      server.send(JSON.stringify(updatedBattleState));
     });
 
     then('the robot\'s position on the arena should be updated', async () => {
@@ -249,20 +183,31 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test('Display robot status', ({ given, when, then }) => {
-    let mockWs: MockWebSocket;
+  test('Display robot status', ({ given, and, when, then }) => {
+    given('the battle state websocket is available', () => {
+      // This is handled by the mock WebSocket server
+    });
+
+    and('a battle with ID "test-battle-id" exists on the server', () => {
+      // This is handled by the mock data
+    });
+
+    and('the battle has an arena with dimensions 20x20', () => {
+      // This is handled by the mock data
+    });
+
+    and('the battle has 2 robots registered', () => {
+      // This is handled by the mock data
+    });
 
     given('I am viewing the arena', async () => {
       render(React.createElement(ArenaComponent, { battleId: "test-battle-id" }));
 
-      // Get the mock WebSocket instance
-      mockWs = (global.WebSocket as any).mock.instances[0];
-
-      // Simulate connection open
-      mockWs.mockOpen();
-
-      // Simulate receiving battle state
-      mockWs.mockReceiveMessage(mockBattleState);
+      // Wait for the WebSocket connection to be established
+      await server.connected;
+      
+      // Send the initial battle state
+      server.send(JSON.stringify(mockBattleState));
 
       // Wait for the arena to render
       await waitFor(() => {
@@ -283,8 +228,8 @@ defineFeature(feature, (test) => {
         ]
       };
 
-      // Simulate receiving updated battle state
-      mockWs.mockReceiveMessage(updatedBattleState);
+      // Send the updated battle state
+      server.send(JSON.stringify(updatedBattleState));
     });
 
     then('the robot should be displayed with a "MOVING" indicator', async () => {
@@ -297,17 +242,31 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test('Handle connection errors', ({ when, then, and }) => {
-    let mockWs: MockWebSocket;
+  test('Handle connection errors', ({ given, and, when, then }) => {
+    given('the battle state websocket is available', () => {
+      // This is handled by the mock WebSocket server
+    });
 
-    when('the websocket connection fails', () => {
+    and('a battle with ID "test-battle-id" exists on the server', () => {
+      // This is handled by the mock data
+    });
+
+    and('the battle has an arena with dimensions 20x20', () => {
+      // This is handled by the mock data
+    });
+
+    and('the battle has 2 robots registered', () => {
+      // This is handled by the mock data
+    });
+
+    when('the websocket connection fails', async () => {
       render(React.createElement(ArenaComponent, { battleId: "test-battle-id" }));
 
-      // Get the mock WebSocket instance
-      mockWs = (global.WebSocket as any).mock.instances[0];
-
-      // Simulate error
-      mockWs.mockError();
+      // Wait for the WebSocket connection to be established
+      await server.connected;
+      
+      // Simulate connection error by closing the server
+      server.error();
     });
 
     then('I should see an error message', async () => {
