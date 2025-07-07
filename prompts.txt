@@ -284,3 +284,10 @@ Given the following issue description `<issue_description>`, could you help me i
 ## 
 Udpate the prompt.txt. Fix the checkstyle issues for the backend.
 </issue_description>
+
+## Forty-sixth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Review the junie agent guidelines in the .junie/guidelines.md file. Are these structured in the best way for the Intellij Junie agent to consume them? If not, make changes to improve them as guidelines for Junie.
+</issue_description>
