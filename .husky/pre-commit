@@ -1,0 +1,39 @@
+#!/bin/sh
+# Robot Wars pre-commit hook: check frontend build, test, and lint
+
+echo "🔍 Running Robot Wars pre-commit checks..."
+
+# Change to frontend directory
+cd frontend
+
+# Check if frontend directory exists and has package.json
+if [ ! -f "package.json" ]; then
+  echo "⚠️ Frontend package.json not found, skipping frontend checks"
+  exit 0
+fi
+
+echo "📝 Running frontend ESLint..."
+npm run lint
+if [ $? -ne 0 ]; then
+  echo "❌ Frontend ESLint failed. Please fix linting errors before committing."
+  exit 1
+fi
+
+echo "🧪 Running frontend tests..."
+npm test -- --watchAll=false --coverage=false
+if [ $? -ne 0 ]; then
+  echo "❌ Frontend tests failed. Please fix failing tests before committing."
+  exit 1
+fi
+
+echo "🔨 Running frontend build..."
+npm run build
+if [ $? -ne 0 ]; then
+  echo "❌ Frontend build failed. Please fix build errors before committing."
+  exit 1
+fi
+
+echo "✅ All frontend pre-commit checks passed!"
+
+# Return to root directory
+cd ..
