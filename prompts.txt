@@ -398,3 +398,6 @@ add a commit hoot to the fe that builds, tests and lints the code before allowin
 
 ## Sixty-first Prompt
 I don't like the root level node requirement to get the hooks working. Revert all commits for the commit hooks. Update the ../prompts.txt file.
+
+## Sixty-second Prompt
+Add prettier to the front-end project, also update the front-end github action to run it. Validate that it passes. If not, fix the issues.
