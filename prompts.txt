@@ -253,3 +253,20 @@ Given the following issue description `<issue_description>`, could you help me i
 Update the prompts.txt file with the last prompt. 
 Also fix the checkstyle issues in the backend project and update the prompts.txt file with this prompt
 </issue_description>
+
+## Forty-second Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Apply the guidelines as defined in the .junie/guidelines.md file while implementing this task.
+Review the code in the backend project to ensure it's using virtual threads where possible (e.g. the API's and any threading that's been implemented.
+Also, review the code to make sure it's using modern java features like Records where it could be.
+Apply changes to align the code with what you discover above.
+</issue_description>
+
+## Forty-third Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the prompts.txt file with the previous prompt and this prompt. Also ensure that the linting rules pass for the backend project.
+</issue_description>

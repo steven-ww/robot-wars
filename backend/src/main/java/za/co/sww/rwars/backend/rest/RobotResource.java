@@ -164,8 +164,8 @@ public class RobotResource {
             Robot robot = battleService.moveRobot(
                     battleId,
                     robotId,
-                    moveRequest.getDirection(),
-                    moveRequest.getBlocks());
+                    moveRequest.direction(),
+                    moveRequest.blocks());
             return Response.ok(robot).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -180,56 +180,20 @@ public class RobotResource {
 
 
     /**
-     * Error response class.
+     * Error response record.
      */
-    public static class ErrorResponse {
-        private String message;
-
+    public record ErrorResponse(String message) {
         public ErrorResponse() {
-        }
-
-        public ErrorResponse(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
+            this(null);
         }
     }
 
     /**
-     * Move request class.
+     * Move request record.
      */
-    public static class MoveRequest {
-        private String direction;
-        private int blocks;
-
+    public record MoveRequest(String direction, int blocks) {
         public MoveRequest() {
-        }
-
-        public MoveRequest(String direction, int blocks) {
-            this.direction = direction;
-            this.blocks = blocks;
-        }
-
-        public String getDirection() {
-            return direction;
-        }
-
-        public void setDirection(String direction) {
-            this.direction = direction;
-        }
-
-        public int getBlocks() {
-            return blocks;
-        }
-
-        public void setBlocks(int blocks) {
-            this.blocks = blocks;
+            this(null, 0);
         }
     }
 
