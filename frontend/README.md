@@ -53,38 +53,6 @@ The application is configured to proxy API requests to the backend at http://loc
 - `src/App.tsx`: Main application component
 - `src/index.tsx`: Application entry point
 
-## Git Hooks
-
-This project uses [Husky](https://typicode.github.io/husky/) to manage Git hooks and ensure code quality.
-
-### Pre-commit Hook
-
-Before each commit, the following checks are automatically run:
-
-1. **ESLint** - Checks for code style and potential issues
-2. **Tests** - Runs all test suites to ensure functionality
-3. **Build** - Ensures the project builds successfully
-
-If any of these checks fail, the commit will be blocked until the issues are resolved.
-
-### Setup
-
-The pre-commit hook is automatically installed when you run `npm install` thanks to the `prepare` script in `package.json`. If you need to manually set it up:
-
-```bash
-npm run prepare
-```
-
-### Bypassing Hooks (Not Recommended)
-
-In exceptional cases, you can bypass the pre-commit hook with:
-
-```bash
-git commit --no-verify -m "your commit message"
-```
-
-**Warning:** Only use this in emergencies as it skips important quality checks.
-
 ## Testing
 
 Run the tests:
