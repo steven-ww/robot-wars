@@ -42,15 +42,10 @@ jobs:
         cd frontend
         npm run format:check
 
-    - name: Run tests
+    - name: Run tests (including Cucumber BDD tests)
       run: |
         cd frontend
         npm test -- --watchAll=false --passWithNoTests
-
-    - name: Run Cucumber tests
-      run: |
-        cd frontend
-        npm test -- --testMatch="**/*.steps.ts" --watchAll=false
 
     - name: Build
       run: |
