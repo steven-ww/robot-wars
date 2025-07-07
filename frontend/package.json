@@ -21,7 +21,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "prepare": "husky"
   },
   "eslintConfig": {
     "extends": [
@@ -46,6 +47,7 @@
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.48.0",
     "eslint-plugin-react": "^7.33.2",
+    "husky": "^9.1.7",
     "jest-cucumber": "^3.0.1",
     "jest-websocket-mock": "^2.5.0"
   },
