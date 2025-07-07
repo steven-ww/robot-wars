@@ -401,3 +401,6 @@ I don't like the root level node requirement to get the hooks working. Revert al
 
 ## Sixty-second Prompt
 Add prettier to the front-end project, also update the front-end github action to run it. Validate that it passes. If not, fix the issues.
+
+## Sixty-third Prompt
+The GitHub cucumber job "run cucumber tests" is using the wrong pattern for the tests and is failing to find any tests. Given the changes to the naming standard you applied to the tests, do we still need a specific cucumber job in the github action or can it just be replaced with the standard test run? Do we loose anything by doing that?
