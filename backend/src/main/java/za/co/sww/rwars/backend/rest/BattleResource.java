@@ -1,5 +1,6 @@
 package za.co.sww.rwars.backend.rest;
 
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -28,6 +29,7 @@ public class BattleResource {
      * @return The created battle
      */
     @POST
+    @RunOnVirtualThread
     public Response createBattle(CreateBattleRequest request) {
         try {
             Battle battle;

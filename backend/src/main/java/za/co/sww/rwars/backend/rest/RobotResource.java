@@ -1,5 +1,6 @@
 package za.co.sww.rwars.backend.rest;
 
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -32,6 +33,7 @@ public class RobotResource {
      */
     @POST
     @Path("/register")
+    @RunOnVirtualThread
     public Response registerRobot(Robot robot) {
         try {
             Robot registeredRobot = battleService.registerRobot(robot.getName());
@@ -51,6 +53,7 @@ public class RobotResource {
      */
     @GET
     @Path("/battle/{battleId}")
+    @RunOnVirtualThread
     public Response getBattleStatus(@PathParam("battleId") String battleId) {
         try {
             if (!battleService.isValidBattleId(battleId)) {
@@ -76,8 +79,9 @@ public class RobotResource {
      */
     @GET
     @Path("/battle/{battleId}/robot/{robotId}")
+    @RunOnVirtualThread
     public Response getBattleStatusForRobot(@PathParam("battleId") String battleId,
-                                           @PathParam("robotId") String robotId) {
+                                            @PathParam("robotId") String robotId) {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -102,8 +106,9 @@ public class RobotResource {
      */
     @GET
     @Path("/battle/{battleId}/robot/{robotId}/details")
+    @RunOnVirtualThread
     public Response getRobotDetails(@PathParam("battleId") String battleId,
-                                   @PathParam("robotId") String robotId) {
+                                    @PathParam("robotId") String robotId) {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -127,6 +132,7 @@ public class RobotResource {
      */
     @POST
     @Path("/battle/{battleId}/start")
+    @RunOnVirtualThread
     public Response startBattle(@PathParam("battleId") String battleId) {
         try {
             Battle battle = battleService.startBattle(battleId);
@@ -152,9 +158,10 @@ public class RobotResource {
      */
     @POST
     @Path("/battle/{battleId}/robot/{robotId}/move")
+    @RunOnVirtualThread
     public Response moveRobot(@PathParam("battleId") String battleId,
-                             @PathParam("robotId") String robotId,
-                             MoveRequest moveRequest) {
+                              @PathParam("robotId") String robotId,
+                              MoveRequest moveRequest) {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -177,7 +184,6 @@ public class RobotResource {
                     .build();
         }
     }
-
 
     /**
      * Error response record.
