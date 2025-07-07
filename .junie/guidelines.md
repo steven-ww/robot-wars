@@ -41,6 +41,9 @@
 - **Framework**: React
 - **Build Tool**: Compatible with chosen technologies
 - **Deployment**: Static files for web server deployment
+- **Linting**: ESLint
+  - Frontend build MUST include linting
+  - All linting checks MUST pass for build to succeed
 
 #### 4.3 Robo-demo
 - **Language**: Kotlin

@@ -371,3 +371,10 @@ Given the following issue description `<issue_description>`, could you help me i
 ## 
 The jbag script is starting the fe before the backend is up. Have the FE wait for the backend to start
 </issue_description>
+
+## Fifty-sixth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Fix the linting errors on the front-end. Update the .junie/guidelines to include that the front-end build must include linting and must pass.
+</issue_description>
