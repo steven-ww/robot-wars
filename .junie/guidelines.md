@@ -13,7 +13,9 @@
 ### 2. BUILD VALIDATION - REQUIRED BEFORE SUBMISSION
 - Run `./gradlew build` at the root level before submitting changes
   - Ensure all tests pass
-  - Ensure all checkstyle rules pass
+  - **MANDATORY**: Verify that all checkstyle rules pass
+    - Fix ANY checkstyle violations before submission
+    - Run `./gradlew checkstyleMain checkstyleTest` to specifically check for style violations
 
 ## PROJECT SPECIFICATIONS
 
@@ -57,7 +59,10 @@
 
 #### 5.2 Testing Validation
 - Run tests to verify solutions
-- Validate checkstyle compliance
+- **Checkstyle Validation**:
+  - Run `./gradlew checkstyleMain checkstyleTest` to verify style compliance
+  - Fix ALL style violations before submitting code
+  - Style violations will cause build failures in CI/CD pipelines
 
 ### 6. CI/CD and Deployment
 

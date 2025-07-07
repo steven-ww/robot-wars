@@ -1,0 +1,136 @@
+.arena-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.arena-container h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.description {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.error-container {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.error {
+  margin-bottom: 10px;
+}
+
+.battle-info {
+  background-color: #e2f0ff;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.battle-info h3 {
+  margin-top: 0;
+  color: #0056b3;
+}
+
+.arena-grid {
+  background-color: #f0f0f0;
+  border: 2px solid #333;
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: 400px;
+}
+
+.robot {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  margin-left: -20px;
+  margin-bottom: -20px;
+  background-color: #007bff;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: 10px;
+  text-align: center;
+  transition: all 0.5s ease;
+  z-index: 10;
+}
+
+.robot-idle {
+  background-color: #28a745;
+}
+
+.robot-moving {
+  background-color: #007bff;
+  animation: pulse 1s infinite;
+}
+
+.robot-crashed {
+  background-color: #dc3545;
+}
+
+.robot-name {
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.robot-status {
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.connecting {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #0069d9;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

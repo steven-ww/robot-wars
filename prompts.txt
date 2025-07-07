@@ -291,3 +291,25 @@ Given the following issue description `<issue_description>`, could you help me i
 ## 
 Review the junie agent guidelines in the .junie/guidelines.md file. Are these structured in the best way for the Intellij Junie agent to consume them? If not, make changes to improve them as guidelines for Junie.
 </issue_description>
+
+## Forty-seventh Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Pay attention to the .junie/guidelines.md while executing this task.
+
+Add a feature to the backend project, define the feature and scenarios in Gherkin
+
+As a Front End instance I want to be able to determine the state of a battle on the server, what the attributes of an arena are, what robots have been registered so that I can render the initial arena state. Implement this in the Backend project via aa websocket. 
+
+For the Front-end project
+Add the ability to use BDD in the frontend project.
+Once configured, add a feature using BDD to the front-end that renders the initial arena for a battle on a page. 
+</issue_description>
+
+## Forty-eighth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Fix the checkstyle violations. Update the .junie/guidelines.md to be explicit about the requirement to verify that the checkstyle rules pass.
+</issue_description>
