@@ -2,38 +2,35 @@ plugins {
     id 'base'
 }
 
-// This is a simplified build.gradle file for the frontend project
+// This is a build.gradle file for the frontend project
 // It integrates the frontend project into the root build
-// without requiring the npm build to succeed
+// and ensures that the build fails if there are compilation errors
 
-// Task to run npm install (but don't fail the build if it fails)
+// Task to run npm install
 task npmInstall(type: Exec) {
     description = 'Install npm dependencies'
     commandLine 'npm', 'install'
-    ignoreExitValue = true
     workingDir = projectDir
 }
 
-// Task to run npm build (but don't fail the build if it fails)
+// Task to run npm build - will fail the build if there are TypeScript errors
 task npmBuild(type: Exec) {
     description = 'Build the frontend'
     commandLine 'npm', 'run', 'build'
-    ignoreExitValue = true
     workingDir = projectDir
     dependsOn npmInstall
 }
 
-// Task that always succeeds, even if npm build fails
+// Task that depends on npmBuild and will fail if npmBuild fails
 task buildFrontend {
-    description = 'Build the frontend (or at least try to)'
+    description = 'Build the frontend'
     dependsOn npmBuild
     doLast {
-        println "Frontend build attempted. Check logs for details."
-        println "To build the frontend manually, run 'npm install' and 'npm run build' in the frontend directory"
+        println "Frontend build completed successfully."
     }
 }
 
-// Map Gradle lifecycle tasks to our always-succeeding task
+// Map Gradle lifecycle tasks to our frontend build task
 assemble.dependsOn buildFrontend
 build.dependsOn assemble
 
