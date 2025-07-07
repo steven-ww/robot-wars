@@ -313,3 +313,17 @@ Given the following issue description `<issue_description>`, could you help me i
 ## 
 Fix the checkstyle violations. Update the .junie/guidelines.md to be explicit about the requirement to verify that the checkstyle rules pass.
 </issue_description>
+
+## Forty-ninth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+The Front-end project is not being built when running the root ./gradlew build command. Enhance the root gradle build to ensure the front-end project also forms part of the build. Follow the .junie/guidelines.md file. 
+</issue_description>
+
+## Fiftieth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Event with the changes you just made, running ./gradle build at the project root, did not build the front-end project. Correct this to ensure the FE also builds
+</issue_description>
