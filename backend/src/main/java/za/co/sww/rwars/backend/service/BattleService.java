@@ -10,9 +10,6 @@ import za.co.sww.rwars.backend.model.Robot.RobotStatus;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Service to manage battles and robots.
@@ -448,28 +445,29 @@ public class BattleService {
      * @param movementTimeSeconds The time in seconds it takes to move one block
      */
     private void startRobotMovement(Robot robot, double movementTimeSeconds) {
-        // Create a scheduled executor to move the robot one block at a time
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
         // Convert movement time to milliseconds for more precise scheduling
         long movementTimeMillis = (long) (movementTimeSeconds * 1000);
 
-        // Schedule the movement task to run at the specified rate
-        executor.scheduleAtFixedRate(() -> {
-            // Move the robot one block in the specified direction
-            moveRobotOneBlock(robot);
+        // Use a virtual thread to handle the robot movement
+        Thread.startVirtualThread(() -> {
+            try {
+                // Continue moving until the robot reaches its target or crashes
+                while (robot.getBlocksRemaining() > 0 && robot.getStatus() != RobotStatus.CRASHED) {
+                    // Move the robot one block in the specified direction
+                    moveRobotOneBlock(robot);
 
-            // Check if the robot has reached its target or crashed
-            if (robot.getBlocksRemaining() <= 0 || robot.getStatus() == RobotStatus.CRASHED) {
-                // Stop the movement
-                executor.shutdown();
+                    // Sleep for the specified movement time
+                    Thread.sleep(movementTimeMillis);
+                }
 
                 // Update the robot's status if it's not crashed
                 if (robot.getStatus() != RobotStatus.CRASHED) {
                     robot.setStatus(RobotStatus.IDLE);
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-        }, 0, movementTimeMillis, TimeUnit.MILLISECONDS);
+        });
     }
 
     /**

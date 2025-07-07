@@ -31,16 +31,16 @@ public class BattleResource {
     public Response createBattle(CreateBattleRequest request) {
         try {
             Battle battle;
-            if (request.getWidth() != null && request.getHeight() != null
-                    && request.getRobotMovementTimeSeconds() != null) {
-                battle = battleService.createBattle(request.getName(), request.getWidth(), request.getHeight(),
-                        request.getRobotMovementTimeSeconds());
-            } else if (request.getWidth() != null && request.getHeight() != null) {
-                battle = battleService.createBattle(request.getName(), request.getWidth(), request.getHeight());
-            } else if (request.getRobotMovementTimeSeconds() != null) {
-                battle = battleService.createBattle(request.getName(), request.getRobotMovementTimeSeconds());
+            if (request.width() != null && request.height() != null
+                    && request.robotMovementTimeSeconds() != null) {
+                battle = battleService.createBattle(request.name(), request.width(), request.height(),
+                        request.robotMovementTimeSeconds());
+            } else if (request.width() != null && request.height() != null) {
+                battle = battleService.createBattle(request.name(), request.width(), request.height());
+            } else if (request.robotMovementTimeSeconds() != null) {
+                battle = battleService.createBattle(request.name(), request.robotMovementTimeSeconds());
             } else {
-                battle = battleService.createBattle(request.getName());
+                battle = battleService.createBattle(request.name());
             }
             return Response.ok(battle).build();
         } catch (IllegalArgumentException e) {
@@ -55,69 +55,20 @@ public class BattleResource {
     }
 
     /**
-     * Battle creation request class.
+     * Battle creation request record.
      */
-    public static class CreateBattleRequest {
-        private String name;
-        private Integer width;
-        private Integer height;
-        private Double robotMovementTimeSeconds;
-
+    public record CreateBattleRequest(String name, Integer width, Integer height, Double robotMovementTimeSeconds) {
         public CreateBattleRequest() {
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public Integer getWidth() {
-            return width;
-        }
-
-        public void setWidth(Integer width) {
-            this.width = width;
-        }
-
-        public Integer getHeight() {
-            return height;
-        }
-
-        public void setHeight(Integer height) {
-            this.height = height;
-        }
-
-        public Double getRobotMovementTimeSeconds() {
-            return robotMovementTimeSeconds;
-        }
-
-        public void setRobotMovementTimeSeconds(Double robotMovementTimeSeconds) {
-            this.robotMovementTimeSeconds = robotMovementTimeSeconds;
+            this(null, null, null, null);
         }
     }
 
     /**
-     * Error response class.
+     * Error response record.
      */
-    public static class ErrorResponse {
-        private String message;
-
+    public record ErrorResponse(String message) {
         public ErrorResponse() {
-        }
-
-        public ErrorResponse(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
+            this(null);
         }
     }
 }
