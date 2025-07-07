@@ -23,7 +23,8 @@ public class ChatSocket {
     private static final Logger LOGGER = Logger.getLogger(ChatSocket.class.getName());
 
     // Store active sessions
-    private Map<String, Session> sessions = new ConcurrentHashMap<>();
+    private final Map<String, Session> sessions = new ConcurrentHashMap<>();
+
     /**
      * Called when a new WebSocket connection is established.
      *

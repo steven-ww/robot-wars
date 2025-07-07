@@ -1,6 +1,6 @@
 # Prompts Received
 
-## Initial Prompt
+## First Prompt
 Junie, generate a Quarkus sub project following the guidelines.
 
 This quarkus project will need to be deployed to k8s, have a native build, support rest api endpoints and possibly need to interact with a fe via websockets.
@@ -55,3 +55,232 @@ I'm having trouble using cucumber with Quarkus and the cucumber ext for Quarkus.
 
 ## Fifteenth Prompt
 Fix the linting issues on the backend build
+
+## Sixteenth Prompt (Warp)
+2025-07-03 - Please follow the guidelines in .junie/guidelines.md for this task. The current implementation of the BE is based on the features defined in the feature file test/java/resource/features/add_a_robot.feature. The cucumber tests work, however, the implementation does not distinquise between a battle id (of the entire battle) and the id of a robot. Each robot should be provided it's own id for the battle and send that back on each request to the server. Update the feature file to make this more explicit, then update the tests and implementation to work with a battle id (for the battle) and a robot id for each robot.
+
+## Seventeenth Prompt
+I've updated the add_a_robot.feature file. It doesn't change the behavior of the solution, but does improve the language of the feature file. Apply the changes to the tests.
+
+## Eighteenth Prompt
+For some reason, junie (you) is not following the guidlines defined in the .junie/guidelines.md file, specifically the one related to updating the prompts.txt with the prompts received.
+
+How can I improve the guidelines to make it clearer and easier for junie to use.
+
+## Nineteenth Prompt
+Review the .junie/guidelines.md file.
+
+Determine how to improve the structure of the guidelines to make them more meaningfull as guidelines to junie AI.
+
+## Twentieth Prompt
+On the last request, junie did not update the prompts file. This is a requirement of the .junie/guidelines.md. Are the guidelines not being applied and if so, why is that?
+
+## Twenty-first Prompt
+Fix the checkstyle errors in the RobotSteps.java file. Rember to follow the guidelines in the .junie/guidelines.md file
+
+## Twenty-second Prompt
+When you updated the RobotSteps file, you broke the cucumber test. it no longer matches the gherkin file for the When "I register my Robot supplying it's name"
+
+## Twenty-third Prompt
+Create new feature file in backend project that deals with creating a battle.
+
+The following scenarios should be described in the feature file in the best practices for cucumber and gherkin.
+
+The features are realised by API calls onto the backend. 
+
+The arena is a map of blocks x * y in dimensions. It represents the playing field or board that robots will navgate during the battle.
+
+A user creates a new Battle by supplying the battle name, but without specifying a battle arena size. The server generates an arena with the size specified in the properties configuration of the server.
+The server returns the battleId for this new battle, along with details of the arena size and name and id. 
+
+A user creates a new Battle by supplying the battle name and the dimensions for the battle arena. It should be no smaller than 10 * 10 and no larger than 1000 * 1000.  The server returns the battleId for this new battle, along with details of the arena size and name and id. 
+
+Adjust the existing code that implements the existing features to align with the above without breaking the existing features and related tests. 
+
+Remember to follow the .junie/guidelines.md file off of the the rool folder.
+
+## Twenty-fourth Prompt
+You didn't update the prompts.txt file with the previous prompt. Please do so now.
+
+## Twenty-fifth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Review the updated .junie/guidelines.md file section 7. Apply the process required.
+</issue_description>
+
+## Twenty-sixth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the add_a_robot.feature feature file to ensure that adding a robot does not create a battle, but requires that one has already been created. That is, using the features in the create_a_battle.feature file, a battle would have been created. Only then can a user add a robot to the battle. 
+
+Follow the process for prompts in section 7 of the .junie/guidelines.md file.
+</issue_description>
+
+## Twenty-seventh Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Add a new feature file for the backend project following the cucumber and gherkin best practices. The new feature set must support the following features.
+
+Allow a user to move the robot by specifying the id of the robot, the direction of the robot (North, south, east, west or nw, ne, sw, se) and how many blocks to move. Each block represents on block on the arena map.
+
+The instruction to the server to move the robot will start the move process. Each second (as the default from the configuration file), the robot can move one space in the requested direction. The position of the robot in the battle arena should be reflected based on this movement. The movement starts from the robots current position and replaces any other movements instructions that may still be running. 
+
+If the robot attempts to move past the last block of the arena, then it stops moving at that point and it's location is the last valid point. The status of the robot should then indicated "crashed".
+
+While the robot is moving, it's state should indicate "moving".
+
+Follow the guidelines in the .junie/guidelines.md file, specifically section 7 that defines what's required for each prompt.
+</issue_description>
+
+## Twenty-eighth Prompt
+The cucumber tests are not passing. Fix this.
+
+## Twenty-ninth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Following the .junie/guidelines.md file (spefically section 7) change the way you've validated the move_robots.feature features. You've create an API to position the robot at a specific spot "public Response updateRobotPosition(@PathParam("battleId")..." This is ont an API that should be available to users and as such please use a different mechanism to position the robot for the related tests. 
+</issue_description>
+
+## Thirtieth Prompt
+Remember to update the prompts.txt file. The updateRobotPosition api is still available. This should have been removed as part of the last prompts outcome.
+
+## Thirty-first Prompt
+Update the prompts.txt file with the previous prompt
+
+## Thirty-second Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Follow the guidelines in the .junie/guidelines.md file. 
+Update the feature files for creating a battle to allow the user to specify how much time it takes the robot to move a block. Load the default value of 1 second from the property file. Use a value of .5 seconds for all the test scenarios.
+
+update the feature file to reflect the above requirement. Update the tests to use the new .5 second value, update thie implementation to support the supplied value or fallback to the value from the configuration. 
+
+Update the prompts and run a root level build as per the guidelines to ensure everything still works.
+</issue_description>
+
+## Thirty-third Prompt
+Two tests are failing. Fix those. Remember to update the prompts.txt file
+
+## Thirty-fourth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Create a new sub-project called robo-demo in the robot-wars project.
+This one must use Kotlin as the language.
+It must form part of the existing gradle build.
+It must use a kotlin linter
+Create github workflow for this project that will build, test and Lint this project.
+
+It will use Cucumber and Gherkin files to define the behaviour and execute those to verify the behaviour.
+
+requirements to be defined in the feature files and implemented and tested:
+* Using the backend project API's
+* Create a new Battle
+* Register a Robot with the name "Restro"
+* Register a second Robot called "ReqBot"
+* Start the Battle
+* Move the robots around the arena until such time 
+**  as one crashes into a wall.
+** more than 5 minutes has passed 
+* Create a script that will start the backend service localy. (Using quarkus dev mode), then start the battle as above 
+* Update the prompts.txt with this prompt.
+</issue_description>
+
+## Thirty-fifth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+The tests are failing because they require the backend-api to be running.
+
+Using wiremock, mockout the backend-server API's for the tests.
+
+update the prompts.txt and also create a readme for the robot-demo project
+</issue_description>
+
+## Thirty-sixth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the prompts.txt for this task. Fix the linting issues in the robo-demo project.  Validate the results with a build 
+</issue_description>
+
+## Thirty-seventh Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Modify the start-battle script to reference gradlew from the parent directory. Update the prompts.txt
+</issue_description>
+
+## Thirty-eighth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the prompts.txt.
+Update the robo-demo project to create a 20 * 20 arena.
+Have it display the initial starting position of each robot.
+Render the arena in the output, showing the start position of each robot.
+</issue_description>
+
+## Thirty-ninth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the prompts.txt, run a complete build for the backend including tests and linting for this task.
+
+Add a scenario to the move robot feature that allows the user to make a request to the API in order to get the details of the users Robot. This would be all the information for this users robot only. 
+
+Add a scenario to the move robot feature that verifies that the initial location of the robot is randomly generated with the space of the arena. 
+</issue_description>
+
+## Fortieth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the robo-demo to retrieve the status for each robot as it moves and rerender the arena with the new location displayed. A  Update the prompts.txt.
+
+Add a scenario to the Robot Battle feature that has the user tracking the movement of the robot to confirm that it is moving as expected. 
+</issue_description>
+
+## Forty-first Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the prompts.txt file with the last prompt. 
+Also fix the checkstyle issues in the backend project and update the prompts.txt file with this prompt
+</issue_description>
+
+## Forty-second Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Apply the guidelines as defined in the .junie/guidelines.md file while implementing this task.
+Review the code in the backend project to ensure it's using virtual threads where possible (e.g. the API's and any threading that's been implemented.
+Also, review the code to make sure it's using modern java features like Records where it could be.
+Apply changes to align the code with what you discover above.
+</issue_description>
+
+## Forty-third Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Update the prompts.txt file with the previous prompt and this prompt. Also ensure that the linting rules pass for the backend project.
+</issue_description>
+
+## Forty-fourth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+While following the guidelines in .junie/guidelines.md, add virtual thread support to the API endpoints by using the Quarkus Virtual thread annotation on each api method. Remember to update the prompts.txt
+</issue_description>
+
+## Forty-fifth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Udpate the prompt.txt. Fix the checkstyle issues for the backend.
+</issue_description>
