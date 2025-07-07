@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import GreetingComponent from './components/GreetingComponent';
 import ChatComponent from './components/ChatComponent';
