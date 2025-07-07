@@ -10,6 +10,9 @@ import za.co.sww.rwars.backend.model.Robot.RobotStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Service to manage battles and robots.
@@ -17,7 +20,7 @@ import java.util.Map;
 @ApplicationScoped
 public class BattleService {
 
-    private Battle currentBattle;
+    private final Map<String, Battle> battlesById = new HashMap<>();
     private final Map<String, Robot> robotsById = new HashMap<>();
 
     @Inject
@@ -166,36 +169,71 @@ public class BattleService {
                     String.format("Arena dimensions must be at most %dx%d", maxArenaWidth, maxArenaHeight));
         }
 
-        if (currentBattle != null && currentBattle.getState() == Battle.BattleState.IN_PROGRESS) {
-            throw new IllegalStateException("Cannot create a new battle while another is in progress");
+        // Check if battle name already exists
+        for (Battle existingBattle : battlesById.values()) {
+            if (battleName.equals(existingBattle.getName())) {
+                throw new IllegalArgumentException("Battle with name '" + battleName + "' already exists");
+            }
         }
 
-        currentBattle = new Battle(battleName, width, height, movementTimeSeconds);
-        return currentBattle;
+        Battle newBattle = new Battle(battleName, width, height, movementTimeSeconds);
+        battlesById.put(newBattle.getId(), newBattle);
+        return newBattle;
     }
 
     /**
      * Registers a robot for the battle.
+     * This method creates a default battle if none exists (for backward compatibility).
      *
      * @param robotName The name of the robot
      * @return The registered robot with battle ID
      * @throws IllegalStateException if a battle is in progress
      */
     public Robot registerRobot(String robotName) {
-        if (currentBattle != null && currentBattle.getState() == Battle.BattleState.IN_PROGRESS) {
+        // Find the first available battle (not in progress)
+        Battle availableBattle = battlesById.values().stream()
+                .filter(battle -> battle.getState() != Battle.BattleState.IN_PROGRESS)
+                .findFirst()
+                .orElse(null);
+
+        if (availableBattle == null) {
+            // If no battles exist at all, create a default battle
+            if (battlesById.isEmpty()) {
+                availableBattle = new Battle("Default Battle", defaultArenaWidth, defaultArenaHeight);
+                battlesById.put(availableBattle.getId(), availableBattle);
+            } else {
+                // All existing battles are in progress, can't join any
+                throw new IllegalStateException("Cannot join a battle in progress");
+            }
+        }
+
+        return registerRobotForBattle(robotName, availableBattle.getId());
+    }
+
+    /**
+     * Registers a robot for a specific battle.
+     *
+     * @param robotName The name of the robot
+     * @param battleId The ID of the battle to join
+     * @return The registered robot with battle ID
+     * @throws IllegalArgumentException if the battle ID is invalid
+     * @throws IllegalStateException if the battle is in progress
+     */
+    public Robot registerRobotForBattle(String robotName, String battleId) {
+        Battle battle = battlesById.get(battleId);
+        if (battle == null) {
+            throw new IllegalArgumentException("Invalid battle ID: " + battleId);
+        }
+
+        if (battle.getState() == Battle.BattleState.IN_PROGRESS) {
             throw new IllegalStateException("Cannot join a battle in progress");
         }
 
-        if (currentBattle == null) {
-            // Create a default battle with a generated name and default dimensions
-            currentBattle = new Battle("Default Battle", defaultArenaWidth, defaultArenaHeight);
-        }
-
-        Robot robot = new Robot(robotName, currentBattle.getId());
+        Robot robot = new Robot(robotName, battleId);
 
         // Randomly position the robot within the arena boundaries
-        int arenaWidth = currentBattle.getArenaWidth();
-        int arenaHeight = currentBattle.getArenaHeight();
+        int arenaWidth = battle.getArenaWidth();
+        int arenaHeight = battle.getArenaHeight();
 
         // Generate random position within arena boundaries
         int randomX = (int) (Math.random() * arenaWidth);
@@ -204,7 +242,7 @@ public class BattleService {
         robot.setPositionX(randomX);
         robot.setPositionY(randomY);
 
-        currentBattle.addRobot(robot);
+        battle.addRobot(robot);
         robotsById.put(robot.getId(), robot);
 
         return robot;
@@ -218,11 +256,11 @@ public class BattleService {
      * @throws IllegalArgumentException if the battle ID is invalid
      */
     public Battle getBattleStatus(String battleId) {
-        if (currentBattle == null || !currentBattle.getId().equals(battleId)) {
-            throw new IllegalArgumentException("Invalid battle ID");
+        Battle battle = battlesById.get(battleId);
+        if (battle == null) {
+            throw new IllegalArgumentException("Invalid battle ID: " + battleId);
         }
-
-        return currentBattle;
+        return battle;
     }
 
     /**
@@ -234,12 +272,13 @@ public class BattleService {
      * @throws IllegalArgumentException if the battle ID or robot ID is invalid
      */
     public Battle getBattleStatusForRobot(String battleId, String robotId) {
-        if (currentBattle == null || !currentBattle.getId().equals(battleId)) {
-            throw new IllegalArgumentException("Invalid battle ID");
+        Battle battle = battlesById.get(battleId);
+        if (battle == null) {
+            throw new IllegalArgumentException("Invalid battle ID: " + battleId);
         }
 
         if (!robotsById.containsKey(robotId)) {
-            throw new IllegalArgumentException("Invalid robot ID");
+            throw new IllegalArgumentException("Invalid robot ID: " + robotId);
         }
 
         Robot robot = robotsById.get(robotId);
@@ -247,7 +286,7 @@ public class BattleService {
             throw new IllegalArgumentException("Robot does not belong to this battle");
         }
 
-        return currentBattle;
+        return battle;
     }
 
     /**
@@ -259,12 +298,13 @@ public class BattleService {
      * @throws IllegalArgumentException if the battle ID or robot ID is invalid
      */
     public Robot getRobotDetails(String battleId, String robotId) {
-        if (currentBattle == null || !currentBattle.getId().equals(battleId)) {
-            throw new IllegalArgumentException("Invalid battle ID");
+        Battle battle = battlesById.get(battleId);
+        if (battle == null) {
+            throw new IllegalArgumentException("Invalid battle ID: " + battleId);
         }
 
         if (!robotsById.containsKey(robotId)) {
-            throw new IllegalArgumentException("Invalid robot ID");
+            throw new IllegalArgumentException("Invalid robot ID: " + robotId);
         }
 
         Robot robot = robotsById.get(robotId);
@@ -284,16 +324,17 @@ public class BattleService {
      * @throws IllegalStateException if the battle is not ready to start
      */
     public Battle startBattle(String battleId) {
-        if (currentBattle == null || !currentBattle.getId().equals(battleId)) {
-            throw new IllegalArgumentException("Invalid battle ID");
+        Battle battle = battlesById.get(battleId);
+        if (battle == null) {
+            throw new IllegalArgumentException("Invalid battle ID: " + battleId);
         }
 
-        if (currentBattle.getState() != Battle.BattleState.READY) {
+        if (battle.getState() != Battle.BattleState.READY) {
             throw new IllegalStateException("Battle is not ready to start");
         }
 
-        currentBattle.startBattle();
-        return currentBattle;
+        battle.startBattle();
+        return battle;
     }
 
     /**
@@ -303,7 +344,7 @@ public class BattleService {
      * @return true if the battle ID is valid, false otherwise
      */
     public boolean isValidBattleId(String battleId) {
-        return currentBattle != null && currentBattle.getId().equals(battleId);
+        return battlesById.containsKey(battleId);
     }
 
     /**
@@ -332,20 +373,81 @@ public class BattleService {
     }
 
     /**
-     * Gets the current battle.
+     * Gets all battles.
      *
-     * @return The current battle, or null if no battle exists
+     * @return A list of all battles
      */
-    public Battle getCurrentBattle() {
-        return currentBattle;
+    public List<Battle> getAllBattles() {
+        return new ArrayList<>(battlesById.values());
     }
 
     /**
-     * Resets the current battle for testing purposes.
+     * Gets all battles with basic information (without robot positions).
+     * This is useful for the frontend to display battle lists.
+     *
+     * @return A list of battle summaries
+     */
+    public List<BattleSummary> getAllBattleSummaries() {
+        return battlesById.values().stream()
+                .map(battle -> new BattleSummary(
+                    battle.getId(),
+                    battle.getName(),
+                    battle.getArenaWidth(),
+                    battle.getArenaHeight(),
+                    battle.getRobotMovementTimeSeconds(),
+                    battle.getState().toString(),
+                    battle.getRobotCount(),
+                    battle.getRobots().stream()
+                            .map(robot -> new RobotSummary(
+                                robot.getId(),
+                                robot.getName(),
+                                robot.getStatus().toString()
+                            ))
+                            .collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the current battle (first available battle for backward compatibility).
+     *
+     * @return The first available battle, or null if no battle exists
+     */
+    public Battle getCurrentBattle() {
+        return battlesById.values().stream().findFirst().orElse(null);
+    }
+
+    /**
+     * Resets all battles for testing purposes.
      */
     public void resetBattle() {
-        currentBattle = null;
+        battlesById.clear();
         robotsById.clear();
+    }
+
+    /**
+     * Battle summary record for listing battles without sensitive robot position data.
+     */
+    public record BattleSummary(
+            String id,
+            String name,
+            int arenaWidth,
+            int arenaHeight,
+            double robotMovementTimeSeconds,
+            String state,
+            int robotCount,
+            List<RobotSummary> robots
+    ) {
+    }
+
+    /**
+     * Robot summary record for listing robots without position data.
+     */
+    public record RobotSummary(
+            String id,
+            String name,
+            String status
+    ) {
     }
 
     /**
@@ -381,7 +483,8 @@ public class BattleService {
             throw new IllegalArgumentException("Invalid battle ID or robot ID");
         }
 
-        if (currentBattle.getState() != Battle.BattleState.IN_PROGRESS) {
+        Battle battle = battlesById.get(battleId);
+        if (battle.getState() != Battle.BattleState.IN_PROGRESS) {
             throw new IllegalStateException("Battle is not in progress");
         }
 
@@ -518,9 +621,17 @@ public class BattleService {
                 break;
         }
 
+        // Get the battle this robot belongs to
+        Battle battle = battlesById.get(robot.getBattleId());
+        if (battle == null) {
+            // This shouldn't happen, but handle it gracefully
+            robot.setStatus(RobotStatus.CRASHED);
+            return;
+        }
+
         // Check if the new position is within the arena boundaries
-        if (newX < 0 || newX >= currentBattle.getArenaWidth()
-            || newY < 0 || newY >= currentBattle.getArenaHeight()) {
+        if (newX < 0 || newX >= battle.getArenaWidth()
+            || newY < 0 || newY >= battle.getArenaHeight()) {
             // Robot has crashed into the arena boundary
             robot.setStatus(RobotStatus.CRASHED);
             return;

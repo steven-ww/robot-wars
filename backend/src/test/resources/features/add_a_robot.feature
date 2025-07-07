@@ -3,6 +3,9 @@ Feature: Robot Registration
   I want to add my robot to a battle
   So that I can participate in the battle when it starts
 
+  Background:
+    Given the battle service is reset
+
   Scenario: Register my robot as a participant in the battle
     Given I create a new battle with name "Robot Battle"
     When I register my Robot supplying it's name
