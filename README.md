@@ -34,11 +34,46 @@ This project consists of two main components:
 ## Running Locally
 
 ### Prerequisites
+
+#### For Running the Application
+- No prerequisites required! The JBang wrapper will automatically install:
+  - JBang itself (if not already installed)
+  - Java 21
+  - Node.js 18+
+
+#### For Development (Making Changes to the Project)
 - JDK 21
 - Node.js 18+
 - Docker (optional, for containerized deployment)
 
-### Backend
+### Using the Development Script
+
+The project includes a JBang script that starts both the backend and frontend in development mode and opens a browser automatically:
+
+1. Run the development script from the project root:
+   ```bash
+   # If jbang is already installed:
+   ./start_dev.java
+
+   # If jbang is not installed:
+   ./jbang start_dev.java
+   ```
+
+   The first time you run this, JBang will install itself and download all required dependencies (Java 21 and Node.js) if they're not already on your system.
+
+   This will:
+   - Start the backend in Quarkus dev mode
+   - Start the frontend development server
+   - Open a browser to http://localhost:3000
+   - Display logs from both servers in the console
+
+   Press Ctrl+C to stop both servers.
+
+### Running Components Separately
+
+If you prefer to run the components separately:
+
+#### Backend
 
 1. Navigate to the backend directory:
    ```bash
@@ -52,7 +87,7 @@ This project consists of two main components:
 
    The backend will be available at http://localhost:8080
 
-### Frontend
+#### Frontend
 
 1. Navigate to the frontend directory:
    ```bash

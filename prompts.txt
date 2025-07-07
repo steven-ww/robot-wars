@@ -109,6 +109,13 @@ Given the following issue description `<issue_description>`, could you help me i
 Review the updated .junie/guidelines.md file section 7. Apply the process required.
 </issue_description>
 
+## Fifty-second Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Create a script in the root project that uses jbang. This script should start the bank-end server in quarkus dev mode and spin up a brower that loads the front-end up locally. This script is used to get the local environment running for local testing and dev. It will also be used by developers working on robots for the game to create a test environment where they can test there robots.
+</issue_description>
+
 ## Twenty-sixth Prompt
 Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
 <issue_description>
@@ -334,4 +341,33 @@ Given the following issue description `<issue_description>`, could you help me i
 ## 
 Follow the guidelines in the .junie/guidelines file for this task.
 Fix the errors in the FE build and ensure that the build fails on these compile errors.
+</issue_description>
+
+## Fifty-third Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+I've configured jbang wrapper in the project. This allows the user to start the development environment without the need for jbang to be installed.
+
+update the readme file to reference that jbang is not a requirement to run the app locally, but will install itself.
+
+Also, update the jbang script to ensure that java 21 and node.js are also managed and installed by jbang if not already on the system.
+
+Update the readme to describe the requirements in terms of
+* making changes to the project (in which case the prerequists are required 
+* or, if just starting the application in to use it, that jbang will take care of all the dependencies.
+</issue_description>
+
+## Fifty-fourth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+If jbang is not installed on the system and the jbang wrapper is being used, woudn't the user be required to specify "jbang start_dev.java" rather than just start_dev.java? If so, update the readme to reflect this difference.
+</issue_description>
+
+## Fifty-fifth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+The jbag script is starting the fe before the backend is up. Have the FE wait for the backend to start
 </issue_description>
