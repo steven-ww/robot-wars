@@ -392,3 +392,6 @@ Given the issues with trying to mock out the websocket, can you rather convert t
 
 ## Fifty-ninth Prompt
 Fix the eslint errors
+
+## Sixtieth Prompt
+add a commit hoot to the fe that builds, tests and lints the code before allowing a commit to git. Follow the guidelines and remember to update the ../prompts.txt file

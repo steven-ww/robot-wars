@@ -55,11 +55,11 @@ The application is configured to proxy API requests to the backend at http://loc
 
 ## Git Hooks
 
-This project uses [Husky](https://typicode.github.io/husky/) to manage Git hooks and ensure code quality.
+This project is part of a larger Robot Wars repository that uses [Husky](https://typicode.github.io/husky/) to manage Git hooks and ensure code quality at the repository level.
 
 ### Pre-commit Hook
 
-Before each commit, the following checks are automatically run:
+Before each commit to the repository, the following frontend checks are automatically run:
 
 1. **ESLint** - Checks for code style and potential issues
 2. **Tests** - Runs all test suites to ensure functionality
@@ -69,11 +69,7 @@ If any of these checks fail, the commit will be blocked until the issues are res
 
 ### Setup
 
-The pre-commit hook is automatically installed when you run `npm install` thanks to the `prepare` script in `package.json`. If you need to manually set it up:
-
-```bash
-npm run prepare
-```
+The pre-commit hook is managed at the repository root level. When you run `npm install` at the root of the Robot Wars repository, the hooks are automatically set up.
 
 ### Bypassing Hooks (Not Recommended)
 
