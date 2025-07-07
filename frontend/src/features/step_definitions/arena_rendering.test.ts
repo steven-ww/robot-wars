@@ -26,7 +26,7 @@ const mockBattleState = {
       direction: 'NORTH',
       status: 'IDLE',
       targetBlocks: 0,
-      blocksRemaining: 0
+      blocksRemaining: 0,
     },
     {
       id: 'robot-2',
@@ -37,24 +37,24 @@ const mockBattleState = {
       direction: 'SOUTH',
       status: 'IDLE',
       targetBlocks: 0,
-      blocksRemaining: 0
-    }
-  ]
+      blocksRemaining: 0,
+    },
+  ],
 };
 
 // WebSocket server mock
 let server: WS;
 
-defineFeature(feature, (test) => {
+defineFeature(feature, test => {
   beforeEach(async () => {
     // Mock window.location.host for the component
     Object.defineProperty(window, 'location', {
       value: {
-        host: 'localhost'
+        host: 'localhost',
       },
-      writable: true
+      writable: true,
     });
-    
+
     // Create a mock WebSocket server
     server = new WS('ws://localhost/battle-state/test-battle-id');
   });
@@ -82,13 +82,15 @@ defineFeature(feature, (test) => {
     });
 
     when('I navigate to the arena page', () => {
-      render(React.createElement(ArenaComponent, { battleId: "test-battle-id" }));
+      render(
+        React.createElement(ArenaComponent, { battleId: 'test-battle-id' })
+      );
     });
 
     and('I connect to the battle state websocket', async () => {
       // Wait for the WebSocket connection to be established
       await server.connected;
-      
+
       // Send the mock battle state to the client
       server.send(JSON.stringify(mockBattleState));
     });
@@ -97,7 +99,7 @@ defineFeature(feature, (test) => {
       await waitFor(() => {
         expect(screen.getByTestId('arena-grid')).toBeInTheDocument();
       });
-      
+
       const arenaGrid = screen.getByTestId('arena-grid');
       expect(arenaGrid).toHaveAttribute('data-width', '20');
       expect(arenaGrid).toHaveAttribute('data-height', '20');
@@ -114,7 +116,7 @@ defineFeature(feature, (test) => {
       await waitFor(() => {
         expect(screen.getByTestId('robot-robot-1')).toBeInTheDocument();
       });
-      
+
       const robot1 = screen.getByTestId('robot-robot-1');
       const robot2 = screen.getByTestId('robot-robot-2');
 
@@ -125,7 +127,12 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test('Update the arena when robot positions change', ({ given, and, when, then }) => {
+  test('Update the arena when robot positions change', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
     given('the battle state websocket is available', () => {
       // This is handled by the mock WebSocket server
     });
@@ -143,11 +150,13 @@ defineFeature(feature, (test) => {
     });
 
     given('I am viewing the arena', async () => {
-      render(React.createElement(ArenaComponent, { battleId: "test-battle-id" }));
+      render(
+        React.createElement(ArenaComponent, { battleId: 'test-battle-id' })
+      );
 
       // Wait for the WebSocket connection to be established
       await server.connected;
-      
+
       // Send the initial battle state
       server.send(JSON.stringify(mockBattleState));
 
@@ -166,21 +175,24 @@ defineFeature(feature, (test) => {
             ...mockBattleState.robots[0],
             positionX: 6,
             positionY: 6,
-            status: 'MOVING'
+            status: 'MOVING',
           },
-          mockBattleState.robots[1]
-        ]
+          mockBattleState.robots[1],
+        ],
       };
 
       // Send the updated battle state
       server.send(JSON.stringify(updatedBattleState));
     });
 
-    then('the robot\'s position on the arena should be updated', async () => {
+    then("the robot's position on the arena should be updated", async () => {
       await waitFor(() => {
-        expect(screen.getByTestId('robot-robot-1')).toHaveAttribute('data-x', '6');
+        expect(screen.getByTestId('robot-robot-1')).toHaveAttribute(
+          'data-x',
+          '6'
+        );
       });
-      
+
       const robot1 = screen.getByTestId('robot-robot-1');
       expect(robot1).toHaveAttribute('data-y', '6');
     });
@@ -204,11 +216,13 @@ defineFeature(feature, (test) => {
     });
 
     given('I am viewing the arena', async () => {
-      render(React.createElement(ArenaComponent, { battleId: "test-battle-id" }));
+      render(
+        React.createElement(ArenaComponent, { battleId: 'test-battle-id' })
+      );
 
       // Wait for the WebSocket connection to be established
       await server.connected;
-      
+
       // Send the initial battle state
       server.send(JSON.stringify(mockBattleState));
 
@@ -225,23 +239,29 @@ defineFeature(feature, (test) => {
         robots: [
           {
             ...mockBattleState.robots[0],
-            status: 'MOVING'
+            status: 'MOVING',
           },
-          mockBattleState.robots[1]
-        ]
+          mockBattleState.robots[1],
+        ],
       };
 
       // Send the updated battle state
       server.send(JSON.stringify(updatedBattleState));
     });
 
-    then('the robot should be displayed with a "MOVING" indicator', async () => {
-      await waitFor(() => {
-        expect(screen.getByTestId('robot-robot-1')).toHaveAttribute('data-status', 'MOVING');
-      });
-      
-      expect(screen.getByText('MOVING')).toBeInTheDocument();
-    });
+    then(
+      'the robot should be displayed with a "MOVING" indicator',
+      async () => {
+        await waitFor(() => {
+          expect(screen.getByTestId('robot-robot-1')).toHaveAttribute(
+            'data-status',
+            'MOVING'
+          );
+        });
+
+        expect(screen.getByText('MOVING')).toBeInTheDocument();
+      }
+    );
   });
 
   test('Handle connection errors', ({ given, and, when, then }) => {
@@ -262,11 +282,13 @@ defineFeature(feature, (test) => {
     });
 
     when('the websocket connection fails', async () => {
-      render(React.createElement(ArenaComponent, { battleId: "test-battle-id" }));
+      render(
+        React.createElement(ArenaComponent, { battleId: 'test-battle-id' })
+      );
 
       // Wait for the WebSocket connection to be established
       await server.connected;
-      
+
       // Simulate connection error by closing the server
       server.error();
     });
