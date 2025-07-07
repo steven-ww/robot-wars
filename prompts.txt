@@ -270,3 +270,17 @@ Given the following issue description `<issue_description>`, could you help me i
 ## 
 Update the prompts.txt file with the previous prompt and this prompt. Also ensure that the linting rules pass for the backend project.
 </issue_description>
+
+## Forty-fourth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+While following the guidelines in .junie/guidelines.md, add virtual thread support to the API endpoints by using the Quarkus Virtual thread annotation on each api method. Remember to update the prompts.txt
+</issue_description>
+
+## Forty-fifth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Udpate the prompt.txt. Fix the checkstyle issues for the backend.
+</issue_description>
