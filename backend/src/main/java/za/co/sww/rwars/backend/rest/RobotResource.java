@@ -26,7 +26,7 @@ public class RobotResource {
     private BattleService battleService;
 
     /**
-     * Registers a robot for the battle.
+     * Registers a robot for the battle (uses first available battle).
      *
      * @param robot The robot to register
      * @return The registered robot with battle ID
@@ -38,6 +38,31 @@ public class RobotResource {
         try {
             Robot registeredRobot = battleService.registerRobot(robot.getName());
             return Response.ok(registeredRobot).build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * Registers a robot for a specific battle.
+     *
+     * @param robot The robot to register
+     * @param battleId The ID of the battle to join
+     * @return The registered robot with battle ID
+     */
+    @POST
+    @Path("/register/{battleId}")
+    @RunOnVirtualThread
+    public Response registerRobotForBattle(Robot robot, @PathParam("battleId") String battleId) {
+        try {
+            Robot registeredRobot = battleService.registerRobotForBattle(robot.getName(), battleId);
+            return Response.ok(registeredRobot).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ErrorResponse(e.getMessage()))

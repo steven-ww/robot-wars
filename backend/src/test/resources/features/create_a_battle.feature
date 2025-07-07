@@ -3,6 +3,9 @@ Feature: Battle Creation
   I want to create a new battle
   So that robots can participate in it
 
+  Background:
+    Given the battle service is reset
+
   Scenario: Create a battle with default arena size
     When I create a new battle with name "Epic Robot Showdown"
     Then a battle with the name "Epic Robot Showdown" should be created
@@ -40,3 +43,8 @@ Feature: Battle Creation
     When I attempt to create a battle with name "Too Large Arena" and dimensions 1200x1200
     Then I should receive an error indicating the arena size is too large
     And the maximum arena size should be 1000x1000
+
+  Scenario: Prevent creating battles with duplicate names
+    Given I have created a battle with name "Existing Battle"
+    When I attempt to create another battle with name "Existing Battle"
+    Then I should receive an error indicating the battle name already exists

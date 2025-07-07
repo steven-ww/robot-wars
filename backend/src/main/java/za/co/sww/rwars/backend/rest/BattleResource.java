@@ -3,6 +3,7 @@ package za.co.sww.rwars.backend.rest;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -21,6 +22,24 @@ public class BattleResource {
 
     @Inject
     private BattleService battleService;
+
+    /**
+     * Gets all battles with their current state and robots (but not robot positions).
+     *
+     * @return A list of all battles with summary information
+     */
+    @GET
+    @RunOnVirtualThread
+    public Response getAllBattles() {
+        try {
+            var battleSummaries = battleService.getAllBattleSummaries();
+            return Response.ok(battleSummaries).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(new ErrorResponse("Error retrieving battles: " + e.getMessage()))
+                    .build();
+        }
+    }
 
     /**
      * Creates a new battle with the given name and default arena dimensions.

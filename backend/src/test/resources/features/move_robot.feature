@@ -3,6 +3,9 @@ Feature: Robot Movement
   I want to move my robot in the battle arena
   So that I can navigate and position my robot strategically
 
+  Background:
+    Given the battle service is reset
+
   Scenario: Move robot in a specific direction
     Given I create a new battle with name "Movement Battle" and robot movement time 0.5 seconds
     And I have registered my robot
