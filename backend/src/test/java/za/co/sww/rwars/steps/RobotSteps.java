@@ -26,6 +26,7 @@ public class RobotSteps {
 
     private Response response;
     private String battleId;
+    private String robotId;
     private RequestSpecification request;
 
     @Before
@@ -53,17 +54,24 @@ public class RobotSteps {
         // No specific action needed here
     }
 
-    @Then("a battle id should be generated for my robot")
-    public void aBattleIdShouldBeGeneratedForMyRobot() {
+    @Then("a robot id should be generated for my robot")
+    public void aRobotIdShouldBeGeneratedForMyRobot() {
         response.then().statusCode(200);
+        robotId = response.jsonPath().getString("id");
+        Assertions.assertNotNull(robotId);
+        Assertions.assertFalse(robotId.isEmpty());
+
+        // Also set the battleId as it might be needed by subsequent steps
         battleId = response.jsonPath().getString("battleId");
-        Assertions.assertNotNull(battleId);
-        Assertions.assertFalse(battleId.isEmpty());
     }
 
-    @And("I should receive the battle id")
-    public void iShouldReceiveTheBattleId() {
+    @And("I should receive the battle id and a unique robot id")
+    public void iShouldReceiveTheBattleIdAndAUniqueRobotId() {
         response.then().body("battleId", Matchers.notNullValue());
+        response.then().body("id", Matchers.notNullValue());
+        robotId = response.jsonPath().getString("id");
+        Assertions.assertNotNull(robotId);
+        Assertions.assertFalse(robotId.isEmpty());
     }
 
     @And("there is a battle currently in progress")
@@ -92,9 +100,6 @@ public class RobotSteps {
         // Verify the battle is actually started
         Response statusResponse = request.get("/api/robots/battle/" + firstBattleId);
         statusResponse.then().statusCode(200).body("state", Matchers.equalTo("IN_PROGRESS"));
-
-        // Store the battle status response to ensure it's available for subsequent steps
-        response = statusResponse;
     }
 
     @Then("I should receive an error code and description reflecting that I can't join an in progress battle")
@@ -116,6 +121,7 @@ public class RobotSteps {
         response = request.body(robot).post("/api/robots/register");
         response.then().statusCode(200);
         battleId = response.jsonPath().getString("battleId");
+        robotId = response.jsonPath().getString("id");
     }
 
     @And("the battle has not yet started")
@@ -123,9 +129,19 @@ public class RobotSteps {
         // No specific action needed, the battle is not started by default
     }
 
+    @When("I check the status of the battle supplying my battle id and robot id")
+    public void iCheckTheStatusOfTheBattleSupplyingMyBattleIdAndRobotId() {
+        response = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId);
+    }
+
     @When("I check the status of the battle supplying my battle id")
     public void iCheckTheStatusOfTheBattle() {
         response = request.get("/api/robots/battle/" + battleId);
+    }
+
+    @And("it's a valid battle and robot id")
+    public void itsAValidBattleAndRobotId() {
+        response.then().statusCode(200);
     }
 
     @And("it's a valid battle id")
@@ -170,6 +186,7 @@ public class RobotSteps {
         Response response1 = request.body(robot1).post("/api/robots/register");
         response1.then().statusCode(200);
         battleId = response1.jsonPath().getString("battleId");
+        robotId = response1.jsonPath().getString("id"); // Use the first robot's ID for subsequent calls
 
         // Register second robot
         Map<String, String> robot2 = new HashMap<>();

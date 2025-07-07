@@ -1,43 +1,84 @@
-# Project Guidelines
+# Project Guidelines for Junie AI
 
-This is a placeholder of the project guidelines for Junie.
-Replace this text with any project-level instructions for Junie, e.g.:
+## 1. Introduction
+This document outlines the requirements and guidelines for the Robot Wars project. Junie AI should follow these guidelines when implementing features and responding to prompts.
 
-* The project structure
-  * This must be a multiproject project
-  * It will contain a folder for the backend project
-  * and another for the FE project
-* Run tests to check the correctness of the proposed solution
-* Build the project before submitting the result
-* The build tooling for the backend project if gradle
-* The build tooling for the FE project can be what bests works witht he tools
-* The backend project must use quarkus
-  * With java 21
-  * With Virtual threads when appropriate
-* The front-end project can use React 
-* The backend project must be in java
-* The front-end project must be in TypeScript
-* The Backend must be deployed in docker container
-* The FE must build to a set of files that can be deployed to a web server (E.g. an S3 bucket)
-* Both should have a GitHub workflow that aligns with the best practice CI/CD for each projects technology
-* Each workflow should run on any push to the repo 
-  * Perform basic builds and unit tests, linting
-  * On MR requests these jobs should be run again.
-    * Deployments to an environment for testing will be expanded on later
-  * The quarkus build for deployment (not for local testing) should build as a native executable
-*  For the backend testing should
-  * Make use of Quarkus Dev services as appropriate
-  * Include unit tests 
-* Quarkus features and extensions should be used
-* Update the readme files, in the root directory and for each project (BE/FE) to reflect any changes made.
-  * This must include 
-    * How to run locally
-    * how to test locally
-    * Tech stack used
-    * Testing approach
-    * Overview of the api's provided/used
-* Record all prompts received in a prompts.txt file in the root folder
-* Cucumber will be used for BDD.
-  * The step definition files must be written in java and use RestAssured for api interactions.
-  * All tests should use Quarkus testing tools and strategies where possible.
-* After each change, validate that the checkstyle rules pass
+## 2. Project Structure
+- **Multi-project Setup**:
+  - This must be a multi-project repository
+  - It must contain a folder for the backend project
+  - It must contain a folder for the frontend project
+
+## 3. Technology Stack
+
+### 3.1 Backend
+- **Language**: Java
+- **Java Version**: 21
+- **Framework**: Quarkus
+  - Use Virtual Threads when appropriate
+  - Use Quarkus features and extensions
+- **Build Tool**: Gradle
+  - - gradlew is available for use in the root folder, not directly in the backend project
+- **Deployment**: Docker container
+  - Native executable for production deployment
+
+### 3.2 Frontend
+- **Language**: TypeScript
+- **Framework**: React
+- **Build Tool**: Best tool that works with the chosen technologies
+- **Deployment**: Static files deployable to a web server (e.g., S3 bucket)
+
+## 4. Testing Requirements
+
+### 4.1 Backend Testing
+- **Unit Tests**: Required for all components
+- **BDD Testing**: Cucumber
+  - Step definition files must be written in Java
+  - Use RestAssured for API interactions
+  - Use Quarkus testing tools and strategies
+- **Development Services**: Use Quarkus Dev Services as appropriate
+
+### 4.2 Testing Validation
+- Run tests to check the correctness of proposed solutions
+- Validate that checkstyle rules pass after each change
+
+## 5. CI/CD and Deployment
+
+### 5.1 GitHub Workflows
+- Both projects should have GitHub workflows following best practices
+- Workflows should run on any push to the repository:
+  - Perform basic builds
+  - Run unit tests
+  - Perform linting
+- On merge requests, these jobs should run again
+- Deployments to test environments will be expanded on later
+
+## 6. Documentation Requirements
+
+### 6.1 README Files
+- Update README files in:
+  - Root directory
+  - Backend project directory
+  - Frontend project directory
+- Each README must include:
+  - How to run locally
+  - How to test locally
+  - Tech stack used
+  - Testing approach
+  - Overview of APIs provided/used
+
+## 7. For each prompt, follow this process
+
+### 7.1 Prompt Handling
+- Record all prompts in a `prompts.txt` file in the root folder
+  - Update immediately upon receiving each new prompt
+  - Use consistent format: "## [Number] Prompt" as heading
+  - Include the full text of the prompt
+  - Do not include implementation details or responses
+  - Ensure sequential numbering (First, Second, Third, etc.)
+  - Always append new prompts to the end of the file
+
+### 7.2 Build Process
+- Build the project using the "./gradlew build command" at the top level 
+  - Ensure all tests pass during the build process
+  - Ensure all checkstyle rules pass
