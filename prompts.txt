@@ -327,3 +327,11 @@ Given the following issue description `<issue_description>`, could you help me i
 ## 
 Event with the changes you just made, running ./gradle build at the project root, did not build the front-end project. Correct this to ensure the FE also builds
 </issue_description>
+
+## Fifty-first Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Follow the guidelines in the .junie/guidelines file for this task.
+Fix the errors in the FE build and ensure that the build fails on these compile errors.
+</issue_description>
