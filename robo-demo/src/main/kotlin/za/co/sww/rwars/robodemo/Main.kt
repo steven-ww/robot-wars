@@ -1,5 +1,8 @@
 package za.co.sww.rwars.robodemo
 
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import za.co.sww.rwars.robodemo.api.BattleApiClient
@@ -128,9 +131,10 @@ fun main(args: Array<String>) = runBlocking {
     val robotApiClient = RobotApiClient(config.baseUrl)
 
     try {
-        // Create a new battle with a 20x20 arena
-        logger.info("Creating a new battle with a 20x20 arena")
-        val battle = battleApiClient.createBattle("Demo Battle", 20, 20)
+        // Create a new battle with a 20x20 arena and unique name
+        val battleName = "Demo Battle ${System.currentTimeMillis()}"
+        logger.info("Creating a new battle with a 20x20 arena: $battleName")
+        val battle = battleApiClient.createBattle(battleName, 20, 20)
         logger.info("Battle created: ${battle.id} - ${battle.name} - Arena size: ${battle.arenaWidth}x${battle.arenaHeight}")
 
         // Register robots
@@ -211,7 +215,7 @@ private suspend fun trackRobotMovement(
 
 /**
  * Moves robots around the arena until one crashes or the time limit is reached.
- * Periodically retrieves robot status and rerenders the arena.
+ * Robots move concurrently and independently.
  */
 private suspend fun moveRobotsUntilCrashOrTimeout(
     robotApiClient: RobotApiClient,
@@ -220,76 +224,77 @@ private suspend fun moveRobotsUntilCrashOrTimeout(
     robot2: Robot,
     timeLimit: Duration,
     stopOnCrash: Boolean,
-) {
+) = coroutineScope {
     val startTime = Instant.now()
     val directions = listOf("NORTH", "EAST", "SOUTH", "WEST", "NE", "SE", "SW", "NW")
     var robot1Crashed = false
     var robot2Crashed = false
 
-    logger.info("Moving robots around the arena")
+    logger.info("Moving robots around the arena concurrently")
 
-    while (Duration.between(startTime, Instant.now()) < timeLimit && (!stopOnCrash || (!robot1Crashed && !robot2Crashed))) {
-        // Move robot1
-        if (!robot1Crashed) {
-            val direction1 = directions.random()
-            val blocks1 = (1..3).random()
-            logger.info("Moving ${robot1.name} $blocks1 blocks $direction1")
-
-            try {
-                robotApiClient.moveRobot(battleId, robot1.id, direction1, blocks1)
-
-                // Track robot movement by polling its position during movement
-                trackRobotMovement(robotApiClient, battleId, robot1.id, robot2.id, blocks1)
-
-                // Check if robot crashed
-                val robotStatus1 = robotApiClient.getRobotDetails(battleId, robot1.id)
-                if (robotStatus1.status == "CRASHED") {
-                    logger.info("${robot1.name} crashed into a wall!")
-                    robot1Crashed = true
-                    if (stopOnCrash) return
-                }
-            } catch (e: Exception) {
-                logger.error("Error moving ${robot1.name}", e)
-                robot1Crashed = true
-                if (stopOnCrash) return
-            }
-        }
-
-        // Move robot2
-        if (!robot2Crashed) {
-            val direction2 = directions.random()
-            val blocks2 = (1..3).random()
-            logger.info("Moving ${robot2.name} $blocks2 blocks $direction2")
-
-            try {
-                robotApiClient.moveRobot(battleId, robot2.id, direction2, blocks2)
-
-                // Track robot movement by polling its position during movement
-                trackRobotMovement(robotApiClient, battleId, robot2.id, robot1.id, blocks2)
-
-                // Check if robot crashed
-                val robotStatus2 = robotApiClient.getRobotDetails(battleId, robot2.id)
-                if (robotStatus2.status == "CRASHED") {
-                    logger.info("${robot2.name} crashed into a wall!")
-                    robot2Crashed = true
-                    if (stopOnCrash) return
-                }
-            } catch (e: Exception) {
-                logger.error("Error moving ${robot2.name}", e)
-                robot2Crashed = true
-                if (stopOnCrash) return
-            }
-        }
-
-        // Check time elapsed
-        val elapsed = Duration.between(startTime, Instant.now())
-        logger.info("Time elapsed: ${elapsed.toMinutes()} minutes ${elapsed.toSecondsPart()} seconds")
-
-        if (elapsed > timeLimit) {
-            logger.info("Time limit reached (5 minutes)")
-            break
+    // Start concurrent robot movement coroutines
+    val robot1Job = launch {
+        moveRobotContinuously(robotApiClient, battleId, robot1, directions) { crashed ->
+            robot1Crashed = crashed
         }
     }
+
+    val robot2Job = launch {
+        moveRobotContinuously(robotApiClient, battleId, robot2, directions) { crashed ->
+            robot2Crashed = crashed
+        }
+    }
+
+    // Monitor the battle state and render arena periodically
+    while (
+        Duration.between(startTime, Instant.now()) < timeLimit &&
+        (!stopOnCrash || (!robot1Crashed && !robot2Crashed))
+    ) {
+        // Get current robot positions and render arena
+        try {
+            val robot1Details = robotApiClient.getRobotDetails(battleId, robot1.id)
+            val robot2Details = robotApiClient.getRobotDetails(battleId, robot2.id)
+
+            // Get battle details for arena dimensions
+            val battle = robotApiClient.getBattleStatus(battleId)
+            renderArena(battle.arenaWidth, battle.arenaHeight, listOf(robot1Details, robot2Details))
+
+            // Check for crashes
+            if (robot1Details.status == "CRASHED" && !robot1Crashed) {
+                logger.info("${robot1.name} crashed into a wall!")
+                robot1Crashed = true
+                robot1Job.cancel()
+            }
+
+            if (robot2Details.status == "CRASHED" && !robot2Crashed) {
+                logger.info("${robot2.name} crashed into a wall!")
+                robot2Crashed = true
+                robot2Job.cancel()
+            }
+
+            // Stop if crash occurred and stopOnCrash is enabled
+            if (stopOnCrash && (robot1Crashed || robot2Crashed)) {
+                robot1Job.cancel()
+                robot2Job.cancel()
+                break
+            }
+        } catch (e: Exception) {
+            logger.error("Error monitoring robot status", e)
+        }
+
+        // Wait before next status check
+        delay(1000) // Check every second
+
+        // Log time elapsed
+        val elapsed = Duration.between(startTime, Instant.now())
+        if (elapsed.seconds % 30 == 0L) { // Log every 30 seconds
+            logger.info("Time elapsed: ${elapsed.toMinutes()} minutes ${elapsed.toSecondsPart()} seconds")
+        }
+    }
+
+    // Cancel any remaining robot movement jobs
+    robot1Job.cancel()
+    robot2Job.cancel()
 
     // Final status
     val battleStatus = robotApiClient.getBattleStatus(battleId)
@@ -305,5 +310,53 @@ private suspend fun moveRobotsUntilCrashOrTimeout(
 
     if (!robot1Crashed && !robot2Crashed) {
         logger.info("Time limit reached without any crashes")
+    }
+}
+
+/**
+ * Continuously moves a robot in random directions until it crashes or is stopped.
+ */
+private suspend fun moveRobotContinuously(
+    robotApiClient: RobotApiClient,
+    battleId: String,
+    robot: Robot,
+    directions: List<String>,
+    onCrashed: (Boolean) -> Unit,
+) {
+    try {
+        while (true) {
+            // Wait for robot to be idle before issuing next movement command
+            var robotStatus = robotApiClient.getRobotDetails(battleId, robot.id)
+
+            // If robot crashed, stop moving
+            if (robotStatus.status == "CRASHED") {
+                onCrashed(true)
+                break
+            }
+
+            // Wait if robot is still moving
+            while (robotStatus.status == "MOVING") {
+                delay(500) // Check every 500ms
+                robotStatus = robotApiClient.getRobotDetails(battleId, robot.id)
+
+                if (robotStatus.status == "CRASHED") {
+                    onCrashed(true)
+                    return
+                }
+            }
+
+            // Issue next movement command
+            val direction = directions.random()
+            val blocks = (1..3).random()
+            logger.info("Moving ${robot.name} $blocks blocks $direction")
+
+            robotApiClient.moveRobot(battleId, robot.id, direction, blocks)
+
+            // Add some randomness to movement timing
+            delay((500..2000).random().toLong())
+        }
+    } catch (e: Exception) {
+        logger.error("Error in continuous movement for ${robot.name}", e)
+        onCrashed(true)
     }
 }
