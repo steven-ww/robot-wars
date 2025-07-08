@@ -1,5 +1,11 @@
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  act,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import React from 'react';
@@ -81,7 +87,12 @@ defineFeature(feature, test => {
     mockFetch.mockClear();
   });
 
-  test('View all existing battles on page load', ({ given, when, then, and }) => {
+  test('View all existing battles on page load', ({
+    given,
+    when,
+    then,
+    and,
+  }) => {
     given('the battle management API is available', () => {
       // API will be mocked in the when step
     });
@@ -170,7 +181,12 @@ defineFeature(feature, test => {
     });
   });
 
-  test('Create a new battle with default settings', ({ given, when, and, then }) => {
+  test('Create a new battle with default settings', ({
+    given,
+    when,
+    and,
+    then,
+  }) => {
     given('the battle management API is available', () => {
       // Mock initial GET request
       mockFetch.mockResolvedValueOnce({
@@ -196,7 +212,9 @@ defineFeature(feature, test => {
 
     and('I enter "Test Battle" as the battle name', async () => {
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Enter battle name')).toBeInTheDocument();
+        expect(
+          screen.getByPlaceholderText('Enter battle name')
+        ).toBeInTheDocument();
       });
 
       await userInteraction(async () => {
@@ -240,12 +258,19 @@ defineFeature(feature, test => {
 
     and('I should see a success message', async () => {
       await waitFor(() => {
-        expect(screen.getByText('Battle "Test Battle" created successfully!')).toBeInTheDocument();
+        expect(
+          screen.getByText('Battle "Test Battle" created successfully!')
+        ).toBeInTheDocument();
       });
     });
   });
 
-  test('Create a new battle with custom arena dimensions', ({ given, when, and, then }) => {
+  test('Create a new battle with custom arena dimensions', ({
+    given,
+    when,
+    and,
+    then,
+  }) => {
     given('the battle management API is available', () => {
       // Mock initial GET request
       mockFetch.mockResolvedValueOnce({
@@ -269,7 +294,9 @@ defineFeature(feature, test => {
 
     and('I enter "Custom Battle" as the battle name', async () => {
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Enter battle name')).toBeInTheDocument();
+        expect(
+          screen.getByPlaceholderText('Enter battle name')
+        ).toBeInTheDocument();
       });
 
       const nameInput = screen.getByPlaceholderText('Enter battle name');
@@ -288,7 +315,12 @@ defineFeature(feature, test => {
 
     and('I click "Create"', async () => {
       // Mock the POST request for battle creation with custom dimensions
-      const customBattle = { ...mockNewBattle, name: 'Custom Battle', arenaWidth: 50, arenaHeight: 50 };
+      const customBattle = {
+        ...mockNewBattle,
+        name: 'Custom Battle',
+        arenaWidth: 50,
+        arenaHeight: 50,
+      };
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => customBattle,
@@ -314,21 +346,29 @@ defineFeature(feature, test => {
       });
     });
 
-    and('the battle should appear in the battle list with dimensions 50x50', async () => {
-      await waitFor(() => {
-        expect(screen.getByText('Custom Battle')).toBeInTheDocument();
-      });
+    and(
+      'the battle should appear in the battle list with dimensions 50x50',
+      async () => {
+        await waitFor(() => {
+          expect(screen.getByText('Custom Battle')).toBeInTheDocument();
+        });
 
-      // Check for arena dimensions 50x50
-      const arena50x50Elements = screen.getAllByText((content, element) => {
-        const text = element?.textContent || '';
-        return text.includes('Arena:') && text.includes('50 x 50');
-      })[0];
-      expect(arena50x50Elements).toBeInTheDocument();
-    });
+        // Check for arena dimensions 50x50
+        const arena50x50Elements = screen.getAllByText((content, element) => {
+          const text = element?.textContent || '';
+          return text.includes('Arena:') && text.includes('50 x 50');
+        })[0];
+        expect(arena50x50Elements).toBeInTheDocument();
+      }
+    );
   });
 
-  test('Create a new battle with custom robot movement time', ({ given, when, and, then }) => {
+  test('Create a new battle with custom robot movement time', ({
+    given,
+    when,
+    and,
+    then,
+  }) => {
     given('the battle management API is available', () => {
       // Mock initial GET request
       mockFetch.mockResolvedValueOnce({
@@ -352,7 +392,9 @@ defineFeature(feature, test => {
 
     and('I enter "Speed Battle" as the battle name', async () => {
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Enter battle name')).toBeInTheDocument();
+        expect(
+          screen.getByPlaceholderText('Enter battle name')
+        ).toBeInTheDocument();
       });
 
       const nameInput = screen.getByPlaceholderText('Enter battle name');
@@ -366,7 +408,11 @@ defineFeature(feature, test => {
 
     and('I click "Create"', async () => {
       // Mock the POST request for battle creation with custom movement time
-      const speedBattle = { ...mockNewBattle, name: 'Speed Battle', robotMovementTimeSeconds: 0.5 };
+      const speedBattle = {
+        ...mockNewBattle,
+        name: 'Speed Battle',
+        robotMovementTimeSeconds: 0.5,
+      };
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => speedBattle,
@@ -376,20 +422,23 @@ defineFeature(feature, test => {
       fireEvent.click(createSubmitButton);
     });
 
-    then('a new battle should be created with custom movement time', async () => {
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith('/api/battles', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: 'Speed Battle',
-            robotMovementTimeSeconds: 0.5,
-          }),
+    then(
+      'a new battle should be created with custom movement time',
+      async () => {
+        await waitFor(() => {
+          expect(mockFetch).toHaveBeenCalledWith('/api/battles', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: 'Speed Battle',
+              robotMovementTimeSeconds: 0.5,
+            }),
+          });
         });
-      });
-    });
+      }
+    );
 
     and('the battle should appear in the battle list', async () => {
       await waitFor(() => {
@@ -397,11 +446,18 @@ defineFeature(feature, test => {
       });
 
       // Check for the movement time text
-      expect(screen.getByText((content, element) => content.includes('0.5'))).toBeInTheDocument();
+      expect(
+        screen.getByText((content, element) => content.includes('0.5'))
+      ).toBeInTheDocument();
     });
   });
 
-  test('Create a new battle with all custom parameters', ({ given, when, and, then }) => {
+  test('Create a new battle with all custom parameters', ({
+    given,
+    when,
+    and,
+    then,
+  }) => {
     given('the battle management API is available', () => {
       // Mock initial GET request
       mockFetch.mockResolvedValueOnce({
@@ -425,7 +481,9 @@ defineFeature(feature, test => {
 
     and('I enter "Full Custom Battle" as the battle name', async () => {
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Enter battle name')).toBeInTheDocument();
+        expect(
+          screen.getByPlaceholderText('Enter battle name')
+        ).toBeInTheDocument();
       });
 
       const nameInput = screen.getByPlaceholderText('Enter battle name');
@@ -465,22 +523,25 @@ defineFeature(feature, test => {
       fireEvent.click(createSubmitButton);
     });
 
-    then('a new battle should be created with all custom parameters', async () => {
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith('/api/battles', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: 'Full Custom Battle',
-            width: 30,
-            height: 40,
-            robotMovementTimeSeconds: 2.0,
-          }),
+    then(
+      'a new battle should be created with all custom parameters',
+      async () => {
+        await waitFor(() => {
+          expect(mockFetch).toHaveBeenCalledWith('/api/battles', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: 'Full Custom Battle',
+              width: 30,
+              height: 40,
+              robotMovementTimeSeconds: 2.0,
+            }),
+          });
         });
-      });
-    });
+      }
+    );
 
     and('the battle should appear in the battle list', async () => {
       await waitFor(() => {
@@ -488,9 +549,15 @@ defineFeature(feature, test => {
       });
 
       // Check for arena dimensions and movement time
-      expect(screen.getByText((content) => content.includes('30'))).toBeInTheDocument();
-      expect(screen.getByText((content) => content.includes('40'))).toBeInTheDocument();
-      expect(screen.getByText((content) => content.includes('2'))).toBeInTheDocument();
+      expect(
+        screen.getByText(content => content.includes('30'))
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(content => content.includes('40'))
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(content => content.includes('2'))
+      ).toBeInTheDocument();
     });
   });
 
@@ -518,7 +585,9 @@ defineFeature(feature, test => {
 
     and('I enter a duplicate battle name', async () => {
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Enter battle name')).toBeInTheDocument();
+        expect(
+          screen.getByPlaceholderText('Enter battle name')
+        ).toBeInTheDocument();
       });
 
       const nameInput = screen.getByPlaceholderText('Enter battle name');
@@ -529,7 +598,9 @@ defineFeature(feature, test => {
       // Mock the POST request to return an error
       mockFetch.mockResolvedValueOnce({
         ok: false,
-        json: async () => ({ message: 'Battle with name "Duplicate Battle" already exists' }),
+        json: async () => ({
+          message: 'Battle with name "Duplicate Battle" already exists',
+        }),
       } as Response);
 
       const createSubmitButton = screen.getByRole('button', { name: 'Create' });
@@ -538,7 +609,9 @@ defineFeature(feature, test => {
 
     then('I should see an error message', async () => {
       await waitFor(() => {
-        expect(screen.getByText('Battle with name "Duplicate Battle" already exists')).toBeInTheDocument();
+        expect(
+          screen.getByText('Battle with name "Duplicate Battle" already exists')
+        ).toBeInTheDocument();
       });
     });
 
@@ -581,7 +654,7 @@ defineFeature(feature, test => {
       expect(robot2Elements).toBeInTheDocument();
     });
 
-    and('I should see each robot\'s current status', async () => {
+    and("I should see each robot's current status", async () => {
       await waitFor(() => {
         const robot1Elements = screen.getAllByText((content, element) => {
           const text = element?.textContent || '';
@@ -595,10 +668,16 @@ defineFeature(feature, test => {
         return text.includes('Robot 2');
       })[0];
       expect(robot2Elements).toBeInTheDocument();
-      expect(screen.getAllByText((content, element) => {
-        const text = element?.textContent || '';
-        return element?.tagName === 'LI' && text.includes('Robot') && text.includes('IDLE');
-      })).toHaveLength(2);
+      expect(
+        screen.getAllByText((content, element) => {
+          const text = element?.textContent || '';
+          return (
+            element?.tagName === 'LI' &&
+            text.includes('Robot') &&
+            text.includes('IDLE')
+          );
+        })
+      ).toHaveLength(2);
     });
 
     and('I should not see robot positions', async () => {

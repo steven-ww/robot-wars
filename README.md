@@ -106,6 +106,51 @@ If you prefer to run the components separately:
 
    The frontend will be available at http://localhost:3000
 
+## Robot Demo Application
+
+The project includes a robot demonstration application (`robo-demo`) that showcases the Robot Wars API functionality by creating battles and moving robots around an arena.
+
+### Running the Robot Demo
+
+To run the robot demo, use the provided script:
+
+```bash
+cd robo-demo
+./start-battle.sh [OPTIONS]
+```
+
+#### Available Options:
+
+- `-u, --url URL`: Base URL for the Robot Wars API (default: `http://localhost:8080`)
+- `-t, --time TIME`: Time limit for the battle (e.g., `5m`, `30s`) (default: `5m`)
+- `-s, --stop-on-crash`: Stop the demo when the first robot crashes (default: `false`)
+- `-h, --help`: Show help message
+
+#### Examples:
+
+```bash
+# Run with default settings (5 minutes, continue after crashes)
+./start-battle.sh
+
+# Run for 2 minutes and stop on first crash
+./start-battle.sh --time 2m --stop-on-crash
+
+# Run against a different API server
+./start-battle.sh --url http://remote-server:8080
+
+# Combine multiple options
+./start-battle.sh --url http://localhost:8080 --time 30s --stop-on-crash
+```
+
+### Running the Robot Demo Directly
+
+You can also run the robot demo application directly using Gradle:
+
+```bash
+cd robo-demo
+../gradlew run --args="--url http://localhost:8080 --time 5m --stop-on-crash"
+```
+
 ## Testing
 
 ### Backend
