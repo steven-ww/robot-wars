@@ -502,6 +502,10 @@ defineFeature(feature, test => {
       await waitFor(() => {
         const robot1 = screen.getByTestId('robot-robot-1');
         expect(robot1).toHaveAttribute('data-x', '7');
+      });
+      
+      await waitFor(() => {
+        const robot1 = screen.getByTestId('robot-robot-1');
         expect(robot1).toHaveAttribute('data-y', '7');
       });
 
@@ -509,6 +513,10 @@ defineFeature(feature, test => {
       await waitFor(() => {
         const robot2 = screen.getByTestId('robot-robot-2');
         expect(robot2).toHaveAttribute('data-x', '14');
+      });
+      
+      await waitFor(() => {
+        const robot2 = screen.getByTestId('robot-robot-2');
         expect(robot2).toHaveAttribute('data-y', '14');
       });
     });
