@@ -114,7 +114,10 @@ const BattleManagement: React.FC = () => {
   if (selectedBattleId) {
     return (
       <div>
-        <button onClick={handleBackToBattleList} style={{ marginBottom: '20px' }}>
+        <button
+          onClick={handleBackToBattleList}
+          style={{ marginBottom: '20px' }}
+        >
           Back to Battle List
         </button>
         <div data-testid="arena-component">

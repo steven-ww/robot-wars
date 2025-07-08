@@ -726,7 +726,12 @@ defineFeature(feature, test => {
     });
   });
 
-  test('Render the arena for a selected battle', ({ given, when, and, then }) => {
+  test('Render the arena for a selected battle', ({
+    given,
+    when,
+    and,
+    then,
+  }) => {
     given('the battle management API is available', () => {
       // Mock GET request with multiple battles
       mockFetch.mockResolvedValueOnce({
@@ -763,7 +768,7 @@ defineFeature(feature, test => {
 
       // Check that the arena shows the correct battle information
       expect(screen.getByText('Battle Arena')).toBeInTheDocument();
-      
+
       // Check that we can go back to the battle list
       expect(screen.getByText('Back to Battle List')).toBeInTheDocument();
     });
