@@ -80,3 +80,9 @@ Feature: Battle Management
     And I refresh the page
     Then I should see the updated battle list
     And all new battles should be displayed
+
+  Scenario: Render the arena for a selected battle
+    Given I am on the battle management page
+    When new battles are created by other users
+    And I select a battle to view
+    Then I should see arena for the battle rendered
