@@ -26,6 +26,16 @@ Feature: Arena Rendering
     When a robot's status changes to "MOVING"
     Then the robot should be displayed with a "MOVING" indicator
 
+  Scenario: Auto-refresh arena view with real-time updates
+    Given I am viewing the arena with live WebSocket connection
+    When multiple robots move and change status simultaneously
+    And the WebSocket receives continuous battle state updates
+    Then the arena view should automatically refresh without user intervention
+    And all robot positions should update in real-time
+    And all robot status changes should be reflected immediately
+    And the user should not need to manually refresh the page
+    And the connection status should show "Live Updates"
+
   Scenario: Handle connection errors
     When the websocket connection fails
     Then I should see an error message

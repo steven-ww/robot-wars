@@ -450,3 +450,6 @@ The battle arena tab/button on the main/starting page of the front-end app shoul
 ## Seventy-seventh Prompt
 I'm not sure why, but when the battle arena is shown, there is always a box showing a web socket connection error. There is also a value arena below it. Can you see why the page would be rendering an error even when there
  is a valid battle?
+
+ ## Seventy-eighth Prompt
+  In the frontend project Add a new scenario to the arena rendering to describe the fact that the view of the arena should auto refresh. That is, the movements and other states of the robot should reflect on the arena without the user needing to refresh. The react component should automatically update it's view based on information obtained via the websocket. This should be implemented with BDD and the tests should pass. Update the prompts.txt in the root to record this prompt.
