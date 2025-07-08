@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import GreetingComponent from './components/GreetingComponent';
 import ChatComponent from './components/ChatComponent';
-import ArenaComponent from './components/ArenaComponent';
+import ArenaTabComponent from './components/ArenaTabComponent';
 import BattleManagement from './components/BattleManagement';
 
 function App() {
@@ -49,7 +49,7 @@ function App() {
         ) : activeTab === 'websocket' ? (
           <ChatComponent />
         ) : (
-          <ArenaComponent battleId="test-battle-id" />
+          <ArenaTabComponent />
         )}
       </main>
       <footer>
