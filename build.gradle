@@ -16,6 +16,15 @@ subprojects {
     }
 }
 
+// Task to run all tests
+task test {
+    description = 'Run all tests in all subprojects'
+    dependsOn ':frontend:npmTest', ':backend:test'
+}
+
+// Make build task depend on tests
+build.dependsOn test
+
 // Configure Gradle wrapper
 wrapper {
     gradleVersion = '8.5'

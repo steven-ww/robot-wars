@@ -21,12 +21,20 @@ task npmLint(type: Exec) {
     dependsOn npmInstall
 }
 
+// Task to run npm test
+task npmTest(type: Exec) {
+    description = 'Run frontend tests'
+    commandLine 'npm', 'test', '--', '--watchAll=false', '--coverage=false'
+    workingDir = projectDir
+    dependsOn npmLint
+}
+
 // Task to run npm build - will fail the build if there are TypeScript errors
 task npmBuild(type: Exec) {
     description = 'Build the frontend'
     commandLine 'npm', 'run', 'build'
     workingDir = projectDir
-    dependsOn npmLint
+    dependsOn npmTest
 }
 
 // Task that depends on npmBuild and will fail if npmBuild fails

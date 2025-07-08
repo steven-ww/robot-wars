@@ -406,7 +406,15 @@ Add prettier to the front-end project, also update the front-end github action t
 The GitHub cucumber job "run cucumber tests" is using the wrong pattern for the tests and is failing to find any tests. Given the changes to the naming standard you applied to the tests, do we still need a specific cucumber job in the github action or can it just be replaced with the standard test run? Do we loose anything by doing that?
 
 ## Sixty-fourth Prompt
-Enhance the backend project. Enable support for multiple battles to be created and be in various states. update the feature files to align with the new approach and create scenarios that validate the new approach of supporting multiple battles. Create a new rest API on the BattleResource (driven by a BDD scenario) that allows a user to get a list of all the battles, the robots in them, there current state (but not position in the arena) so that the FE can use this to display the battles and what they look like.
+Follow the guidelines in ./junie/guidelins.md for this task. Use BDD to define a scenario and features based on the task. Given a user of the FE loads the initial page, show a list of all Battles currently created, along with the status of each and any robots in each battle and there state and show a button that when pressed allows the user to creae a battle, with optional parameters as per the API in the backend project.
 
 ## Sixty-fifth Prompt
-Fix the checkstyle errors, apply the ./.junie/guidelines.md and commit the changes.
+Implement tests for the battle_management.feature as done for the arena_rendering.feature.
+
+## Sixty-sixth Prompt
+Remember to follow the guidelines in the .junie/guideline.md. There are two issues with the solution. Firstly the root project build does not run the tests, fix this. Secondly, the tests aren't passing. Fix them.
+
+## Sixty-seventh Prompt
+You have still left off a most of the file. Rather do this. Restore the file from the last commit. Then add in all prompts you've received today, including this one.
+
+## Note: I've had to manually try and recreate the last few prompts as the agent was not able to correctly determine what the prompts where.
