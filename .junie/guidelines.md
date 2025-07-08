@@ -1,84 +1,93 @@
 # Project Guidelines for Junie AI
 
-## 1. Introduction
-This document outlines the requirements and guidelines for the Robot Wars project. Junie AI should follow these guidelines when implementing features and responding to prompts.
+## ⚠️ CRITICAL REQUIREMENTS - ALWAYS FOLLOW THESE ⚠️
 
-## 2. Project Structure
-- **Multi-project Setup**:
-  - This must be a multi-project repository
-  - It must contain a folder for the backend project
-  - It must contain a folder for the frontend project
+### 1. PROMPT HANDLING - MANDATORY FOR EVERY REQUEST
+- **IMMEDIATELY** update `prompts.txt` in the root folder with each new prompt
+  - Format: `## [Ordinal Number] Prompt` (e.g., "## Forty-sixth Prompt")
+  - Include the FULL text of the prompt
+  - ALWAYS append to the end of the file
+  - Do NOT include implementation details or responses
+  - This is a REQUIRED step for EVERY prompt
 
-## 3. Technology Stack
+### 2. BUILD VALIDATION - REQUIRED BEFORE SUBMISSION
+- Run `./gradlew build` at the root level before submitting changes
+  - Ensure all tests pass
+  - **MANDATORY**: Verify that all checkstyle rules pass
+    - Fix ANY checkstyle violations before submission
+    - Run `./gradlew checkstyleMain checkstyleTest` to specifically check for style violations
 
-### 3.1 Backend
-- **Language**: Java
-- **Java Version**: 21
+## PROJECT SPECIFICATIONS
+
+### 3. Project Structure
+- **Multi-project Repository**:
+  - Backend project folder
+  - Frontend project folder
+  - Robo-demo project folder (Kotlin)
+
+### 4. Technology Stack
+
+#### 4.1 Backend
+- **Language**: Java 21
 - **Framework**: Quarkus
-  - Use Virtual Threads when appropriate
+  - MUST use Virtual Threads where appropriate
   - Use Quarkus features and extensions
 - **Build Tool**: Gradle
-  - - gradlew is available for use in the root folder, not directly in the backend project
-- **Deployment**: Docker container
-  - Native executable for production deployment
+  - gradlew is in the root folder, not in the backend project
+- **Deployment**: Docker container with native executable
 
-### 3.2 Frontend
+#### 4.2 Frontend
 - **Language**: TypeScript
 - **Framework**: React
-- **Build Tool**: Best tool that works with the chosen technologies
-- **Deployment**: Static files deployable to a web server (e.g., S3 bucket)
+- **Build Tool**: Compatible with chosen technologies
+- **Deployment**: Static files for web server deployment
+- **Linting**: ESLint
+  - Frontend build MUST include linting
+  - All linting checks MUST pass for build to succeed
 
-## 4. Testing Requirements
+#### 4.3 Robo-demo
+- **Language**: Kotlin
+- **Build Tool**: Gradle (part of main build)
+- **Testing**: Cucumber/Gherkin
 
-### 4.1 Backend Testing
+### 5. Testing Requirements
+
+#### 5.1 Backend Testing
 - **Unit Tests**: Required for all components
 - **BDD Testing**: Cucumber
-  - Step definition files must be written in Java
-  - Use RestAssured for API interactions
-  - Use Quarkus testing tools and strategies
-- **Development Services**: Use Quarkus Dev Services as appropriate
+  - Step definitions in Java
+  - RestAssured for API testing
+  - Quarkus testing tools
+- **Development Services**: Use Quarkus Dev Services
 
-### 4.2 Testing Validation
-- Run tests to check the correctness of proposed solutions
-- Validate that checkstyle rules pass after each change
+#### 5.2 Testing Validation
+- Run tests to verify solutions
+- **Checkstyle Validation**:
+  - Run `./gradlew checkstyleMain checkstyleTest` to verify style compliance
+  - Fix ALL style violations before submitting code
+  - Style violations will cause build failures in CI/CD pipelines
 
-## 5. CI/CD and Deployment
+### 6. CI/CD and Deployment
 
-### 5.1 GitHub Workflows
-- Both projects should have GitHub workflows following best practices
-- Workflows should run on any push to the repository:
-  - Perform basic builds
-  - Run unit tests
-  - Perform linting
-- On merge requests, these jobs should run again
-- Deployments to test environments will be expanded on later
+#### 6.1 GitHub Workflows
+- All projects must have GitHub workflows
+- Workflow actions:
+  - Build
+  - Test
+  - Lint
+- Run on push and merge requests
 
-## 6. Documentation Requirements
+### 7. Documentation Requirements
 
-### 6.1 README Files
-- Update README files in:
+#### 7.1 README Files
+- Required in:
   - Root directory
-  - Backend project directory
-  - Frontend project directory
-- Each README must include:
-  - How to run locally
-  - How to test locally
-  - Tech stack used
+  - Backend project
+  - Frontend project
+  - Robo-demo project
+- Must include:
+  - Local run instructions
+  - Local test instructions
+  - Tech stack details
   - Testing approach
-  - Overview of APIs provided/used
-
-## 7. For each prompt, follow this process
-
-### 7.1 Prompt Handling
-- Record all prompts in a `prompts.txt` file in the root folder
-  - Update immediately upon receiving each new prompt
-  - Use consistent format: "## [Number] Prompt" as heading
-  - Include the full text of the prompt
-  - Do not include implementation details or responses
-  - Ensure sequential numbering (First, Second, Third, etc.)
-  - Always append new prompts to the end of the file
-
-### 7.2 Build Process
-- Build the project using the "./gradlew build command" at the top level 
-  - Ensure all tests pass during the build process
-  - Ensure all checkstyle rules pass
+  - API overview

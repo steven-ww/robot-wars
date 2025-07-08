@@ -75,6 +75,24 @@ Run the linter:
 npm run lint
 ```
 
+## Code Formatting
+
+This project uses [Prettier](https://prettier.io/) for consistent code formatting.
+
+### Format code automatically:
+
+```bash
+npm run format
+```
+
+### Check if code is properly formatted:
+
+```bash
+npm run format:check
+```
+
+The CI pipeline will automatically check that all code is properly formatted. You can configure your editor to format on save, or run the format command before committing.
+
 ## Building
 
 Build the application for production:

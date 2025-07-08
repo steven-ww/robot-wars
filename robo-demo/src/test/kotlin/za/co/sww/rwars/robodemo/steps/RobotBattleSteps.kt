@@ -211,6 +211,89 @@ class RobotBattleSteps {
         }
     }
 
+    @Then("I should be able to move the robots around the arena until a specified time has passed")
+    fun iShouldMoveRobotsUntilSpecifiedTime() = runBlocking {
+        logger.info("Moving robots around the arena until the specified time has passed")
+
+        wireMockStubs.stubGetBattleStatus()
+
+        val startTime = Instant.now()
+        // Use a shorter time limit for testing (5 seconds instead of 5 minutes)
+        val timeLimitDuration = Duration.ofSeconds(5)
+        val directions = listOf("NORTH", "EAST", "SOUTH", "WEST", "NE", "SE", "SW", "NW")
+        var moveCount = 0
+        val maxMoves = 10 // Limit the number of moves for test efficiency
+
+        while (
+            Duration.between(startTime, Instant.now()) < timeLimitDuration &&
+            moveCount < maxMoves
+        ) {
+            moveCount++
+            // Move each robot
+            for ((robotName, robot) in robots) {
+                val direction = directions.random()
+                val blocks = (1..3).random()
+                logger.info("Moving $robotName $blocks blocks $direction")
+
+                try {
+                    wireMockStubs.stubMoveRobot(robotName, direction, blocks)
+                    robotApiClient.moveRobot(battle.id, robot.id, direction, blocks)
+                    Thread.sleep(100)
+                } catch (e: Exception) {
+                    logger.error("Error moving $robotName", e)
+                }
+            }
+
+            val elapsed = Duration.between(startTime, Instant.now())
+            logger.info("Time elapsed: ${elapsed.toMillis()} ms")
+        }
+
+        logger.info("Specified time limit reached or maximum moves completed")
+        val battleStatus = robotApiClient.getBattleStatus(battle.id)
+        logger.info("Battle ended with state: ${battleStatus.state}")
+    }
+
+    @Then("I should be able to move the robots around the arena until {int} minutes has passed even if they crash into a wall")
+    fun iShouldMoveRobotsUntilTimeLimitEvenIfTheyCrash(timeLimit: Int) = runBlocking {
+        logger.info("Moving robots around the arena for $timeLimit minutes, ignoring crashes")
+
+        wireMockStubs.stubGetBattleStatus()
+
+        val startTime = Instant.now()
+        val timeLimitDuration = Duration.ofMinutes(timeLimit.toLong())
+        val directions = listOf("NORTH", "EAST", "SOUTH", "WEST", "NE", "SE", "SW", "NW")
+
+        while (
+            Duration.between(startTime, Instant.now()) < timeLimitDuration
+        ) {
+            // Move each robot
+            for ((robotName, robot) in robots) {
+                val direction = directions.random()
+                val blocks = (1..3).random()
+                logger.info("Moving $robotName $blocks blocks $direction")
+
+                // Set up stub for moving a robot
+                wireMockStubs.stubMoveRobot(robotName, direction, blocks)
+
+                // Call the API through the client
+                robotApiClient.moveRobot(battle.id, robot.id, direction, blocks)
+
+                // Simulate waiting for movement to complete (reduced for tests)
+                Thread.sleep(100) // Just a short delay for tests
+            }
+
+            // Check time elapsed
+            val elapsed = Duration.between(startTime, Instant.now())
+            logger.info("Time elapsed: ${elapsed.toMinutes()} minutes ${elapsed.toSecondsPart()} seconds")
+        }
+
+        logger.info("Time limit reached ($timeLimit minutes)")
+
+        // Final status
+        val battleStatus = robotApiClient.getBattleStatus(battle.id)
+        logger.info("Battle ended with state: ${battleStatus.state}")
+    }
+
     @When("I move the robot in direction {string} for {int} blocks")
     fun iMoveTheRobotInDirectionForBlocks(direction: String, blocks: Int) = runBlocking {
         logger.info("Moving robot in direction $direction for $blocks blocks")

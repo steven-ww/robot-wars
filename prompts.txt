@@ -109,6 +109,13 @@ Given the following issue description `<issue_description>`, could you help me i
 Review the updated .junie/guidelines.md file section 7. Apply the process required.
 </issue_description>
 
+## Fifty-second Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Create a script in the root project that uses jbang. This script should start the bank-end server in quarkus dev mode and spin up a brower that loads the front-end up locally. This script is used to get the local environment running for local testing and dev. It will also be used by developers working on robots for the game to create a test environment where they can test there robots.
+</issue_description>
+
 ## Twenty-sixth Prompt
 Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
 <issue_description>
@@ -284,3 +291,189 @@ Given the following issue description `<issue_description>`, could you help me i
 ## 
 Udpate the prompt.txt. Fix the checkstyle issues for the backend.
 </issue_description>
+
+## Forty-sixth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Review the junie agent guidelines in the .junie/guidelines.md file. Are these structured in the best way for the Intellij Junie agent to consume them? If not, make changes to improve them as guidelines for Junie.
+</issue_description>
+
+## Forty-seventh Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Pay attention to the .junie/guidelines.md while executing this task.
+
+Add a feature to the backend project, define the feature and scenarios in Gherkin
+
+As a Front End instance I want to be able to determine the state of a battle on the server, what the attributes of an arena are, what robots have been registered so that I can render the initial arena state. Implement this in the Backend project via aa websocket. 
+
+For the Front-end project
+Add the ability to use BDD in the frontend project.
+Once configured, add a feature using BDD to the front-end that renders the initial arena for a battle on a page. 
+</issue_description>
+
+## Forty-eighth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Fix the checkstyle violations. Update the .junie/guidelines.md to be explicit about the requirement to verify that the checkstyle rules pass.
+</issue_description>
+
+## Forty-ninth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+The Front-end project is not being built when running the root ./gradlew build command. Enhance the root gradle build to ensure the front-end project also forms part of the build. Follow the .junie/guidelines.md file. 
+</issue_description>
+
+## Fiftieth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Event with the changes you just made, running ./gradle build at the project root, did not build the front-end project. Correct this to ensure the FE also builds
+</issue_description>
+
+## Fifty-first Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Follow the guidelines in the .junie/guidelines file for this task.
+Fix the errors in the FE build and ensure that the build fails on these compile errors.
+</issue_description>
+
+## Fifty-third Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+I've configured jbang wrapper in the project. This allows the user to start the development environment without the need for jbang to be installed.
+
+update the readme file to reference that jbang is not a requirement to run the app locally, but will install itself.
+
+Also, update the jbang script to ensure that java 21 and node.js are also managed and installed by jbang if not already on the system.
+
+Update the readme to describe the requirements in terms of
+* making changes to the project (in which case the prerequists are required 
+* or, if just starting the application in to use it, that jbang will take care of all the dependencies.
+</issue_description>
+
+## Fifty-fourth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+If jbang is not installed on the system and the jbang wrapper is being used, woudn't the user be required to specify "jbang start_dev.java" rather than just start_dev.java? If so, update the readme to reflect this difference.
+</issue_description>
+
+## Fifty-fifth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+The jbag script is starting the fe before the backend is up. Have the FE wait for the backend to start
+</issue_description>
+
+## Fifty-sixth Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Fix the linting errors on the front-end. Update the .junie/guidelines to include that the front-end build must include linting and must pass.
+</issue_description>
+
+## Fifty-seventh Prompt
+Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
+<issue_description>
+## 
+Enhance the github action for the Front-end to run the cucumber tests and also not to fail the existing test step "npm test -- --watchAll=false" if there are not tests to run yet.
+</issue_description>
+
+Switched to Warp 2.0 (Out of June credits)
+## Fifty-eighth Prompt
+Given the issues with trying to mock out the websocket, can you rather convert the tests to use the "jest-websocket-mock" library for the websocket mocks. Follow the guidelines in the ../junie/guidelines.md and update the ../prompts.txt file with all prompts you receive.
+
+## Fifty-ninth Prompt
+Fix the eslint errors
+
+## Sixtieth Prompt
+add a commit hoot to the fe that builds, tests and lints the code before allowing a commit to git. Follow the guidelines and remember to update the ../prompts.txt file
+
+## Sixty-first Prompt
+I don't like the root level node requirement to get the hooks working. Revert all commits for the commit hooks. Update the ../prompts.txt file.
+
+## Sixty-second Prompt
+Add prettier to the front-end project, also update the front-end github action to run it. Validate that it passes. If not, fix the issues.
+
+## Sixty-third Prompt
+The GitHub cucumber job "run cucumber tests" is using the wrong pattern for the tests and is failing to find any tests. Given the changes to the naming standard you applied to the tests, do we still need a specific cucumber job in the github action or can it just be replaced with the standard test run? Do we loose anything by doing that?
+
+## Sixty-fourth Prompt
+Enhance the backend project. Enable support for multiple battles to be created and be in various states. update the feature files to align with the new approach and create scenarios that validate the new approach of supporting multiple battles. Create a new rest API on the BattleResource (driven by a BDD scenario) that allows a user to get a list of all the battles, the robots in them, there current state (but not position in the arena) so that the FE can use this to display the battles and what they look like.
+
+## Sixty-fifth Prompt
+Fix the checkstyle errors, apply the ./.junie/guidelines.md and commit the changes.
+
+## Sixty-sixth Prompt
+Follow the guidelines in ./junie/guidelins.md for this task. Use BDD to define a scenario and features based on the task. Given a user of the FE loads the initial page, show a list of all Battles currently created, along with the status of each and any robots in each battle and there state and show a button that when pressed allows the user to creae a battle, with optional parameters as per the API in the backend project.
+
+## Sixty-seventh Prompt
+Implement tests for the battle_management.feature as done for the arena_rendering.feature.
+
+## Sixty-eighth Prompt
+Remember to follow the guidelines in the .junie/guideline.md. There are two issues with the solution. Firstly the root project build does not run the tests, fix this. Secondly, the tests aren't passing. Fix them.
+
+## Sixty-ninth Prompt
+You have still left off a most of the file. Rather do this. Restore the file from the last commit. Then add in all prompts you've received today, including this one.
+
+## Note: I've had to manually try and recreate the last few prompts as the agent was not able to correctly determine what the prompts where.
+
+## Seventieth Prompt
+Three tests are still failing. Try and fix these
+
+## Seventy-first Prompt
+Enhance the robot-demo with a test and implementation to match the new scenario I've added to the robot_battle.feature called "Create a battle and move robots until the time limit is reached". This is partially implemented already. For the test, set the duration tht the robots will move around to 5 seconds. However, in the start_battle.sh script, allow the user to supply this and default the value to 5 minutes.
+
+## Seventy-second Prompt
+Implement the missing step definition for the scenario "Create a battle and move robots until the time limit is reached" in the robot-demo project. The step "I should be able to move the robots around the arena until a specified time has passed" is undefined and causing the test to fail.
+
+## Seventy-third Prompt
+In the robo-demo project, the start-battle.sh script does not pass parameters correctly to the Kotlin main program. Change the main program to accept named parameters. Adjust the script to support any combination of those parameters being supplied (url, time, stop_on_crash). Update the script to, default to using the default values. The stop on crash default should be false. add instructions on how to use these parameters to the readme. Make sure the tests still work. Update the prompts.txt with this prompt.
+
+## Seventy-fourth Prompt - Amazon Q from here down
+The Frontend code uses BDD. I've updated the battle_management.feature file with a new scenario. Write the tests for this feature file and implement the changes required. Use existing react components for the arena render. The new scenario is the one called "Render the arena for a selected battle"
+
+## Seventy-fifth Prompt
+When the user selects a battle and the arena component is rendered, there seems to be a websocket connection issue. Given the way the backend project provides for the websocket and any configuration that is setup of runni
+ng locally, why would the arena not be able to connect to the websocket successfully?
+
+## Seventy-sixth Prompt
+The battle arena tab/button on the main/starting page of the front-end app should show the state of only one battle. That should be the last selected battle or the default battle. It should never attempt to show a battle without first getting the battle id (selected or default). Create a new scenario in the feature file to drive this behaviour out with BDD. Create the test and adjust the implementation to have it pass
+
+## Seventy-seventh Prompt
+I'm not sure why, but when the battle arena is shown, there is always a box showing a web socket connection error. There is also a value arena below it. Can you see why the page would be rendering an error even when there
+ is a valid battle?
+
+## Seventy-eighth Prompt
+In the frontend project Add a new scenario to the arena rendering to describe the fact that the view of the arena should auto refresh. That is, the movements and other states of the robot should reflect on the arena without the user needing to refresh. The react component should automatically update it's view based on information obtained via the websocket. This should be implemented with BDD and the tests should pass. Update the prompts.txt in the root to record this prompt.
+
+## Seventy-ninth Prompt
+In the frontend project the arena still has a refresh button (that shouldn't be needed any more - so remove it) and still does not automatically track the robots. That is, there is no automatic rerender of the screen with the latest robot movements. This is strange as there is a test for it. Are both the code and the test wrong? Can you fix both?
+
+## Eightieth Prompt
+fix the linting errors in the frontend project.
+
+## Eighty-first Prompt
+Why when I run the start_dev.java script (using jbang) does it open two windows the the front-end app
+
+## Eighty-second Prompt
+The front-end projects Arena automatically applies updates received via a websocket to the view. The view does not show changes though. Could it be that the backend project is not updating the websocket whenever something changes for a robot? If so, create a scenario in BBD following the existing style in the backend project, implement the test and the logic to make sure that any change to a robot is communicated via the websocket to the front-end.
+
+## Eighty-third Prompt
+fix the checkstyle issues in the backend project
+
+## Eighty-forth Prompt
+The robots started in the robo-demo project seem to move in turn. That is, robot A moves, thnen robot B moves. Is this because of the way the robot-demo is written or a issue with the backend and how it implements the moving of the robots? The robots should move completing independently of each other
+
+## Eighty-fourth Prompt
+fix the robo-demo ktlint errors
+
+## Eighty-fifth Prompt
+Add the check for formatting to the root build triggered by gradle. E.g. ./gradlew build does not seem to run the pretty check.
