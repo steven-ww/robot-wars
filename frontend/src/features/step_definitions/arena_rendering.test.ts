@@ -1,5 +1,5 @@
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import React from 'react';
 import ArenaComponent from '../../components/ArenaComponent';
@@ -305,6 +305,248 @@ defineFeature(feature, test => {
       await waitFor(() => {
         expect(screen.getByText(/retry connection/i)).toBeInTheDocument();
       });
+    });
+  });
+
+  test('Auto-refresh arena view with real-time updates', ({
+    given,
+    when,
+    and,
+    then,
+  }) => {
+    let server: WS;
+
+    given('the battle state websocket is available', () => {
+      // Use a unique URL for this test to avoid conflicts
+      server = new WS('ws://localhost/battle-state/auto-refresh-test');
+    });
+
+    and(/^a battle with ID "(.*)" exists on the server$/, battleId => {
+      // This is handled by the mock WebSocket server setup
+      expect(battleId).toBe('test-battle-id');
+    });
+
+    and(
+      /^the battle has an arena with dimensions (\d+)x(\d+)$/,
+      (width, height) => {
+        // This will be verified when the battle state is sent
+        expect(width).toBe('20');
+        expect(height).toBe('20');
+      }
+    );
+
+    and(/^the battle has (\d+) robots registered$/, robotCount => {
+      // This will be verified when the battle state is sent
+      expect(robotCount).toBe('2');
+    });
+
+    given('I am viewing the arena with live WebSocket connection', async () => {
+      // Use the unique battle ID for this test
+      render(
+        React.createElement(ArenaComponent, { battleId: 'auto-refresh-test' })
+      );
+
+      // Wait for the WebSocket connection to be established
+      await server.connected;
+
+      // Send initial battle state
+      server.send(
+        JSON.stringify({
+          battleId: 'auto-refresh-test',
+          battleName: 'Auto Refresh Test Battle',
+          arenaWidth: 20,
+          arenaHeight: 20,
+          robotMovementTimeSeconds: 1,
+          battleState: 'READY',
+          robots: [
+            {
+              id: 'robot-1',
+              name: 'Robot 1',
+              battleId: 'auto-refresh-test',
+              positionX: 5,
+              positionY: 5,
+              direction: 'NORTH',
+              status: 'IDLE',
+              targetBlocks: 0,
+              blocksRemaining: 0,
+            },
+            {
+              id: 'robot-2',
+              name: 'Robot 2',
+              battleId: 'auto-refresh-test',
+              positionX: 15,
+              positionY: 15,
+              direction: 'SOUTH',
+              status: 'IDLE',
+              targetBlocks: 0,
+              blocksRemaining: 0,
+            },
+          ],
+        })
+      );
+
+      // Wait for the arena to render
+      await waitFor(() => {
+        expect(screen.getByTestId('arena-grid')).toBeInTheDocument();
+      });
+    });
+
+    when('multiple robots move and change status simultaneously', async () => {
+      // This step sets up the expectation for multiple updates
+      // The actual updates will be sent in the next step
+    });
+
+    and('the WebSocket receives continuous battle state updates', async () => {
+      // Send first update - robot-1 moves and changes status
+      server.send(
+        JSON.stringify({
+          battleId: 'auto-refresh-test',
+          battleName: 'Auto Refresh Test Battle',
+          arenaWidth: 20,
+          arenaHeight: 20,
+          robotMovementTimeSeconds: 1,
+          battleState: 'IN_PROGRESS',
+          robots: [
+            {
+              id: 'robot-1',
+              name: 'Robot 1',
+              battleId: 'auto-refresh-test',
+              positionX: 6,
+              positionY: 6,
+              direction: 'NORTH',
+              status: 'MOVING',
+              targetBlocks: 0,
+              blocksRemaining: 0,
+            },
+            {
+              id: 'robot-2',
+              name: 'Robot 2',
+              battleId: 'auto-refresh-test',
+              positionX: 15,
+              positionY: 15,
+              direction: 'SOUTH',
+              status: 'IDLE',
+              targetBlocks: 0,
+              blocksRemaining: 0,
+            },
+          ],
+        })
+      );
+
+      // Wait a bit for the update to be processed
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      });
+
+      // Send second update - robot-2 also moves and changes status
+      server.send(
+        JSON.stringify({
+          battleId: 'auto-refresh-test',
+          battleName: 'Auto Refresh Test Battle',
+          arenaWidth: 20,
+          arenaHeight: 20,
+          robotMovementTimeSeconds: 1,
+          battleState: 'IN_PROGRESS',
+          robots: [
+            {
+              id: 'robot-1',
+              name: 'Robot 1',
+              battleId: 'auto-refresh-test',
+              positionX: 7,
+              positionY: 7,
+              direction: 'EAST',
+              status: 'MOVING',
+              targetBlocks: 0,
+              blocksRemaining: 0,
+            },
+            {
+              id: 'robot-2',
+              name: 'Robot 2',
+              battleId: 'auto-refresh-test',
+              positionX: 14,
+              positionY: 14,
+              direction: 'WEST',
+              status: 'MOVING',
+              targetBlocks: 0,
+              blocksRemaining: 0,
+            },
+          ],
+        })
+      );
+
+      // Wait for the updates to be processed
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      });
+    });
+
+    then(
+      'the arena view should automatically refresh without user intervention',
+      async () => {
+        // Verify that the arena is still rendered and responsive
+        await waitFor(() => {
+          expect(screen.getByTestId('arena-grid')).toBeInTheDocument();
+        });
+
+        // Verify that battle state shows IN_PROGRESS (updated from READY)
+        await waitFor(() => {
+          expect(
+            screen.getByText('Battle State: IN_PROGRESS')
+          ).toBeInTheDocument();
+        });
+      }
+    );
+
+    and('all robot positions should update in real-time', async () => {
+      // Verify robot-1 is at new position (7, 7)
+      await waitFor(() => {
+        const robot1 = screen.getByTestId('robot-robot-1');
+        expect(robot1).toHaveAttribute('data-x', '7');
+        expect(robot1).toHaveAttribute('data-y', '7');
+      });
+
+      // Verify robot-2 is at new position (14, 14)
+      await waitFor(() => {
+        const robot2 = screen.getByTestId('robot-robot-2');
+        expect(robot2).toHaveAttribute('data-x', '14');
+        expect(robot2).toHaveAttribute('data-y', '14');
+      });
+    });
+
+    and(
+      'all robot status changes should be reflected immediately',
+      async () => {
+        // Verify both robots now have MOVING status
+        await waitFor(() => {
+          const robot1 = screen.getByTestId('robot-robot-1');
+          expect(robot1).toHaveAttribute('data-status', 'MOVING');
+        });
+
+        await waitFor(() => {
+          const robot2 = screen.getByTestId('robot-robot-2');
+          expect(robot2).toHaveAttribute('data-status', 'MOVING');
+        });
+      }
+    );
+
+    and('the user should not need to manually refresh the page', async () => {
+      // This is implicit - if the previous assertions pass, it means
+      // the updates happened automatically without user intervention
+      // We can verify by checking that no refresh button was clicked
+      // and the data still updated
+      expect(screen.getByTestId('arena-grid')).toBeInTheDocument();
+    });
+
+    and('the connection status should show "Live Updates"', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('🟢 Live Updates')).toBeInTheDocument();
+      });
+    });
+
+    afterEach(() => {
+      if (server) {
+        server.close();
+      }
     });
   });
 });
