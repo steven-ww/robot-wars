@@ -3,10 +3,11 @@ import './App.css';
 import GreetingComponent from './components/GreetingComponent';
 import ChatComponent from './components/ChatComponent';
 import ArenaComponent from './components/ArenaComponent';
+import BattleManagement from './components/BattleManagement';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'rest' | 'websocket' | 'arena'>(
-    'rest'
+  const [activeTab, setActiveTab] = useState<'rest' | 'websocket' | 'arena' | 'battles'>(
+    'battles'
   );
 
   return (
@@ -14,6 +15,12 @@ function App() {
       <header className="App-header">
         <h1>Robot Wars Frontend</h1>
         <div className="tabs">
+          <button
+            className={activeTab === 'battles' ? 'active' : ''}
+            onClick={() => setActiveTab('battles')}
+          >
+            Battle Management
+          </button>
           <button
             className={activeTab === 'rest' ? 'active' : ''}
             onClick={() => setActiveTab('rest')}
@@ -35,7 +42,9 @@ function App() {
         </div>
       </header>
       <main>
-        {activeTab === 'rest' ? (
+        {activeTab === 'battles' ? (
+          <BattleManagement />
+        ) : activeTab === 'rest' ? (
           <GreetingComponent />
         ) : activeTab === 'websocket' ? (
           <ChatComponent />
