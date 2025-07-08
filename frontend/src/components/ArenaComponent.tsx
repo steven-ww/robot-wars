@@ -46,9 +46,19 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
       }
 
       // Create a new WebSocket connection
-      const ws = new WebSocket(
-        `ws://${window.location.host}/battle-state/${battleId}`
-      );
+      // In development, connect directly to backend (port 8080)
+      // In production, use the same host as the frontend
+      const wsHost =
+        process.env.NODE_ENV === 'development'
+          ? 'localhost:8080'
+          : window.location.host;
+
+      // Use secure WebSocket (wss) if the page is served over HTTPS
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${wsProtocol}//${wsHost}/battle-state/${battleId}`;
+
+      console.log(`Connecting to WebSocket: ${wsUrl}`);
+      const ws = new WebSocket(wsUrl);
 
       // Set up event handlers
       ws.onopen = () => {

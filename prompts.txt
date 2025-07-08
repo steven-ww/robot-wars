@@ -439,3 +439,8 @@ In the robo-demo project, the start-battle.sh script does not pass parameters co
 
 ## Seventy-fourth Prompt - Amazon Q
 The Frontend code uses BDD. I've updated the battle_management.feature file with a new scenario. Write the tests for this feature file and implement the changes required. Use existing react components for the arena render. The new scenario is the one called "Render the arena for a selected battle"
+
+## Seventy-fifth Prompt
+When the user selects a battle and the arena component is rendered, there seems to be a websocket connection issue. Given the way the backend project provides for the websocket and any configuration that is setup of runni
+ng locally, why would the arena not be able to connect to the websocket successfully?
+
