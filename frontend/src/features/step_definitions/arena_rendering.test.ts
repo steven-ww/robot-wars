@@ -295,13 +295,15 @@ defineFeature(feature, test => {
 
     then('I should see an error message', async () => {
       await waitFor(() => {
-        expect(screen.getByText(/connection error/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/unable to connect to real-time updates/i)
+        ).toBeInTheDocument();
       });
     });
 
     and('I should have an option to reconnect', async () => {
       await waitFor(() => {
-        expect(screen.getByText(/reconnect/i)).toBeInTheDocument();
+        expect(screen.getByText(/retry connection/i)).toBeInTheDocument();
       });
     });
   });
