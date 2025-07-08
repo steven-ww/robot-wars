@@ -125,16 +125,18 @@ defineFeature(feature, test => {
 
     and('each battle should show the arena dimensions', async () => {
       await waitFor(() => {
-        expect(screen.getByText((content, element) => {
+        const arena20x20Elements = screen.getAllByText((content, element) => {
           const text = element?.textContent || '';
           return text.includes('Arena:') && text.includes('20 x 20');
-        })).toBeInTheDocument();
+        })[0];
+        expect(arena20x20Elements).toBeInTheDocument();
       });
 
-      expect(screen.getByText((content, element) => {
+      const arena30x30Elements = screen.getAllByText((content, element) => {
         const text = element?.textContent || '';
         return text.includes('Arena:') && text.includes('30 x 30');
-      })).toBeInTheDocument();
+      })[0];
+      expect(arena30x30Elements).toBeInTheDocument();
     });
   });
 
@@ -318,10 +320,11 @@ defineFeature(feature, test => {
       });
 
       // Check for arena dimensions 50x50
-      expect(screen.getByText((content, element) => {
+      const arena50x50Elements = screen.getAllByText((content, element) => {
         const text = element?.textContent || '';
         return text.includes('Arena:') && text.includes('50 x 50');
-      })).toBeInTheDocument();
+      })[0];
+      expect(arena50x50Elements).toBeInTheDocument();
     });
   });
 
@@ -564,31 +567,38 @@ defineFeature(feature, test => {
 
     then('I should see the robot names', async () => {
       await waitFor(() => {
-        expect(screen.getByText((content, element) => {
+        const robot1Elements = screen.getAllByText((content, element) => {
           const text = element?.textContent || '';
           return text.includes('Robot 1');
-        })).toBeInTheDocument();
+        })[0];
+        expect(robot1Elements).toBeInTheDocument();
       });
 
-      expect(screen.getByText((content, element) => {
+      const robot2Elements = screen.getAllByText((content, element) => {
         const text = element?.textContent || '';
         return text.includes('Robot 2');
-      })).toBeInTheDocument();
+      })[0];
+      expect(robot2Elements).toBeInTheDocument();
     });
 
     and('I should see each robot\'s current status', async () => {
       await waitFor(() => {
-        expect(screen.getByText((content, element) => {
+        const robot1Elements = screen.getAllByText((content, element) => {
           const text = element?.textContent || '';
           return text.includes('Robot 1');
-        })).toBeInTheDocument();
+        })[0];
+        expect(robot1Elements).toBeInTheDocument();
       });
 
-      expect(screen.getByText((content, element) => {
+      const robot2Elements = screen.getAllByText((content, element) => {
         const text = element?.textContent || '';
         return text.includes('Robot 2');
-      })).toBeInTheDocument();
-      expect(screen.getAllByText('IDLE')).toHaveLength(2);
+      })[0];
+      expect(robot2Elements).toBeInTheDocument();
+      expect(screen.getAllByText((content, element) => {
+        const text = element?.textContent || '';
+        return element?.tagName === 'LI' && text.includes('Robot') && text.includes('IDLE');
+      })).toHaveLength(2);
     });
 
     and('I should not see robot positions', async () => {
