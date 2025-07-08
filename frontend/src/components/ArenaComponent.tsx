@@ -33,6 +33,8 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
   const [connectionAttempted, setConnectionAttempted] =
     useState<boolean>(false);
   const [webSocketError, setWebSocketError] = useState<string | null>(null);
+  const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
+  const [updateCount, setUpdateCount] = useState<number>(0);
 
   // Reference to the WebSocket connection
   const webSocketRef = useRef<WebSocket | null>(null);
@@ -81,8 +83,10 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
             return;
           }
 
-          // Update battle state
+          // Update battle state and tracking info
           setBattleState(data);
+          setLastUpdateTime(new Date());
+          setUpdateCount(prev => prev + 1);
         } catch (err) {
           console.error('Error parsing WebSocket message:', err);
           setWebSocketError('Error parsing WebSocket message');
@@ -121,7 +125,11 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
   // Function to request an update
   const requestUpdate = () => {
     if (isConnected && webSocketRef.current) {
+      // If connected, request update via WebSocket
       webSocketRef.current.send('update');
+    } else {
+      // If not connected, try to reconnect
+      connectWebSocket();
     }
   };
 
@@ -221,7 +229,28 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
               <span style={{ color: 'orange' }}>🟡 Cached Data</span>
             )}
           </p>
-          <button onClick={requestUpdate}>Refresh</button>
+          {/* Show update tracking info */}
+          {isConnected && (
+            <div style={{ fontSize: '0.9em', color: '#666', marginTop: '10px' }}>
+              <p>Updates received: {updateCount}</p>
+              {lastUpdateTime && (
+                <p>Last update: {lastUpdateTime.toLocaleTimeString()}</p>
+              )}
+            </div>
+          )}
+          {/* Only show refresh button if WebSocket is not connected */}
+          {!isConnected && (
+            <button onClick={requestUpdate} style={{ 
+              padding: '5px 10px', 
+              backgroundColor: '#28a745', 
+              color: 'white',
+              border: 'none', 
+              borderRadius: '3px',
+              cursor: 'pointer'
+            }}>
+              Refresh Data
+            </button>
+          )}
         </div>
       )}
 
