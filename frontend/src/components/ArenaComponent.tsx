@@ -231,7 +231,9 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
           </p>
           {/* Show update tracking info */}
           {isConnected && (
-            <div style={{ fontSize: '0.9em', color: '#666', marginTop: '10px' }}>
+            <div
+              style={{ fontSize: '0.9em', color: '#666', marginTop: '10px' }}
+            >
               <p>Updates received: {updateCount}</p>
               {lastUpdateTime && (
                 <p>Last update: {lastUpdateTime.toLocaleTimeString()}</p>
@@ -240,14 +242,17 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
           )}
           {/* Only show refresh button if WebSocket is not connected */}
           {!isConnected && (
-            <button onClick={requestUpdate} style={{ 
-              padding: '5px 10px', 
-              backgroundColor: '#28a745', 
-              color: 'white',
-              border: 'none', 
-              borderRadius: '3px',
-              cursor: 'pointer'
-            }}>
+            <button
+              onClick={requestUpdate}
+              style={{
+                padding: '5px 10px',
+                backgroundColor: '#28a745',
+                color: 'white',
+                border: 'none',
+                borderRadius: '3px',
+                cursor: 'pointer',
+              }}
+            >
               Refresh Data
             </button>
           )}
