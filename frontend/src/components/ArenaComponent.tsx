@@ -30,14 +30,17 @@ interface ArenaComponentProps {
 const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
   const [battleState, setBattleState] = useState<BattleState | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [connectionAttempted, setConnectionAttempted] =
+    useState<boolean>(false);
+  const [webSocketError, setWebSocketError] = useState<string | null>(null);
 
   // Reference to the WebSocket connection
   const webSocketRef = useRef<WebSocket | null>(null);
 
   // Function to connect to the WebSocket
   const connectWebSocket = useCallback(() => {
-    setError(null);
+    setWebSocketError(null);
+    setConnectionAttempted(true);
 
     try {
       // Close existing connection if any
@@ -63,6 +66,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
       // Set up event handlers
       ws.onopen = () => {
         setIsConnected(true);
+        setWebSocketError(null);
         console.log('Connected to battle state WebSocket');
       };
 
@@ -73,7 +77,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
 
           // Check if there's an error message
           if (data.error) {
-            setError(data.error);
+            setWebSocketError(data.error);
             return;
           }
 
@@ -81,13 +85,13 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
           setBattleState(data);
         } catch (err) {
           console.error('Error parsing WebSocket message:', err);
-          setError('Error parsing WebSocket message');
+          setWebSocketError('Error parsing WebSocket message');
         }
       };
 
       ws.onerror = event => {
         console.error('WebSocket error:', event);
-        setError('WebSocket connection error');
+        setWebSocketError('Unable to connect to real-time updates');
         setIsConnected(false);
       };
 
@@ -99,7 +103,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
       // Store the WebSocket reference
       webSocketRef.current = ws;
     } catch (err) {
-      setError(
+      setWebSocketError(
         `Failed to connect: ${err instanceof Error ? err.message : String(err)}`
       );
       console.error('Error connecting to WebSocket:', err);
@@ -161,14 +165,47 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
         This component displays the battle arena and the robots within it.
       </p>
 
-      {error && (
-        <div className="error-container">
-          <p className="error">{error}</p>
-          <button onClick={connectWebSocket}>Reconnect</button>
+      {/* Only show WebSocket error if connection was attempted and failed, and we don't have battle data */}
+      {webSocketError && !battleState && connectionAttempted && (
+        <div
+          className="warning-container"
+          style={{
+            backgroundColor: '#fff3cd',
+            border: '1px solid #ffeaa7',
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+          }}
+        >
+          <p style={{ color: '#856404', margin: '0 0 5px 0' }}>
+            <strong>Real-time updates unavailable:</strong> {webSocketError}
+          </p>
+          <p
+            style={{
+              color: '#856404',
+              margin: '0 0 10px 0',
+              fontSize: '0.9em',
+            }}
+          >
+            Make sure the backend server is running on port 8080.
+          </p>
+          <button
+            onClick={connectWebSocket}
+            style={{
+              padding: '5px 10px',
+              backgroundColor: '#ffc107',
+              border: 'none',
+              borderRadius: '3px',
+              cursor: 'pointer',
+            }}
+          >
+            Retry Connection
+          </button>
         </div>
       )}
 
-      {isConnected && battleState && (
+      {/* Show connection status when we have battle data */}
+      {battleState && (
         <div className="battle-info">
           <h3>{battleState.battleName}</h3>
           <p>Battle State: {battleState.battleState}</p>
@@ -176,11 +213,20 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
             Arena Size: {battleState.arenaWidth}x{battleState.arenaHeight}
           </p>
           <p>Robots: {battleState.robots.length}</p>
+          <p>
+            Connection Status:{' '}
+            {isConnected ? (
+              <span style={{ color: 'green' }}>🟢 Live Updates</span>
+            ) : (
+              <span style={{ color: 'orange' }}>🟡 Cached Data</span>
+            )}
+          </p>
           <button onClick={requestUpdate}>Refresh</button>
         </div>
       )}
 
-      {isConnected && battleState && (
+      {/* Show arena grid when we have battle data */}
+      {battleState && (
         <div
           className="arena-grid"
           data-testid="arena-grid"
@@ -200,9 +246,20 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
         </div>
       )}
 
-      {!isConnected && !error && (
+      {/* Show connecting message only when no error and no battle data */}
+      {!isConnected &&
+        !webSocketError &&
+        !battleState &&
+        connectionAttempted && (
+          <div className="connecting">
+            <p>Connecting to battle state...</p>
+          </div>
+        )}
+
+      {/* Show initial loading state */}
+      {!connectionAttempted && (
         <div className="connecting">
-          <p>Connecting to battle state...</p>
+          <p>Initializing battle arena...</p>
         </div>
       )}
     </div>

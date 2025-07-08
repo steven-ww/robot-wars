@@ -446,3 +446,7 @@ ng locally, why would the arena not be able to connect to the websocket successf
 
 ## Seventy-sixth Prompt
 The battle arena tab/button on the main/starting page of the front-end app should show the state of only one battle. That should be the last selected battle or the default battle. It should never attempt to show a battle without first getting the battle id (selected or default). Create a new scenario in the feature file to drive this behaviour out with BDD. Create the test and adjust the implementation to have it pass
+
+## Seventy-seventh Prompt
+I'm not sure why, but when the battle arena is shown, there is always a box showing a web socket connection error. There is also a value arena below it. Can you see why the page would be rendering an error even when there
+ is a valid battle?
