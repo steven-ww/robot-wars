@@ -16,6 +16,27 @@ subprojects {
     }
 }
 
+// Task to run prettier format check on frontend
+task prettierCheck {
+    description = 'Check code formatting with Prettier'
+    dependsOn ':frontend:npmFormatCheck'
+}
+
+// Task to run all tests
+task test {
+    description = 'Run all tests in all subprojects'
+    dependsOn ':frontend:npmTest', ':backend:test'
+}
+
+// Configure the existing check task to include all checks
+check {
+    description = 'Run all checks including tests and formatting'
+    dependsOn ':backend:check', ':frontend:npmTest'
+}
+
+// Make build task depend on checks
+build.dependsOn check
+
 // Configure Gradle wrapper
 wrapper {
     gradleVersion = '8.5'

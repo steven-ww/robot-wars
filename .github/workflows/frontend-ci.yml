@@ -37,10 +37,15 @@ jobs:
         cd frontend
         npm run lint
 
-    - name: Run tests
+    - name: Check code formatting
       run: |
         cd frontend
-        npm test -- --watchAll=false
+        npm run format:check
+
+    - name: Run tests (including Cucumber BDD tests)
+      run: |
+        cd frontend
+        npm test -- --watchAll=false --passWithNoTests
 
     - name: Build
       run: |

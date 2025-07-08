@@ -1,35 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import GreetingComponent from './components/GreetingComponent';
 import ChatComponent from './components/ChatComponent';
+import ArenaTabComponent from './components/ArenaTabComponent';
+import BattleManagement from './components/BattleManagement';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'rest' | 'websocket'>('rest');
+  const [activeTab, setActiveTab] = useState<
+    'rest' | 'websocket' | 'arena' | 'battles'
+  >('battles');
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Robot Wars Frontend</h1>
         <div className="tabs">
-          <button 
-            className={activeTab === 'rest' ? 'active' : ''} 
+          <button
+            className={activeTab === 'battles' ? 'active' : ''}
+            onClick={() => setActiveTab('battles')}
+          >
+            Battle Management
+          </button>
+          <button
+            className={activeTab === 'rest' ? 'active' : ''}
             onClick={() => setActiveTab('rest')}
           >
             REST API Demo
           </button>
-          <button 
-            className={activeTab === 'websocket' ? 'active' : ''} 
+          <button
+            className={activeTab === 'websocket' ? 'active' : ''}
             onClick={() => setActiveTab('websocket')}
           >
             WebSocket Demo
           </button>
+          <button
+            className={activeTab === 'arena' ? 'active' : ''}
+            onClick={() => setActiveTab('arena')}
+          >
+            Battle Arena
+          </button>
         </div>
       </header>
       <main>
-        {activeTab === 'rest' ? (
+        {activeTab === 'battles' ? (
+          <BattleManagement />
+        ) : activeTab === 'rest' ? (
           <GreetingComponent />
-        ) : (
+        ) : activeTab === 'websocket' ? (
           <ChatComponent />
+        ) : (
+          <ArenaTabComponent />
         )}
       </main>
       <footer>

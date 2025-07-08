@@ -1,0 +1,67 @@
+plugins {
+    id 'base'
+}
+
+// This is a build.gradle file for the frontend project
+// It integrates the frontend project into the root build
+// and ensures that the build fails if there are compilation errors
+
+// Task to run npm install
+task npmInstall(type: Exec) {
+    description = 'Install npm dependencies'
+    commandLine 'npm', 'install'
+    workingDir = projectDir
+}
+
+// Task to run prettier format check
+task npmFormatCheck(type: Exec) {
+    description = 'Check code formatting with Prettier'
+    commandLine 'npm', 'run', 'format:check'
+    workingDir = projectDir
+    dependsOn npmInstall
+}
+
+// Task to run npm lint
+task npmLint(type: Exec) {
+    description = 'Lint the frontend code'
+    commandLine 'npm', 'run', 'lint'
+    workingDir = projectDir
+    dependsOn npmFormatCheck
+}
+
+// Task to run npm test
+task npmTest(type: Exec) {
+    description = 'Run frontend tests'
+    commandLine 'npm', 'test', '--', '--watchAll=false', '--coverage=false'
+    workingDir = projectDir
+    dependsOn npmLint
+}
+
+// Task to run npm build - will fail the build if there are TypeScript errors
+task npmBuild(type: Exec) {
+    description = 'Build the frontend'
+    commandLine 'npm', 'run', 'build'
+    workingDir = projectDir
+    dependsOn npmTest
+}
+
+// Task that depends on npmBuild and will fail if npmBuild fails
+task buildFrontend {
+    description = 'Build the frontend'
+    dependsOn npmBuild
+    doLast {
+        println "Frontend build completed successfully."
+    }
+}
+
+// Map Gradle lifecycle tasks to our frontend build task
+assemble.dependsOn buildFrontend
+build.dependsOn assemble
+
+// Clean task to remove build directory and node_modules
+clean {
+    doLast {
+        delete "${projectDir}/build"
+        delete "${projectDir}/node_modules"
+    }
+}
