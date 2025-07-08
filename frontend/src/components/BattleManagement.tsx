@@ -55,7 +55,7 @@ const BattleManagement: React.FC = () => {
 
     try {
       const requestBody: any = { name: newBattleName.trim() };
-      
+
       if (arenaWidth) {
         requestBody.width = parseInt(arenaWidth, 10);
       }
@@ -73,12 +73,12 @@ const BattleManagement: React.FC = () => {
         },
         body: JSON.stringify(requestBody),
       });
-      
+
       if (response.ok) {
         const newBattle = await response.json();
-        setBattles((prevBattles) => [...prevBattles, newBattle]);
+        setBattles(prevBattles => [...prevBattles, newBattle]);
         setSuccessMessage(`Battle "${newBattle.name}" created successfully!`);
-        
+
         // Reset form
         setNewBattleName('');
         setArenaWidth('');
@@ -86,7 +86,7 @@ const BattleManagement: React.FC = () => {
         setRobotMovementTime('');
         setShowCreateForm(false);
         setError(null);
-        
+
         // Clear success message after 3 seconds
         setTimeout(() => setSuccessMessage(''), 3000);
       } else {
@@ -109,9 +109,7 @@ const BattleManagement: React.FC = () => {
       )}
 
       {error && (
-        <div style={{ color: 'red', marginBottom: '10px' }}>
-          {error}
-        </div>
+        <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
       )}
 
       {isLoading ? (
@@ -122,16 +120,33 @@ const BattleManagement: React.FC = () => {
         <div>
           <h3>Current Battles</h3>
           <div style={{ marginBottom: '20px' }}>
-            {battles.map((battle) => (
-              <div key={battle.id} style={{ border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}>
+            {battles.map(battle => (
+              <div
+                key={battle.id}
+                style={{
+                  border: '1px solid #ccc',
+                  padding: '10px',
+                  margin: '10px 0',
+                }}
+              >
                 <h4>{battle.name}</h4>
-                <p><strong>Status:</strong> {battle.state}</p>
-                <p><strong>Arena:</strong> {battle.arenaWidth} x {battle.arenaHeight}</p>
-                <p><strong>Robot Movement Time:</strong> {battle.robotMovementTimeSeconds}s</p>
-                <p><strong>Robots ({battle.robotCount}):</strong></p>
+                <p>
+                  <strong>Status:</strong> {battle.state}
+                </p>
+                <p>
+                  <strong>Arena:</strong> {battle.arenaWidth} x{' '}
+                  {battle.arenaHeight}
+                </p>
+                <p>
+                  <strong>Robot Movement Time:</strong>{' '}
+                  {battle.robotMovementTimeSeconds}s
+                </p>
+                <p>
+                  <strong>Robots ({battle.robotCount}):</strong>
+                </p>
                 {battle.robots.length > 0 ? (
                   <ul>
-                    {battle.robots.map((robot) => (
+                    {battle.robots.map(robot => (
                       <li key={robot.id}>
                         {robot.name} - Status: {robot.status}
                       </li>
@@ -150,46 +165,52 @@ const BattleManagement: React.FC = () => {
         {!showCreateForm ? (
           <button onClick={() => setShowCreateForm(true)}>Create Battle</button>
         ) : (
-          <div style={{ border: '1px solid #ccc', padding: '20px', marginTop: '20px' }}>
+          <div
+            style={{
+              border: '1px solid #ccc',
+              padding: '20px',
+              marginTop: '20px',
+            }}
+          >
             <h3>Create a New Battle</h3>
-            
+
             <div style={{ marginBottom: '10px' }}>
               <label>Battle Name (required):</label>
               <input
                 type="text"
                 placeholder="Enter battle name"
                 value={newBattleName}
-                onChange={(e) => setNewBattleName(e.target.value)}
+                onChange={e => setNewBattleName(e.target.value)}
                 style={{ width: '100%', padding: '5px' }}
               />
             </div>
-            
+
             <div style={{ marginBottom: '10px' }}>
               <label>Arena Width (optional):</label>
               <input
                 type="number"
                 placeholder="Default arena width"
                 value={arenaWidth}
-                onChange={(e) => setArenaWidth(e.target.value)}
+                onChange={e => setArenaWidth(e.target.value)}
                 style={{ width: '100%', padding: '5px' }}
                 min="10"
                 max="1000"
               />
             </div>
-            
+
             <div style={{ marginBottom: '10px' }}>
               <label>Arena Height (optional):</label>
               <input
                 type="number"
                 placeholder="Default arena height"
                 value={arenaHeight}
-                onChange={(e) => setArenaHeight(e.target.value)}
+                onChange={e => setArenaHeight(e.target.value)}
                 style={{ width: '100%', padding: '5px' }}
                 min="10"
                 max="1000"
               />
             </div>
-            
+
             <div style={{ marginBottom: '10px' }}>
               <label>Robot Movement Time (seconds, optional):</label>
               <input
@@ -197,24 +218,29 @@ const BattleManagement: React.FC = () => {
                 step="0.1"
                 placeholder="Default movement time"
                 value={robotMovementTime}
-                onChange={(e) => setRobotMovementTime(e.target.value)}
+                onChange={e => setRobotMovementTime(e.target.value)}
                 style={{ width: '100%', padding: '5px' }}
                 min="0.1"
               />
             </div>
-            
+
             <div>
-              <button onClick={handleCreateBattle} style={{ marginRight: '10px' }}>
+              <button
+                onClick={handleCreateBattle}
+                style={{ marginRight: '10px' }}
+              >
                 Create
               </button>
-              <button onClick={() => {
-                setShowCreateForm(false);
-                setNewBattleName('');
-                setArenaWidth('');
-                setArenaHeight('');
-                setRobotMovementTime('');
-                setError(null);
-              }}>
+              <button
+                onClick={() => {
+                  setShowCreateForm(false);
+                  setNewBattleName('');
+                  setArenaWidth('');
+                  setArenaHeight('');
+                  setRobotMovementTime('');
+                  setError(null);
+                }}
+              >
                 Cancel
               </button>
             </div>
@@ -226,4 +252,3 @@ const BattleManagement: React.FC = () => {
 };
 
 export default BattleManagement;
-

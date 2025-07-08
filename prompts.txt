@@ -433,3 +433,6 @@ Enhance the robot-demo with a test and implementation to match the new scenario 
 
 ## Seventy-second Prompt
 Implement the missing step definition for the scenario "Create a battle and move robots until the time limit is reached" in the robot-demo project. The step "I should be able to move the robots around the arena until a specified time has passed" is undefined and causing the test to fail.
+
+## Seventy-third Prompt
+In the robo-demo project, the start-battle.sh script does not pass parameters correctly to the Kotlin main program. Change the main program to accept named parameters. Adjust the script to support any combination of those parameters being supplied (url, time, stop_on_crash). Update the script to, default to using the default values. The stop on crash default should be false. add instructions on how to use these parameters to the readme. Make sure the tests still work. Update the prompts.txt with this prompt.

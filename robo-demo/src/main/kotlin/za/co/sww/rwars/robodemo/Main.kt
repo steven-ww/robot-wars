@@ -25,7 +25,7 @@ private fun renderArena(width: Int, height: Int, robots: List<Robot>) {
     val arena = Array(height) { Array(width) { "." } }
 
     // Place robots on the arena
-    robots.forEachIndexed { index, robot ->
+    robots.forEachIndexed { _, robot ->
         // Ensure robot position is within arena bounds
         if (robot.positionX in 0 until width && robot.positionY in 0 until height) {
             // Use the first letter of the robot's name as its marker
@@ -51,30 +51,81 @@ private fun renderArena(width: Int, height: Int, robots: List<Robot>) {
 }
 
 /**
+ * Data class to hold application configuration parsed from command line arguments.
+ */
+data class AppConfig(
+    val baseUrl: String = "http://localhost:8080",
+    val timeLimit: Duration = Duration.ofMinutes(5),
+    val stopOnCrash: Boolean = false,
+)
+
+/**
+ * Parses command line arguments into an AppConfig object.
+ * Supports named parameters: --url, --time, --stop-on-crash
+ */
+fun parseArgs(args: Array<String>): AppConfig {
+    var baseUrl = "http://localhost:8080"
+    var timeLimit = Duration.ofMinutes(5)
+    var stopOnCrash = false
+
+    var i = 0
+    while (i < args.size) {
+        when {
+            args[i] == "--url" && i + 1 < args.size -> {
+                baseUrl = args[i + 1]
+                i += 2
+            }
+            args[i] == "--time" && i + 1 < args.size -> {
+                val timeLimitArg = args[i + 1]
+                timeLimit = if (timeLimitArg.endsWith("s")) {
+                    Duration.ofSeconds(timeLimitArg.dropLast(1).toLong())
+                } else if (timeLimitArg.endsWith("m")) {
+                    Duration.ofMinutes(timeLimitArg.dropLast(1).toLong())
+                } else {
+                    Duration.ofMinutes(timeLimitArg.toLong())
+                }
+                i += 2
+            }
+            args[i] == "--stop-on-crash" -> {
+                stopOnCrash = true
+                i += 1
+            }
+            args[i].startsWith("--") -> {
+                logger.warn("Unknown parameter: ${args[i]}")
+                i += 1
+            }
+            else -> {
+                i += 1
+            }
+        }
+    }
+
+    return AppConfig(baseUrl, timeLimit, stopOnCrash)
+}
+
+/**
  * Main entry point for the robo-demo application.
  * This application demonstrates the use of the Robot Wars API to:
  * 1. Create a new battle
  * 2. Register robots
  * 3. Start the battle
  * 4. Move robots around until one crashes or time limit is reached
+ *
+ * Supported parameters:
+ * --url <baseUrl> : Base URL for the Robot Wars API (default: http://localhost:8080)
+ * --time <time>   : Time limit for the battle (e.g., 5m, 30s) (default: 5m)
+ * --stop-on-crash : Stop the demo when the first robot crashes (default: false)
  */
 fun main(args: Array<String>) = runBlocking {
     logger.info("Starting Robot Wars Demo")
 
-    val baseUrl = args.getOrElse(0) { "http://localhost:8080" }
-    logger.info("Using base URL: $baseUrl")
+    val config = parseArgs(args)
+    logger.info("Using base URL: ${config.baseUrl}")
+    logger.info("Time limit set to: ${config.timeLimit}")
+    logger.info("Stop on crash: ${config.stopOnCrash}")
 
-    // Parse time limit argument (second argument)
-    val timeLimitArg = args.getOrNull(1) ?: "5m"
-    val timeLimit = if (timeLimitArg.endsWith("s")) {
-        Duration.ofSeconds(timeLimitArg.dropLast(1).toLong())
-    } else {
-        Duration.ofMinutes(timeLimitArg.dropLast(1).toLong())
-    }
-    logger.info("Time limit set to: $timeLimit")
-
-    val battleApiClient = BattleApiClient(baseUrl)
-    val robotApiClient = RobotApiClient(baseUrl)
+    val battleApiClient = BattleApiClient(config.baseUrl)
+    val robotApiClient = RobotApiClient(config.baseUrl)
 
     try {
         // Create a new battle with a 20x20 arena
@@ -107,7 +158,7 @@ fun main(args: Array<String>) = runBlocking {
         renderArena(battle.arenaWidth, battle.arenaHeight, listOf(restroDetails, reqBotDetails))
 
         // Move robots until one crashes or time limit is reached
-        moveRobotsUntilCrashOrTimeout(robotApiClient, battle.id, restro, reqBot, timeLimit)
+        moveRobotsUntilCrashOrTimeout(robotApiClient, battle.id, restro, reqBot, config.timeLimit, config.stopOnCrash)
 
         logger.info("Demo completed successfully")
     } catch (e: Exception) {
@@ -168,6 +219,7 @@ private suspend fun moveRobotsUntilCrashOrTimeout(
     robot1: Robot,
     robot2: Robot,
     timeLimit: Duration,
+    stopOnCrash: Boolean,
 ) {
     val startTime = Instant.now()
     val directions = listOf("NORTH", "EAST", "SOUTH", "WEST", "NE", "SE", "SW", "NW")
@@ -176,7 +228,7 @@ private suspend fun moveRobotsUntilCrashOrTimeout(
 
     logger.info("Moving robots around the arena")
 
-    while (!robot1Crashed && !robot2Crashed && Duration.between(startTime, Instant.now()) < timeLimit) {
+    while (Duration.between(startTime, Instant.now()) < timeLimit && (!stopOnCrash || (!robot1Crashed && !robot2Crashed))) {
         // Move robot1
         if (!robot1Crashed) {
             val direction1 = directions.random()
@@ -194,10 +246,12 @@ private suspend fun moveRobotsUntilCrashOrTimeout(
                 if (robotStatus1.status == "CRASHED") {
                     logger.info("${robot1.name} crashed into a wall!")
                     robot1Crashed = true
+                    if (stopOnCrash) return
                 }
             } catch (e: Exception) {
                 logger.error("Error moving ${robot1.name}", e)
                 robot1Crashed = true
+                if (stopOnCrash) return
             }
         }
 
@@ -218,10 +272,12 @@ private suspend fun moveRobotsUntilCrashOrTimeout(
                 if (robotStatus2.status == "CRASHED") {
                     logger.info("${robot2.name} crashed into a wall!")
                     robot2Crashed = true
+                    if (stopOnCrash) return
                 }
             } catch (e: Exception) {
                 logger.error("Error moving ${robot2.name}", e)
                 robot2Crashed = true
+                if (stopOnCrash) return
             }
         }
 

@@ -6,9 +6,9 @@ import ArenaComponent from './components/ArenaComponent';
 import BattleManagement from './components/BattleManagement';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'rest' | 'websocket' | 'arena' | 'battles'>(
-    'battles'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'rest' | 'websocket' | 'arena' | 'battles'
+  >('battles');
 
   return (
     <div className="App">
