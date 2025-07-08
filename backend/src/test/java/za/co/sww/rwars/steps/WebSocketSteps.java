@@ -130,6 +130,18 @@ public class WebSocketSteps {
         LOGGER.info("Received updated WebSocket message: " + lastReceivedMessage);
     }
 
+    @Then("I should automatically receive a battle state update")
+    public void iShouldAutomaticallyReceiveABattleStateUpdate() throws Exception {
+        // Set up a new latch to wait for automatic broadcast
+        messageLatch = new CountDownLatch(1);
+
+        // Wait for automatic broadcast (should happen when robot starts moving)
+        Assertions.assertTrue(messageLatch.await(5, TimeUnit.SECONDS),
+                "Did not receive automatic WebSocket broadcast within timeout");
+        Assertions.assertNotNull(lastReceivedMessage, "No automatic WebSocket message received");
+        LOGGER.info("Received automatic WebSocket broadcast: " + lastReceivedMessage);
+    }
+
     @And("the battle state should include the arena dimensions {int}x{int}")
     public void theBattleStateShouldIncludeTheArenaDimensions(int width, int height) throws Exception {
         JsonNode jsonNode = parseJsonMessage(lastReceivedMessage);

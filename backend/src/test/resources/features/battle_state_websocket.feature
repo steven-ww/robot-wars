@@ -37,3 +37,10 @@ Feature: Battle State WebSocket
     And I send an "update" message to the websocket
     Then I should receive the updated battle state information
     And the battle state should include battle state "IN_PROGRESS"
+
+  Scenario: Automatic broadcast when robot starts moving
+    Given I am connected to the battle state websocket
+    And the battle is started
+    When robot "TestBot1" moves "NORTH" for 3 blocks
+    Then I should automatically receive a battle state update
+    And the battle state should include the robot "TestBot1" with status "MOVING"

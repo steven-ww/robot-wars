@@ -7,6 +7,7 @@ import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
 import za.co.sww.rwars.backend.model.Robot.Direction;
 import za.co.sww.rwars.backend.model.Robot.RobotStatus;
+import za.co.sww.rwars.backend.websocket.BattleStateSocket;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +51,9 @@ public class BattleService {
     @Inject
     @ConfigProperty(name = "battle.robot.movement-time-seconds", defaultValue = "1")
     private double robotMovementTimeSeconds;
+
+    @Inject
+    private BattleStateSocket battleStateSocket;
 
     /**
      * Gets the default arena width.
@@ -504,6 +508,9 @@ public class BattleService {
         robot.setTargetBlocks(blocks);
         robot.setBlocksRemaining(blocks);
 
+        // Broadcast the state change to WebSocket clients
+        broadcastBattleStateUpdate(battleId);
+
         // Start the movement process
         startRobotMovement(robot, movementTimeSeconds);
 
@@ -566,6 +573,8 @@ public class BattleService {
                 // Update the robot's status if it's not crashed
                 if (robot.getStatus() != RobotStatus.CRASHED) {
                     robot.setStatus(RobotStatus.IDLE);
+                    // Broadcast the status change to IDLE
+                    broadcastBattleStateUpdate(robot.getBattleId());
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -634,6 +643,8 @@ public class BattleService {
             || newY < 0 || newY >= battle.getArenaHeight()) {
             // Robot has crashed into the arena boundary
             robot.setStatus(RobotStatus.CRASHED);
+            // Broadcast the crash state change
+            broadcastBattleStateUpdate(robot.getBattleId());
             return;
         }
 
@@ -643,5 +654,26 @@ public class BattleService {
 
         // Decrement the blocks remaining
         robot.setBlocksRemaining(robot.getBlocksRemaining() - 1);
+
+        // Broadcast the position change
+        broadcastBattleStateUpdate(robot.getBattleId());
+    }
+
+    /**
+     * Broadcasts battle state updates to all connected WebSocket clients.
+     * This method is called whenever robot state changes to ensure real-time updates.
+     *
+     * @param battleId The battle ID to broadcast updates for
+     */
+    private void broadcastBattleStateUpdate(String battleId) {
+        if (battleStateSocket != null && battleId != null) {
+            try {
+                battleStateSocket.broadcastBattleState(battleId);
+            } catch (Exception e) {
+                // Log the error but don't fail the operation
+                System.err.println("Error broadcasting battle state update for battle " + battleId + ": "
+                        + e.getMessage());
+            }
+        }
     }
 }
