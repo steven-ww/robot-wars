@@ -13,12 +13,20 @@ task npmInstall(type: Exec) {
     workingDir = projectDir
 }
 
+// Task to run prettier format check
+task npmFormatCheck(type: Exec) {
+    description = 'Check code formatting with Prettier'
+    commandLine 'npm', 'run', 'format:check'
+    workingDir = projectDir
+    dependsOn npmInstall
+}
+
 // Task to run npm lint
 task npmLint(type: Exec) {
     description = 'Lint the frontend code'
     commandLine 'npm', 'run', 'lint'
     workingDir = projectDir
-    dependsOn npmInstall
+    dependsOn npmFormatCheck
 }
 
 // Task to run npm test
