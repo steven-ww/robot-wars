@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ArenaComponent from './ArenaComponent';
 
 // Define interfaces for battles and robots
 interface Robot {
@@ -28,6 +29,7 @@ const BattleManagement: React.FC = () => {
   const [robotMovementTime, setRobotMovementTime] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [selectedBattleId, setSelectedBattleId] = useState<string | null>(null);
 
   // Fetch battles from the backend API
   useEffect(() => {
@@ -98,6 +100,30 @@ const BattleManagement: React.FC = () => {
     }
   };
 
+  // Handle viewing arena for a selected battle
+  const handleViewArena = (battleId: string) => {
+    setSelectedBattleId(battleId);
+  };
+
+  // Handle going back to battle list
+  const handleBackToBattleList = () => {
+    setSelectedBattleId(null);
+  };
+
+  // If a battle is selected, show the arena component
+  if (selectedBattleId) {
+    return (
+      <div>
+        <button onClick={handleBackToBattleList} style={{ marginBottom: '20px' }}>
+          Back to Battle List
+        </button>
+        <div data-testid="arena-component">
+          <ArenaComponent battleId={selectedBattleId} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h2>Battle Management</h2>
@@ -155,6 +181,21 @@ const BattleManagement: React.FC = () => {
                 ) : (
                   <p>No robots registered</p>
                 )}
+                <button
+                  onClick={() => handleViewArena(battle.id)}
+                  data-testid={`view-arena-${battle.id}`}
+                  style={{
+                    marginTop: '10px',
+                    padding: '5px 10px',
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '3px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  View Arena
+                </button>
               </div>
             ))}
           </div>

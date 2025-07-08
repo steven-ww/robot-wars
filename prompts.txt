@@ -436,3 +436,6 @@ Implement the missing step definition for the scenario "Create a battle and move
 
 ## Seventy-third Prompt
 In the robo-demo project, the start-battle.sh script does not pass parameters correctly to the Kotlin main program. Change the main program to accept named parameters. Adjust the script to support any combination of those parameters being supplied (url, time, stop_on_crash). Update the script to, default to using the default values. The stop on crash default should be false. add instructions on how to use these parameters to the readme. Make sure the tests still work. Update the prompts.txt with this prompt.
+
+## Seventy-fourth Prompt - Amazon Q
+The Frontend code uses BDD. I've updated the battle_management.feature file with a new scenario. Write the tests for this feature file and implement the changes required. Use existing react components for the arena render. The new scenario is the one called "Render the arena for a selected battle"

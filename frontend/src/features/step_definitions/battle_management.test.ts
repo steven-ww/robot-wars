@@ -725,4 +725,47 @@ defineFeature(feature, test => {
       });
     });
   });
+
+  test('Render the arena for a selected battle', ({ given, when, and, then }) => {
+    given('the battle management API is available', () => {
+      // Mock GET request with multiple battles
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockBattles,
+      } as Response);
+    });
+
+    given('I am on the battle management page', () => {
+      render(React.createElement(BattleManagement));
+    });
+
+    when('new battles are created by other users', () => {
+      // This would happen on the server side - battles are already loaded
+    });
+
+    and('I select a battle to view', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Test Battle 1')).toBeInTheDocument();
+      });
+
+      // Find and click the "View Arena" button for the first battle
+      const viewArenaButton = screen.getByTestId('view-arena-battle-1');
+      await userInteraction(() => {
+        fireEvent.click(viewArenaButton);
+      });
+    });
+
+    then('I should see arena for the battle rendered', async () => {
+      await waitFor(() => {
+        // Check that the arena component is rendered
+        expect(screen.getByTestId('arena-component')).toBeInTheDocument();
+      });
+
+      // Check that the arena shows the correct battle information
+      expect(screen.getByText('Battle Arena')).toBeInTheDocument();
+      
+      // Check that we can go back to the battle list
+      expect(screen.getByText('Back to Battle List')).toBeInTheDocument();
+    });
+  });
 });
