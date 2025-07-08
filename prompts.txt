@@ -427,3 +427,9 @@ You have still left off a most of the file. Rather do this. Restore the file fro
 
 ## Seventieth Prompt
 Three tests are still failing. Try and fix these
+
+## Seventy-first Prompt
+Enhance the robot-demo with a test and implementation to match the new scenario I've added to the robot_battle.feature called "Create a battle and move robots until the time limit is reached". This is partially implemented already. For the test, set the duration tht the robots will move around to 5 seconds. However, in the start_battle.sh script, allow the user to supply this and default the value to 5 minutes.
+
+## Seventy-second Prompt
+Implement the missing step definition for the scenario "Create a battle and move robots until the time limit is reached" in the robot-demo project. The step "I should be able to move the robots around the arena until a specified time has passed" is undefined and causing the test to fail.
