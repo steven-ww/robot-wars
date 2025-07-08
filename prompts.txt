@@ -468,3 +468,9 @@ The front-end projects Arena automatically applies updates received via a websoc
 
 ## Eighty-third Prompt
 fix the checkstyle issues in the backend project
+
+## Eighty-forth Prompt
+The robots started in the robo-demo project seem to move in turn. That is, robot A moves, thnen robot B moves. Is this because of the way the robot-demo is written or a issue with the backend and how it implements the moving of the robots? The robots should move completing independently of each other
+
+## Eighty-fourth Prompt
+fix the robo-demo ktlint errors
