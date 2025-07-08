@@ -462,3 +462,9 @@ fix the linting errors in the frontend project.
 
 ## Eighty-first Prompt
 Why when I run the start_dev.java script (using jbang) does it open two windows the the front-end app
+
+## Eighty-second Prompt
+The front-end projects Arena automatically applies updates received via a websocket to the view. The view does not show changes though. Could it be that the backend project is not updating the websocket whenever something changes for a robot? If so, create a scenario in BBD following the existing style in the backend project, implement the test and the logic to make sure that any change to a robot is communicated via the websocket to the front-end.
+
+## Eighty-third Prompt
+fix the checkstyle issues in the backend project
