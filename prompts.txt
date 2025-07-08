@@ -444,3 +444,5 @@ The Frontend code uses BDD. I've updated the battle_management.feature file with
 When the user selects a battle and the arena component is rendered, there seems to be a websocket connection issue. Given the way the backend project provides for the websocket and any configuration that is setup of runni
 ng locally, why would the arena not be able to connect to the websocket successfully?
 
+## Seventy-sixth Prompt
+The battle arena tab/button on the main/starting page of the front-end app should show the state of only one battle. That should be the last selected battle or the default battle. It should never attempt to show a battle without first getting the battle id (selected or default). Create a new scenario in the feature file to drive this behaviour out with BDD. Create the test and adjust the implementation to have it pass
