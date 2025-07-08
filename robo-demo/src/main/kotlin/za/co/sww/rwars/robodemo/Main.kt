@@ -64,6 +64,15 @@ fun main(args: Array<String>) = runBlocking {
     val baseUrl = args.getOrElse(0) { "http://localhost:8080" }
     logger.info("Using base URL: $baseUrl")
 
+    // Parse time limit argument (second argument)
+    val timeLimitArg = args.getOrNull(1) ?: "5m"
+    val timeLimit = if (timeLimitArg.endsWith("s")) {
+        Duration.ofSeconds(timeLimitArg.dropLast(1).toLong())
+    } else {
+        Duration.ofMinutes(timeLimitArg.dropLast(1).toLong())
+    }
+    logger.info("Time limit set to: $timeLimit")
+
     val battleApiClient = BattleApiClient(baseUrl)
     val robotApiClient = RobotApiClient(baseUrl)
 
@@ -98,7 +107,7 @@ fun main(args: Array<String>) = runBlocking {
         renderArena(battle.arenaWidth, battle.arenaHeight, listOf(restroDetails, reqBotDetails))
 
         // Move robots until one crashes or time limit is reached
-        moveRobotsUntilCrashOrTimeout(robotApiClient, battle.id, restro, reqBot)
+        moveRobotsUntilCrashOrTimeout(robotApiClient, battle.id, restro, reqBot, timeLimit)
 
         logger.info("Demo completed successfully")
     } catch (e: Exception) {
@@ -158,9 +167,9 @@ private suspend fun moveRobotsUntilCrashOrTimeout(
     battleId: String,
     robot1: Robot,
     robot2: Robot,
+    timeLimit: Duration,
 ) {
     val startTime = Instant.now()
-    val timeLimit = Duration.ofMinutes(5)
     val directions = listOf("NORTH", "EAST", "SOUTH", "WEST", "NE", "SE", "SW", "NW")
     var robot1Crashed = false
     var robot2Crashed = false
