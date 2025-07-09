@@ -232,7 +232,7 @@ public class BattleSteps {
 
     @Then("I should receive an error indicating the battle name already exists")
     public void iShouldReceiveAnErrorIndicatingTheBattleNameAlreadyExists() {
-        response.then().statusCode(400);
+        response.then().statusCode(409);
         response.then().body("message", Matchers.containsString("already exists"));
     }
 

@@ -8,7 +8,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import za.co.sww.rwars.robodemo.model.Battle
+import za.co.sww.rwars.robodemo.model.RadarResponse
 import za.co.sww.rwars.robodemo.model.Robot
+import za.co.sww.rwars.robodemo.model.RobotStatus
 import java.io.IOException
 
 /**
@@ -48,6 +50,35 @@ class RobotApiClient(private val baseUrl: String) {
     }
 
     /**
+     * Registers a robot for a specific battle.
+     *
+     * @param name The name of the robot
+     * @param battleId The ID of the battle to join
+     * @return The registered robot
+     * @throws IOException if the API call fails
+     */
+    @Throws(IOException::class)
+    suspend fun registerRobotForBattle(name: String, battleId: String): Robot {
+        val requestBody = mapper.writeValueAsString(
+            mapOf("name" to name),
+        ).toRequestBody(jsonMediaType)
+
+        val request = Request.Builder()
+            .url("$baseUrl/api/robots/register/$battleId")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw IOException("Unexpected response code: ${response.code}")
+            }
+
+            val responseBody = response.body?.string() ?: throw IOException("Empty response body")
+            return mapper.readValue(responseBody)
+        }
+    }
+
+    /**
      * Starts a battle.
      *
      * @param battleId The ID of the battle to start
@@ -57,7 +88,7 @@ class RobotApiClient(private val baseUrl: String) {
     @Throws(IOException::class)
     suspend fun startBattle(battleId: String): Battle {
         val request = Request.Builder()
-            .url("$baseUrl/api/robots/battle/$battleId/start")
+            .url("$baseUrl/api/battles/$battleId/start")
             .post("".toRequestBody(jsonMediaType))
             .build()
 
@@ -96,17 +127,18 @@ class RobotApiClient(private val baseUrl: String) {
     }
 
     /**
-     * Gets the details of a robot.
+     * Gets a robot's status without revealing its absolute position.
+     * This is what robots should use to check their own status.
      *
      * @param battleId The ID of the battle
      * @param robotId The ID of the robot
-     * @return The robot details
+     * @return The robot status (without position information)
      * @throws IOException if the API call fails
      */
     @Throws(IOException::class)
-    suspend fun getRobotDetails(battleId: String, robotId: String): Robot {
+    suspend fun getRobotStatus(battleId: String, robotId: String): RobotStatus {
         val request = Request.Builder()
-            .url("$baseUrl/api/robots/battle/$battleId/robot/$robotId/details")
+            .url("$baseUrl/api/robots/battle/$battleId/robot/$robotId/status")
             .get()
             .build()
 
@@ -141,6 +173,36 @@ class RobotApiClient(private val baseUrl: String) {
 
         val request = Request.Builder()
             .url("$baseUrl/api/robots/battle/$battleId/robot/$robotId/move")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw IOException("Unexpected response code: ${response.code}")
+            }
+
+            val responseBody = response.body?.string() ?: throw IOException("Empty response body")
+            return mapper.readValue(responseBody)
+        }
+    }
+
+    /**
+     * Performs a radar scan for a robot to detect nearby walls and other robots.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param range The radar scan range (default: 5)
+     * @return The radar response containing detected objects
+     * @throws IOException if the API call fails
+     */
+    @Throws(IOException::class)
+    suspend fun performRadarScan(battleId: String, robotId: String, range: Int = 5): RadarResponse {
+        val requestBody = mapper.writeValueAsString(
+            mapOf("range" to range),
+        ).toRequestBody(jsonMediaType)
+
+        val request = Request.Builder()
+            .url("$baseUrl/api/robots/battle/$battleId/robot/$robotId/radar")
             .post(requestBody)
             .build()
 

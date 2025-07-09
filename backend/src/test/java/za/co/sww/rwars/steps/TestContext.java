@@ -35,6 +35,10 @@ public class TestContext {
         return new HashMap<>(battlesByName);
     }
 
+    public String getLastBattleId() {
+        return battlesByName.values().stream().reduce((first, second) -> second).orElse(null);
+    }
+
     public void storeRobot(String robotName, String robotId) {
         robotsByName.put(robotName, robotId);
     }

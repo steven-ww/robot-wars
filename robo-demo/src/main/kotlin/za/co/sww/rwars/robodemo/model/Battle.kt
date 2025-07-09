@@ -14,4 +14,6 @@ data class Battle(
     val state: String = "READY",
     val robots: List<Robot> = emptyList(),
     val robotMovementTimeSeconds: Double = 1.0,
+    val winnerId: String? = null,
+    val winnerName: String? = null,
 )

@@ -11,6 +11,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import org.slf4j.LoggerFactory
 import za.co.sww.rwars.robodemo.model.Battle
+import za.co.sww.rwars.robodemo.model.RadarResponse
 import za.co.sww.rwars.robodemo.model.Robot
 import java.util.UUID
 
@@ -135,7 +136,7 @@ class WireMockStubs {
         )
 
         WireMock.stubFor(
-            post(urlPathMatching("/api/robots/battle/$battleId/start"))
+            post(urlPathMatching("/api/battles/$battleId/start"))
                 .willReturn(
                     aResponse()
                         .withStatus(200)
@@ -191,39 +192,39 @@ class WireMockStubs {
     }
 
     /**
-     * Sets up a stub for getting robot details.
+     * Sets up a stub for getting robot status (position-blind).
      *
      * @param robotName The name of the robot
      * @param status The status of the robot (IDLE, MOVING, CRASHED)
-     * @return The robot details
+     * @return The robot status
      */
-    fun stubGetRobotDetails(robotName: String, status: String = "IDLE"): Robot {
+    fun stubGetRobotStatus(robotName: String, status: String = "IDLE"): za.co.sww.rwars.robodemo.model.RobotStatus {
         val robotId = robotIds[robotName] ?: throw IllegalArgumentException("Robot not found: $robotName")
 
-        val robot = Robot(
+        val robotStatus = za.co.sww.rwars.robodemo.model.RobotStatus(
             id = robotId,
             name = robotName,
             battleId = battleId,
-            positionX = 0,
-            positionY = 0,
             direction = "NORTH",
             status = status,
             blocksRemaining = 0,
             targetBlocks = 0,
+            hitPoints = 100,
+            maxHitPoints = 100,
         )
 
         WireMock.stubFor(
-            get(urlPathMatching("/api/robots/battle/$battleId/robot/$robotId/details"))
+            get(urlPathMatching("/api/robots/battle/$battleId/robot/$robotId/status"))
                 .willReturn(
                     aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(mapper.writeValueAsString(robot)),
+                        .withBody(mapper.writeValueAsString(robotStatus)),
                 ),
         )
 
-        logger.info("Stubbed get robot details endpoint for robot: $robotName with status: $status")
-        return robot
+        logger.info("Stubbed get robot status endpoint for robot: $robotName with status: $status")
+        return robotStatus
     }
 
     /**
@@ -295,45 +296,39 @@ class WireMockStubs {
     }
 
     /**
-     * Sets up a stub for getting robot details with a specific position.
+     * Sets up a stub for radar scanning.
      *
      * @param robotName The name of the robot
-     * @param status The status of the robot (IDLE, MOVING, CRASHED)
-     * @param positionX The X coordinate of the robot
-     * @param positionY The Y coordinate of the robot
-     * @return The robot details
+     * @param range The radar range
+     * @param detections List of detections to return
+     * @return The radar response
      */
-    fun stubGetRobotDetailsWithPosition(
-        robotName: String,
-        status: String = "IDLE",
-        positionX: Int = 0,
-        positionY: Int = 0,
-    ): Robot {
+    fun stubRadarScan(robotName: String, range: Int = 5, detections: List<RadarResponse.Detection> = emptyList()): RadarResponse {
         val robotId = robotIds[robotName] ?: throw IllegalArgumentException("Robot not found: $robotName")
 
-        val robot = Robot(
-            id = robotId,
-            name = robotName,
-            battleId = battleId,
-            positionX = positionX,
-            positionY = positionY,
-            direction = "NORTH",
-            status = status,
-            blocksRemaining = 0,
-            targetBlocks = 0,
+        val radarResponse = RadarResponse(
+            range = range,
+            detections = detections,
         )
 
         WireMock.stubFor(
-            get(urlPathMatching("/api/robots/battle/$battleId/robot/$robotId/details"))
+            post(urlPathMatching("/api/robots/battle/$battleId/robot/$robotId/radar"))
+                .withRequestBody(
+                    equalToJson(
+                        mapper.writeValueAsString(mapOf("range" to range)),
+                        true,
+                        false,
+                    ),
+                )
                 .willReturn(
                     aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(mapper.writeValueAsString(robot)),
+                        .withBody(mapper.writeValueAsString(radarResponse)),
                 ),
         )
 
-        logger.info("Stubbed get robot details endpoint for robot: $robotName with status: $status at position: ($positionX, $positionY)")
-        return robot
+        logger.info("Stubbed radar scan endpoint for robot: $robotName with range: $range, detections: ${detections.size}")
+        return radarResponse
     }
 }
