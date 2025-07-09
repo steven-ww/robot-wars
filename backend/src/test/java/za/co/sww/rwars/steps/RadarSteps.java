@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import za.co.sww.rwars.backend.service.BattleService;
 import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
-import za.co.sww.rwars.backend.model.Wall;
-import za.co.sww.rwars.steps.TestContext;
 
 import java.util.List;
 import java.util.Map;

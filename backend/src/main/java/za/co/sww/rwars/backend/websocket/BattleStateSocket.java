@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
+import za.co.sww.rwars.backend.model.Wall;
 import za.co.sww.rwars.backend.service.BattleService;
 
 /**
@@ -124,15 +125,15 @@ public class BattleStateSocket {
                 Battle battle = battleService.getBattleStatus(battleId);
 
                 // Create a response with battle state information
-                BattleStateResponse response = new BattleStateResponse(
-                    battle.getId(),
-                    battle.getName(),
-                    battle.getArenaWidth(),
-                    battle.getArenaHeight(),
-                    battle.getRobotMovementTimeSeconds(),
-                    battle.getState().toString(),
-                    battle.getRobots()
-                );
+                BattleStateResponse response = new BattleStateResponse();
+                response.setBattleId(battle.getId());
+                response.setBattleName(battle.getName());
+                response.setArenaWidth(battle.getArenaWidth());
+                response.setArenaHeight(battle.getArenaHeight());
+                response.setRobotMovementTimeSeconds(battle.getRobotMovementTimeSeconds());
+                response.setBattleState(battle.getState().toString());
+                response.setRobots(battle.getRobots());
+                response.setWalls(battle.getWalls());
 
                 // Convert to JSON and send
                 ObjectMapper mapper = new ObjectMapper();
@@ -194,19 +195,9 @@ public class BattleStateSocket {
         private double robotMovementTimeSeconds;
         private String battleState;
         private java.util.List<Robot> robots;
+        private java.util.List<Wall> walls;
 
         public BattleStateResponse() {
-        }
-
-        public BattleStateResponse(String battleId, String battleName, int arenaWidth, int arenaHeight,
-                                  double robotMovementTimeSeconds, String battleState, java.util.List<Robot> robots) {
-            this.battleId = battleId;
-            this.battleName = battleName;
-            this.arenaWidth = arenaWidth;
-            this.arenaHeight = arenaHeight;
-            this.robotMovementTimeSeconds = robotMovementTimeSeconds;
-            this.battleState = battleState;
-            this.robots = robots;
         }
 
         public String getBattleId() {
@@ -263,6 +254,14 @@ public class BattleStateSocket {
 
         public void setRobots(java.util.List<Robot> robots) {
             this.robots = robots;
+        }
+
+        public java.util.List<Wall> getWalls() {
+            return walls;
+        }
+
+        public void setWalls(java.util.List<Wall> walls) {
+            this.walls = walls;
         }
     }
 
