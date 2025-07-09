@@ -554,3 +554,5 @@ java.io.IOException: Unexpected response code: 409
 
 ## Ninety-third Prompt
 Follow the guidelines in the .junie/guidelines.md file. Update the robo-demo project to no longer print out the arena for any tests. The entire logic to render or view the arena on the console should be removed along with any tests for it.
+## Ninety-fourth Prompt
+In the backend project the api to start a battle is in the Robots Resource. Given this is not a robot function, but a battle function, move this to the Battle Resource. Fix all tests, update the robo-demo and ensure that the frontend project still works. Follow the guidelines in the .junie/guidelines.md file.

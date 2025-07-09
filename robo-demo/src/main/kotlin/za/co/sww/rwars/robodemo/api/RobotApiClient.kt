@@ -86,7 +86,7 @@ class RobotApiClient(private val baseUrl: String) {
     @Throws(IOException::class)
     suspend fun startBattle(battleId: String): Battle {
         val request = Request.Builder()
-            .url("$baseUrl/api/robots/battle/$battleId/start")
+            .url("$baseUrl/api/battles/$battleId/start")
             .post("".toRequestBody(jsonMediaType))
             .build()
 

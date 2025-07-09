@@ -6,6 +6,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -63,6 +64,30 @@ public class BattleResource {
             } else {
                 battle = battleService.createBattle(request.name());
             }
+            return Response.ok(battle).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * Starts the battle.
+     *
+     * @param battleId The battle ID
+     * @return The battle status
+     */
+    @POST
+    @Path("/{battleId}/start")
+    @RunOnVirtualThread
+    public Response startBattle(@PathParam("battleId") String battleId) {
+        try {
+            Battle battle = battleService.startBattle(battleId);
             return Response.ok(battle).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
