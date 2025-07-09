@@ -39,3 +39,11 @@ Feature: Radar API
     When I invoke the radar API with range 3
     Then I should receive an empty radar response
     And no obstacles should be detected within the scanned area
+
+  Scenario: Radar returns coordinates relative to robot position
+    Given I create a new battle with name "Relative Coordinates Battle" and dimensions 20x20
+    And I have registered my robot "RelativeBot"
+    And the battle has started
+    When I invoke the radar API with range 5
+    Then the radar response should contain coordinates relative to the robot's position
+    And no detection should have the same coordinates as the robot's absolute position

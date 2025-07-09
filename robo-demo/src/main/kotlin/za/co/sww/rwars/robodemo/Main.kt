@@ -425,11 +425,11 @@ private suspend fun chooseSafeDirection(
             radarResponse.detections.forEach { detection ->
                 val distance = kotlin.math.sqrt(
                     (
-                        (detection.x - currentX) * (detection.x - currentX) +
-                            (detection.y - currentY) * (detection.y - currentY)
+                        detection.x * detection.x +
+                            detection.y * detection.y
                         ).toDouble(),
                 ).toInt()
-                logger.info("   ${detection.type.name} detected at (${detection.x}, ${detection.y}) - distance: $distance - ${detection.details}")
+                logger.info("   ${detection.type.name} detected at relative position (${detection.x}, ${detection.y}) - distance: $distance - ${detection.details}")
             }
         }
 
@@ -471,6 +471,7 @@ private suspend fun chooseSafeDirection(
 /**
  * Determines if a direction is safe based on radar detections.
  * Checks if moving in the given direction would lead towards a detected obstacle.
+ * Now works with relative coordinates from radar (robot position is 0,0).
  */
 private fun isDirectionSafe(
     direction: String,
@@ -494,24 +495,22 @@ private fun isDirectionSafe(
     // Check if any detected walls are in the path of this direction
     for (detection in detections) {
         if (detection.type.name == "WALL") {
-            val wallX = detection.x
-            val wallY = detection.y
+            // Detection coordinates are now relative to robot position (0,0)
+            val relativeX = detection.x
+            val relativeY = detection.y
 
-            // Check if the wall is in the general direction we want to move
-            val wallDeltaX = wallX - currentX
-            val wallDeltaY = wallY - currentY
-
-            // If the wall is in the same direction as our intended movement, it's not safe
-            if (deltaX != 0 && (wallDeltaX * deltaX > 0) && Math.abs(wallDeltaX) <= 2) {
-                if (deltaY == 0 || (wallDeltaY * deltaY >= 0 && Math.abs(wallDeltaY) <= 2)) {
-                    logger.debug("   ❌ $direction unsafe: Wall at ($wallX, $wallY) blocks path from ($currentX, $currentY)")
+            // Check if the wall is in the same direction as our intended movement
+            // If we're moving in a direction and there's a wall in that direction within 2 blocks, it's unsafe
+            if (deltaX != 0 && (relativeX * deltaX > 0) && Math.abs(relativeX) <= 2) {
+                if (deltaY == 0 || (relativeY * deltaY >= 0 && Math.abs(relativeY) <= 2)) {
+                    logger.debug("   ❌ $direction unsafe: Wall at relative position ($relativeX, $relativeY) blocks path")
                     return false
                 }
             }
 
-            if (deltaY != 0 && (wallDeltaY * deltaY > 0) && Math.abs(wallDeltaY) <= 2) {
-                if (deltaX == 0 || (wallDeltaX * deltaX >= 0 && Math.abs(wallDeltaX) <= 2)) {
-                    logger.debug("   ❌ $direction unsafe: Wall at ($wallX, $wallY) blocks path from ($currentX, $currentY)")
+            if (deltaY != 0 && (relativeY * deltaY > 0) && Math.abs(relativeY) <= 2) {
+                if (deltaX == 0 || (relativeX * deltaX >= 0 && Math.abs(relativeX) <= 2)) {
+                    logger.debug("   ❌ $direction unsafe: Wall at relative position ($relativeX, $relativeY) blocks path")
                     return false
                 }
             }

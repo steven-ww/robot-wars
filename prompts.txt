@@ -593,3 +593,7 @@ kotlinx.coroutines.JobCancellationException: StandaloneCoroutine was cancelled
 15:03:35.582 [main] INFO  Main - Demo completed successfully
 ## One Hundred and First Prompt
 I keep seeing crashes. To try get more information on this, show the radar results for each scan if the radar detected anything. Also show the decision that the "radar guided" movement made based on the results of the scan.
+## One Hundred and second Prompt
+Given that a robot should not know its absolute position in the arena it makes sense that the radar data returned conveys items detected in relation to the robot and not in absolute co-ordinates in the arena. Confirm that the backend api does return radar results relative to the robot and add a scenario to the feature that tests for this.
+## One Hundred and third Prompt
+Go ahead and implement the changes to make the test pass based on the solution you've identified.
