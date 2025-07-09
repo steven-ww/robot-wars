@@ -334,11 +334,13 @@ private suspend fun moveRobotContinuously(
             val blocks = (1..2).random() // Reduced range to be more cautious
 
             if (safeDirection != null) {
-                logger.info("🚀 Moving ${robot.name} $blocks blocks $safeDirection (radar-guided)")
+                val (destX, destY) = calculateDestination(robotStatus.positionX, robotStatus.positionY, safeDirection, blocks)
+                logger.info("🚀 Moving ${robot.name} $blocks blocks $safeDirection (radar-guided from (${robotStatus.positionX}, ${robotStatus.positionY}) to (~$destX, ~$destY))")
             } else {
                 // If no safe direction found, try a random direction with minimal movement
                 val direction = directions.random()
-                logger.info("🚀 Moving ${robot.name} 1 block $direction (random - no safe path detected)")
+                val (destX, destY) = calculateDestination(robotStatus.positionX, robotStatus.positionY, direction, 1)
+                logger.info("🚀 Moving ${robot.name} 1 block $direction (random fallback from (${robotStatus.positionX}, ${robotStatus.positionY}) to (~$destX, ~$destY))")
 
                 try {
                     robotApiClient.moveRobot(battleId, robot.id, direction, 1)
@@ -378,6 +380,25 @@ private suspend fun moveRobotContinuously(
 }
 
 /**
+ * Calculates the intended destination coordinates for a movement command.
+ * Used for logging purposes to show where the robot intends to move.
+ */
+private fun calculateDestination(currentX: Int, currentY: Int, direction: String, blocks: Int): Pair<Int, Int> {
+    val (deltaX, deltaY) = when (direction) {
+        "NORTH" -> Pair(0, -blocks)
+        "SOUTH" -> Pair(0, blocks)
+        "EAST" -> Pair(blocks, 0)
+        "WEST" -> Pair(-blocks, 0)
+        "NE" -> Pair(blocks, -blocks)
+        "NW" -> Pair(-blocks, -blocks)
+        "SE" -> Pair(blocks, blocks)
+        "SW" -> Pair(-blocks, blocks)
+        else -> Pair(0, 0)
+    }
+    return Pair(currentX + deltaX, currentY + deltaY)
+}
+
+/**
  * Uses radar to choose a safe direction for robot movement.
  * Analyzes radar data to avoid walls and other robots.
  */
@@ -396,26 +417,52 @@ private suspend fun chooseSafeDirection(
         val currentX = robotDetails.positionX
         val currentY = robotDetails.positionY
 
-        // Analyze each direction for safety
-        val safeDirections = mutableListOf<String>()
-
-        for (direction in directions) {
-            if (isDirectionSafe(direction, currentX, currentY, radarResponse.detections)) {
-                safeDirections.add(direction)
+        // Log detailed radar scan results
+        logger.info("📡 ${robot.name} at ($currentX, $currentY) - Radar scan (range 3):")
+        if (radarResponse.detections.isEmpty()) {
+            logger.info("   No obstacles detected within range")
+        } else {
+            radarResponse.detections.forEach { detection ->
+                val distance = kotlin.math.sqrt(
+                    (
+                        (detection.x - currentX) * (detection.x - currentX) +
+                            (detection.y - currentY) * (detection.y - currentY)
+                        ).toDouble(),
+                ).toInt()
+                logger.info("   ${detection.type.name} detected at (${detection.x}, ${detection.y}) - distance: $distance - ${detection.details}")
             }
         }
 
-        // Log radar findings for debugging
-        if (radarResponse.detections.isNotEmpty()) {
-            val wallCount = radarResponse.detections.count { detection -> detection.type.name == "WALL" }
-            val robotCount = radarResponse.detections.count { detection -> detection.type.name == "ROBOT" }
-            logger.debug("📡 ${robot.name} radar: $wallCount walls, $robotCount robots detected. Safe directions: $safeDirections")
+        // Analyze each direction for safety
+        val safeDirections = mutableListOf<String>()
+        val unsafeDirections = mutableListOf<String>()
+
+        for (direction in directions) {
+            val isSafe = isDirectionSafe(direction, currentX, currentY, radarResponse.detections)
+            if (isSafe) {
+                safeDirections.add(direction)
+            } else {
+                unsafeDirections.add(direction)
+            }
+        }
+
+        // Log decision analysis
+        logger.info("📊 ${robot.name} direction analysis:")
+        logger.info("   Safe directions: $safeDirections")
+        logger.info("   Unsafe directions: $unsafeDirections")
+
+        val chosenDirection = safeDirections.randomOrNull()
+        if (chosenDirection != null) {
+            logger.info("✅ ${robot.name} chose direction: $chosenDirection (radar-guided)")
+        } else {
+            logger.info("⚠️  ${robot.name} found no safe directions - will attempt random fallback")
         }
 
         // Return a random safe direction, or null if none found
-        return safeDirections.randomOrNull()
+        return chosenDirection
     } catch (e: Exception) {
         logger.warn("Failed to perform radar scan for ${robot.name}: ${e.message}")
+        logger.info("🎲 ${robot.name} falling back to random direction due to radar failure")
         // Fallback to random direction if radar fails
         return directions.random()
     }
@@ -457,17 +504,20 @@ private fun isDirectionSafe(
             // If the wall is in the same direction as our intended movement, it's not safe
             if (deltaX != 0 && (wallDeltaX * deltaX > 0) && Math.abs(wallDeltaX) <= 2) {
                 if (deltaY == 0 || (wallDeltaY * deltaY >= 0 && Math.abs(wallDeltaY) <= 2)) {
+                    logger.debug("   ❌ $direction unsafe: Wall at ($wallX, $wallY) blocks path from ($currentX, $currentY)")
                     return false
                 }
             }
 
             if (deltaY != 0 && (wallDeltaY * deltaY > 0) && Math.abs(wallDeltaY) <= 2) {
                 if (deltaX == 0 || (wallDeltaX * deltaX >= 0 && Math.abs(wallDeltaX) <= 2)) {
+                    logger.debug("   ❌ $direction unsafe: Wall at ($wallX, $wallY) blocks path from ($currentX, $currentY)")
                     return false
                 }
             }
         }
     }
 
+    logger.debug("   ✅ $direction safe: No walls detected in path")
     return true
 }

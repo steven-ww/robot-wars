@@ -501,16 +501,16 @@ Does the backend project include the walls defined within the arena in the data 
 Go ahead and implement the required changes you identified. Follow the .junie/guidelines.md file for guidelines.
 ## Ninety-second Prompt
 The robo-demo project creates a battle with two robots as a demo of the game. Follow the guidelines in the .junie/guidelines file while performing this task. Change the robo-demo to no longer output the arena to the console. Change it to play the game until a robot wins (see what winning means in the backend project). Change the start script and the parameters to remove the option to ignore crashes as the battle ends when only one robot still have hit points.
-## Forty-sixth Prompt
+## Ninety-third Prompt
 Follow the guidlines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. However, if I run it twice, on the second time I receive a 409 from the backend server (in the backend project). Is there a problem with the how the backend is implemented that creating a second battle causes an issue?
-## Forty-seventh Prompt
-Follow the guidlines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. Enhance the demo so that it creates a unique battle name each time it runs.
-## Forty-sixth Prompt
+## Ninety-fourth Prompt
+Follow the guidelines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. Enhance the demo so that it creates a unique battle name each time it runs.
+## Ninety-fifth Prompt
 
 Follow the guidlines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. The demo still seems to print out a lot of information during testing. Looks like it's debug level information. Remove this so that there is less noise while running the tests
-## Forty-seventh Prompt
+## Ninety-sixth Prompt
 
-Follow the guidlines in the .junie/guidelines.md file. The robo-demo still fails when starting the battle the second time. This is the error log. 13:02:23.148 [main] INFO Main -- Starting Robot Wars Demo
+Follow the guidelines in the .junie/guidelines.md file. The robo-demo still fails when starting the battle the second time. This is the error log. 13:02:23.148 [main] INFO Main -- Starting Robot Wars Demo
 13:02:23.156 [main] INFO Main -- Using base URL: http://localhost:8080
 13:02:23.156 [main] INFO Main -- Time limit set to: PT5M
 13:02:23.362 [main] INFO Main -- Creating a new battle with a 20x20 arena: Demo Battle 2025-07-09 13:02:23 [3c785664]
@@ -524,7 +524,7 @@ Follow the guidlines in the .junie/guidelines.md file. The robo-demo still fails
 java.io.IOException: Unexpected response code: 409
         at za.co.sww.rwars.robodemo.api.RobotApiClient.startBattle(RobotApiClient.kt:66)
         at za.co.sww.rwars.robodemo.MainKt$main$1.invokeSuspend(Main.kt:159)
-## Forty-eighth Prompt
+## Ninety-seventh Prompt
 
 that worked, but now the move robot fails with the following error. (remember to follow the guidelines.) 14:16:56.607 [main] INFO  Main - Starting Robot Wars Demo
 14:16:56.612 [main] INFO  Main - Using base URL: http://localhost:8080
@@ -552,10 +552,44 @@ kotlinx.coroutines.JobCancellationException: StandaloneCoroutine was cancelled
 java.io.IOException: Unexpected response code: 409
         at za.co.sww.rwars.robodemo.api.RobotApiClient.moveRobot(RobotApiClient.kt:178)
 
-## Ninety-third Prompt
+## Ninety-eighth Prompt
 Follow the guidelines in the .junie/guidelines.md file. Update the robo-demo project to no longer print out the arena for any tests. The entire logic to render or view the arena on the console should be removed along with any tests for it.
 ## Ninety-fourth Prompt
 In the backend project the api to start a battle is in the Robots Resource. Given this is not a robot function, but a battle function, move this to the Battle Resource. Fix all tests, update the robo-demo and ensure that the frontend project still works. Follow the guidelines in the .junie/guidelines.md file.
 
-## Ninety-fifth Prompt
+## Ninety-ninth Prompt
 Following the guidelines, enhance the robo-demo such that both robots use the radar api to determine if there is a wall close to them. The robots will use this information to attempt to avoid crashing into a wall. Either an interal wall or a wall on the edge of the arena. Also confirm that the radar logic in the backend does report the walls on the edge of the arena as a wall in the radar response.
+## One Hundredth Prompt
+Follow the guidelines in the guidelines.md file. The robo-demo project has robots that are using radar to avoid collisions. Given that the case, why did this battle end with a crash? 15:03:31.999 [main] INFO  Main - Starting Robot Wars Demo
+15:03:32.004 [main] INFO  Main - Using base URL: http://localhost:8080
+15:03:32.004 [main] INFO  Main - Time limit set to: PT5M
+15:03:32.201 [main] INFO  Main - Creating a new battle with a 20x20 arena: Demo Battle 2025-07-09 15:03:32 [2654aeae]
+15:03:32.491 [main] INFO  Main - Battle created: 2423dc09-389c-4c90-b560-fc582244be30 - Demo Battle 2025-07-09 15:03:32 [2654aeae] - Arena size: 20x20
+15:03:32.492 [main] INFO  Main - Registering robot 'BattleBot-ca86ff' for battle 2423dc09-389c-4c90-b560-fc582244be30
+15:03:32.507 [main] INFO  Main - Robot registered: 626b66d0-eb9f-47b5-8f36-bbb31207f5f5 - BattleBot-ca86ff
+15:03:32.507 [main] INFO  Main - Registering robot 'SteelStorm-4d3ee8' for battle 2423dc09-389c-4c90-b560-fc582244be30
+15:03:32.509 [main] INFO  Main - Robot registered: c0769392-909a-4d1e-912c-54b3bc5ac328 - SteelStorm-4d3ee8
+15:03:32.509 [main] INFO  Main - Starting the battle
+15:03:32.514 [main] INFO  Main - Battle started: IN_PROGRESS
+15:03:32.520 [main] INFO  Main - Initial position of BattleBot-ca86ff: (2, 3)
+15:03:32.521 [main] INFO  Main - Initial position of SteelStorm-4d3ee8: (8, 13)
+15:03:32.523 [main] INFO  Main - Moving robots around the arena concurrently
+15:03:32.533 [main] INFO  Main - 📍 BattleBot-ca86ff: (2, 3) - Status: IDLE
+15:03:32.533 [main] INFO  Main - 📍 SteelStorm-4d3ee8: (8, 13) - Status: IDLE
+15:03:32.650 [main] INFO  Main - 🚀 Moving BattleBot-ca86ff 1 blocks NE (radar-guided)
+15:03:32.659 [main] INFO  Main - 🚀 Moving SteelStorm-4d3ee8 2 blocks EAST (radar-guided)
+15:03:34.841 [main] INFO  Main - 🚀 Moving SteelStorm-4d3ee8 2 blocks NE (radar-guided)
+15:03:35.090 [main] INFO  Main - 🚀 Moving BattleBot-ca86ff 2 blocks NE (radar-guided)
+15:03:35.576 [main] INFO  Main - 🎉 BATTLE WON! Winner: SteelStorm-4d3ee8 (ID: c0769392-909a-4d1e-912c-54b3bc5ac328)
+15:03:35.578 [main] INFO  Main - 🏁 Battle ended with state: COMPLETED
+15:03:35.578 [main] INFO  Main - 🏆 Final Winner: SteelStorm-4d3ee8
+15:03:35.580 [main] INFO  Main - 📊 Final Status:
+15:03:35.580 [main] INFO  Main -    BattleBot-ca86ff: CRASHED at (3, 4)
+15:03:35.580 [main] INFO  Main -    SteelStorm-4d3ee8: MOVING at (11, 14)
+15:03:35.581 [main] ERROR Main - Error in continuous movement for BattleBot-ca86ff
+kotlinx.coroutines.JobCancellationException: StandaloneCoroutine was cancelled
+15:03:35.582 [main] ERROR Main - Error in continuous movement for SteelStorm-4d3ee8
+kotlinx.coroutines.JobCancellationException: StandaloneCoroutine was cancelled
+15:03:35.582 [main] INFO  Main - Demo completed successfully
+## One Hundred and First Prompt
+I keep seeing crashes. To try get more information on this, show the radar results for each scan if the radar detected anything. Also show the decision that the "radar guided" movement made based on the results of the scan.
