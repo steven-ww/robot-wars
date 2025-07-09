@@ -1,0 +1,47 @@
+Follow the guidelines in the ../.junie/guidelines.md file for these tasks.
+
+Given the sudo BDD descriptions of features and scenarios below do the following in the backend project.
+* Update the existing feature files and/or define new feature files to define the scenarios described.
+* Implement BDD tests for those new features (as per the existing tech stack and process)
+* Adjust existing features and scenarios to align if required.
+* implement the features to pass the tests
+
+Given a battle has been created, robots have been added to the battle and the battle has been started.
+When a robot invokes the radar api
+then return a object that represents positions in the arena that contain something (a robot or wall) within a configurable distance from the robot.
+and indicate what was found at that location (Wall, robot)
+
+When a robot is created
+Assign it a configurable hit point value
+
+Given a battle has been created, robots have been added to the battle and the battle has been started.
+when a robots hit points reduce to zero
+then that robot state should be destroyed unless the state is crashed
+and a robot with 0 hit points can no longer participate in the game
+and the battle state should indicate that the robot is out of the game
+
+Given a battle has been created, robots have been added to the battle and the battle has been started.
+when only one robot remains in the game with a positive hit point value
+then the battle is over
+and the remaining robot is the winner
+and the battle state updates to reflect the winner
+
+When a battle is created
+then add random walls into the battle space
+and ensure that the walls are of three types only
+squared off areas of 4*4
+long walls of 1*10
+u shaped walls of 4 * 10 * 4
+and ensure that the values for these internal walls are configurable
+and base how many are created on the size of the arena
+no more than a configurable percentage of the arena space should contain these walls (e.g. 2%)
+
+Given a battle has been created, robots have been added to the battle and the battle has been started.
+when a robot runs into a wall
+then reduce its hit points to zero
+and change its state to crashed
+and ensure that it can take no further actions
+
+
+
+
