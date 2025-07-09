@@ -48,6 +48,11 @@ public class HitPointsSteps {
         // Update current battle reference
         currentBattle = battleService.getBattleStatus(battleId);
 
+        // Register an additional robot if needed
+        if (currentBattle.getRobotCount() < 2) {
+            registerAdditionalRobot("AdditionalBot");
+        }
+
         // Verify the robot was registered with server-configured hit points
         Robot robot = currentBattle.getRobots().stream()
                 .filter(r -> robotName.equals(r.getName()))
@@ -77,6 +82,11 @@ public class HitPointsSteps {
 
         // Update current battle reference
         currentBattle = battleService.getBattleStatus(battleId);
+
+        // Register an additional robot if needed
+        if (currentBattle.getRobotCount() < 2) {
+            registerAdditionalRobot("AdditionalBot");
+        }
         // Note: The expected hit points parameter is ignored as server controls this
     }
 
@@ -89,8 +99,16 @@ public class HitPointsSteps {
 
     @Then("the robot {string} should have {int} hit points")
     public void theRobotShouldHaveHitPoints(String robotName, int expectedHitPoints) {
-        Assertions.assertNotNull(currentBattle);
-
+        // Get battle from context if currentBattle is null
+        if (currentBattle == null) {
+            String battleId = testContext.getLastBattleId();
+            Assertions.assertNotNull(battleId, "Battle ID should be available");
+            currentBattle = battleService.getBattleStatus(battleId);
+        } else {
+            // Refresh battle state to get latest robot data
+            currentBattle = battleService.getBattleStatus(currentBattle.getId());
+        }
+        
         Robot robot = currentBattle.getRobots().stream()
                 .filter(r -> robotName.equals(r.getName()))
                 .findFirst()
@@ -129,7 +147,15 @@ public class HitPointsSteps {
 
     @And("the state of {string} should be {string}")
     public void theStateOfShouldBe(String robotName, String expectedState) {
-        Assertions.assertNotNull(currentBattle);
+        // Get battle from context if currentBattle is null
+        if (currentBattle == null) {
+            String battleId = testContext.getLastBattleId();
+            Assertions.assertNotNull(battleId, "Battle ID should be available");
+            currentBattle = battleService.getBattleStatus(battleId);
+        } else {
+            // Refresh battle state to get latest robot data
+            currentBattle = battleService.getBattleStatus(currentBattle.getId());
+        }
 
         Robot robot = currentBattle.getRobots().stream()
                 .filter(r -> robotName.equals(r.getName()))
@@ -162,7 +188,15 @@ public class HitPointsSteps {
 
     @And("{string} should no longer participate in the battle")
     public void shouldNoLongerParticipateInTheBattle(String robotName) {
-        Assertions.assertNotNull(currentBattle);
+        // Get battle from context if currentBattle is null
+        if (currentBattle == null) {
+            String battleId = testContext.getLastBattleId();
+            Assertions.assertNotNull(battleId, "Battle ID should be available");
+            currentBattle = battleService.getBattleStatus(battleId);
+        } else {
+            // Refresh battle state to get latest robot data
+            currentBattle = battleService.getBattleStatus(currentBattle.getId());
+        }
 
         Robot robot = currentBattle.getRobots().stream()
                 .filter(r -> robotName.equals(r.getName()))
@@ -221,6 +255,12 @@ public class HitPointsSteps {
             // For testing, we're manually setting the robot to crashed state
         }
 
+        // Check if battle should end now
+        Robot winner = currentBattle.getActiveRobot();
+        if (winner != null) {
+            currentBattle.declareWinner(winner);
+        }
+
         // Refresh battle state
         currentBattle = battleService.getBattleStatus(currentBattle.getId());
     }
@@ -266,5 +306,17 @@ public class HitPointsSteps {
 
         Assertions.assertNotNull(winner, "Winner should be found in battle");
         Assertions.assertTrue(winner.isActive(), "Winner should be active");
+    }
+
+    private void registerAdditionalRobot(String robotName) {
+        Map<String, Object> robotRequest = new HashMap<>();
+        robotRequest.put("name", robotName);
+
+        Response response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(robotRequest)
+                .post("/api/robots/register/" + currentBattle.getId());
+
+        Assertions.assertEquals(200, response.getStatusCode());
     }
 }

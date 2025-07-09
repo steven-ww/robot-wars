@@ -51,11 +51,11 @@ public class WallSteps {
 
         // Check that we have valid wall types
         for (Wall.WallType type : wallTypes) {
-        Assertions.assertTrue(
-                type == Wall.WallType.SQUARE
-                || type == Wall.WallType.LONG
-                || type == Wall.WallType.U_SHAPE,
-                "Wall type should be one of: SQUARED, LONG, U_SHAPE"
+            Assertions.assertTrue(
+                    type == Wall.WallType.SQUARE
+                    || type == Wall.WallType.LONG
+                    || type == Wall.WallType.U_SHAPE,
+                    "Wall type should be one of: SQUARED, LONG, U_SHAPE"
             );
         }
     }
@@ -189,6 +189,10 @@ public class WallSteps {
 
     @When("{string} runs into a wall")
     public void runsIntoAWall(String robotName) {
+        // Get the current battle
+        String battleId = testContext.getLastBattleId();
+        Assertions.assertNotNull(battleId, "Battle ID should be available");
+        currentBattle = battleService.getBattleStatus(battleId);
         // Find the robot and simulate it running into a wall
         List<Robot> robots = currentBattle.getRobots();
         Robot robot = robots.stream()

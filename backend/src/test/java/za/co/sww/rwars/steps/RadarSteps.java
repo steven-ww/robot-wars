@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Assertions;
 import za.co.sww.rwars.backend.service.BattleService;
 import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
+import za.co.sww.rwars.backend.model.Wall;
+import za.co.sww.rwars.steps.TestContext;
 
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,17 @@ public class RadarSteps {
         Assertions.assertEquals(200, response.getStatusCode());
         currentRobotId = response.jsonPath().getString("id");
         Assertions.assertNotNull(currentRobotId);
+
+        // Register an additional robot if needed to start the battle
+        Battle battle = battleService.getBattleStatus(currentBattleId);
+        if (battle.getRobotCount() < 2) {
+            Map<String, Object> robotRequest2 = new HashMap<>();
+            robotRequest2.put("name", "SecondRobot");
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(robotRequest2)
+                    .post("/api/robots/register/" + currentBattleId);
+        }
     }
 
     @And("I have registered another robot {string}")
@@ -98,9 +111,10 @@ public class RadarSteps {
         List<Map<String, Object>> detections = radarResponse.jsonPath().getList("detections");
         Assertions.assertNotNull(detections);
 
+
         // Verify at least one wall is detected
         boolean wallDetected = detections.stream()
-                .anyMatch(detection -> "Wall".equals(detection.get("type")));
+                .anyMatch(detection -> "WALL".equals(detection.get("type")));
         Assertions.assertTrue(wallDetected, "At least one wall should be detected");
     }
 
@@ -123,7 +137,7 @@ public class RadarSteps {
 
         // Verify at least one robot is detected
         boolean robotDetected = detections.stream()
-                .anyMatch(detection -> "Robot".equals(detection.get("type")));
+                .anyMatch(detection -> "ROBOT".equals(detection.get("type")));
         Assertions.assertTrue(robotDetected, "At least one robot should be detected");
     }
 

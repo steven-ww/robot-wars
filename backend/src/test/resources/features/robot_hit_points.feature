@@ -25,7 +25,7 @@ Feature: Robot Hit Points
     Given I create a new battle with name "Zero Hit Points Battle"
     And I have registered my robot "NonParticipantBot" with hit points 100
     When the battle starts
-    # When robot is destroyed, it should remain inactive
+    And "NonParticipantBot" collides with a wall
     Then "NonParticipantBot" should remain inactive
 
   Scenario: Battle ends with only one robot remaining
