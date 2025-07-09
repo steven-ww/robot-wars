@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import za.co.sww.rwars.backend.service.BattleService;
 import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
-import za.co.sww.rwars.backend.model.Wall;
-import za.co.sww.rwars.backend.model.RadarResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -30,21 +28,40 @@ public class RadarSteps {
     private String currentBattleId;
 
 
+    @And("I have registered my robot {string}")
+    public void iHaveRegisteredMyRobot(String robotName) {
+        // Get the current battle ID from context
+        currentBattleId = testContext.getLastBattleId();
+        Assertions.assertNotNull(currentBattleId, "Battle ID should be available");
+
+        // Register robot via API
+        Map<String, Object> robotRequest = new HashMap<>();
+        robotRequest.put("name", robotName);
+
+        Response response = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(robotRequest)
+                .post("/api/robots/register/" + currentBattleId);
+
+        Assertions.assertEquals(200, response.getStatusCode());
+        currentRobotId = response.jsonPath().getString("id");
+        Assertions.assertNotNull(currentRobotId);
+    }
+
     @And("I have registered another robot {string}")
     public void iHaveRegisteredAnotherRobot(String robotName) {
         // Get the current battle ID from context
         currentBattleId = testContext.getLastBattleId();
         Assertions.assertNotNull(currentBattleId, "Battle ID should be available");
-        
+
         // Register robot via API
         Map<String, Object> robotRequest = new HashMap<>();
         robotRequest.put("name", robotName);
-        robotRequest.put("battleId", currentBattleId);
 
         Response response = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(robotRequest)
-                .post("/api/robots");
+                .post("/api/robots/register/" + currentBattleId);
 
         Assertions.assertEquals(200, response.getStatusCode());
     }
@@ -71,16 +88,16 @@ public class RadarSteps {
         radarResponse = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(radarRequest)
-                .post("/api/robots/" + currentRobotId + "/radar");
+                .post("/api/robots/battle/" + currentBattleId + "/robot/" + currentRobotId + "/radar");
     }
 
     @Then("I should receive a radar response showing detected walls within range")
     public void iShouldReceiveARadarResponseShowingDetectedWallsWithinRange() {
         Assertions.assertEquals(200, radarResponse.getStatusCode());
-        
+
         List<Map<String, Object>> detections = radarResponse.jsonPath().getList("detections");
         Assertions.assertNotNull(detections);
-        
+
         // Verify at least one wall is detected
         boolean wallDetected = detections.stream()
                 .anyMatch(detection -> "Wall".equals(detection.get("type")));
@@ -91,7 +108,7 @@ public class RadarSteps {
     public void theResponseShouldIndicateAtTheDetectedPositions(String expectedType) {
         List<Map<String, Object>> detections = radarResponse.jsonPath().getList("detections");
         Assertions.assertNotNull(detections);
-        
+
         boolean typeFound = detections.stream()
                 .anyMatch(detection -> expectedType.equals(detection.get("type")));
         Assertions.assertTrue(typeFound, "Should find detection of type: " + expectedType);
@@ -100,10 +117,10 @@ public class RadarSteps {
     @Then("I should receive a radar response showing detected robots within range")
     public void iShouldReceiveARadarResponseShowingDetectedRobotsWithinRange() {
         Assertions.assertEquals(200, radarResponse.getStatusCode());
-        
+
         List<Map<String, Object>> detections = radarResponse.jsonPath().getList("detections");
         Assertions.assertNotNull(detections);
-        
+
         // Verify at least one robot is detected
         boolean robotDetected = detections.stream()
                 .anyMatch(detection -> "Robot".equals(detection.get("type")));
@@ -113,22 +130,22 @@ public class RadarSteps {
     @Then("I should receive a radar response for positions within {int} blocks")
     public void iShouldReceiveARadarResponseForPositionsWithinBlocks(int maxRange) {
         Assertions.assertEquals(200, radarResponse.getStatusCode());
-        
+
         List<Map<String, Object>> detections = radarResponse.jsonPath().getList("detections");
         Assertions.assertNotNull(detections);
-        
+
         // Verify all detections are within range
         for (Map<String, Object> detection : detections) {
             int x = (Integer) detection.get("x");
             int y = (Integer) detection.get("y");
-            
+
             // Get robot position to calculate distance
             Robot robot = battleService.getRobotDetails(currentBattleId, currentRobotId);
             int robotX = robot.getPositionX();
             int robotY = robot.getPositionY();
-            
+
             double distance = Math.sqrt(Math.pow(x - robotX, 2) + Math.pow(y - robotY, 2));
-            Assertions.assertTrue(distance <= maxRange, 
+            Assertions.assertTrue(distance <= maxRange,
                 "Detection at (" + x + "," + y + ") should be within range " + maxRange);
         }
     }
@@ -142,7 +159,7 @@ public class RadarSteps {
     @Then("I should receive an empty radar response")
     public void iShouldReceiveAnEmptyRadarResponse() {
         Assertions.assertEquals(200, radarResponse.getStatusCode());
-        
+
         List<Map<String, Object>> detections = radarResponse.jsonPath().getList("detections");
         Assertions.assertNotNull(detections);
         Assertions.assertTrue(detections.isEmpty(), "Radar response should be empty");

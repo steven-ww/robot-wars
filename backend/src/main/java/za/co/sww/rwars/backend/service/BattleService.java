@@ -220,6 +220,9 @@ public class BattleService {
             // If no battles exist at all, create a default battle
             if (battlesById.isEmpty()) {
                 availableBattle = new Battle("Default Battle", defaultArenaWidth, defaultArenaHeight);
+                // Generate random walls for the battle
+                List<Wall> walls = wallService.generateWalls(availableBattle);
+                availableBattle.setWalls(walls);
                 battlesById.put(availableBattle.getId(), availableBattle);
             } else {
                 // All existing battles are in progress, can't join any

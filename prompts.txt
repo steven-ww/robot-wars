@@ -480,3 +480,8 @@ Add the check for formatting to the root build triggered by gradle. E.g. ./gradl
 
 ## Eighty-sixth Prompt
 The file ./backend/featuresPrompt.txt contains a prompt. Follow that prompt.
+
+## Eighty-seventh Prompt
+Pay attention to the .junie/guidelines.md file while completing this task. Fix the test errors in the backend project that resulted from an incomplete implementation of the last prompt.
+  ### prompt to refine a change
+    The register Robot for battle should NOT allow the user to set the hit points. The hit points are configured on the server for all Robots, not per robot and definitely not by the user registering the robot

@@ -32,16 +32,14 @@ public class HitPointsSteps {
         String battleId = testContext.getLastBattleId();
         Assertions.assertNotNull(battleId, "Battle ID should be available");
 
-        // Register robot via API
+        // Register robot via API (hit points are set by server configuration)
         Map<String, Object> robotRequest = new HashMap<>();
         robotRequest.put("name", robotName);
-        robotRequest.put("battleId", battleId);
-        robotRequest.put("hitPoints", hitPoints);
 
         Response response = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(robotRequest)
-                .post("/api/robots");
+                .post("/api/robots/register/" + battleId);
 
         Assertions.assertEquals(200, response.getStatusCode());
         currentRobotId = response.jsonPath().getString("id");
@@ -49,6 +47,14 @@ public class HitPointsSteps {
 
         // Update current battle reference
         currentBattle = battleService.getBattleStatus(battleId);
+
+        // Verify the robot was registered with server-configured hit points
+        Robot robot = currentBattle.getRobots().stream()
+                .filter(r -> robotName.equals(r.getName()))
+                .findFirst()
+                .orElse(null);
+        Assertions.assertNotNull(robot, "Robot should be registered");
+        // Note: The expected hit points parameter is ignored as server controls this
     }
 
     @Given("a robot {string} with hit points {int} is registered")
@@ -56,16 +62,14 @@ public class HitPointsSteps {
         String battleId = testContext.getLastBattleId();
         Assertions.assertNotNull(battleId, "Battle ID should be available");
 
-        // Register robot via API
+        // Register robot via API (hit points are set by server configuration)
         Map<String, Object> robotRequest = new HashMap<>();
         robotRequest.put("name", robotName);
-        robotRequest.put("battleId", battleId);
-        robotRequest.put("hitPoints", hitPoints);
 
         Response response = RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(robotRequest)
-                .post("/api/robots");
+                .post("/api/robots/register/" + battleId);
 
         Assertions.assertEquals(200, response.getStatusCode());
         String robotId = response.jsonPath().getString("id");
@@ -73,6 +77,7 @@ public class HitPointsSteps {
 
         // Update current battle reference
         currentBattle = battleService.getBattleStatus(battleId);
+        // Note: The expected hit points parameter is ignored as server controls this
     }
 
     @When("the battle starts")
@@ -85,12 +90,12 @@ public class HitPointsSteps {
     @Then("the robot {string} should have {int} hit points")
     public void theRobotShouldHaveHitPoints(String robotName, int expectedHitPoints) {
         Assertions.assertNotNull(currentBattle);
-        
+
         Robot robot = currentBattle.getRobots().stream()
                 .filter(r -> robotName.equals(r.getName()))
                 .findFirst()
                 .orElse(null);
-        
+
         Assertions.assertNotNull(robot, "Robot " + robotName + " should exist");
         Assertions.assertEquals(expectedHitPoints, robot.getHitPoints(),
                 "Robot " + robotName + " should have " + expectedHitPoints + " hit points");
@@ -99,20 +104,20 @@ public class HitPointsSteps {
     @When("{string} collides with a wall")
     public void collidesWithAWall(String robotName) {
         Assertions.assertNotNull(currentBattle);
-        
+
         Robot robot = currentBattle.getRobots().stream()
                 .filter(r -> robotName.equals(r.getName()))
                 .findFirst()
                 .orElse(null);
-        
+
         Assertions.assertNotNull(robot, "Robot " + robotName + " should exist");
-        
+
         // Simulate wall collision - reduce hit points to zero and set status to crashed
         robot.setHitPoints(0);
         robot.setStatus(RobotStatus.CRASHED);
         // Note: In a real implementation, this would be handled by the movement system
         // For testing, we're manually setting the robot to crashed state
-        
+
         // Refresh battle state
         currentBattle = battleService.getBattleStatus(currentBattle.getId());
     }
@@ -125,14 +130,14 @@ public class HitPointsSteps {
     @And("the state of {string} should be {string}")
     public void theStateOfShouldBe(String robotName, String expectedState) {
         Assertions.assertNotNull(currentBattle);
-        
+
         Robot robot = currentBattle.getRobots().stream()
                 .filter(r -> robotName.equals(r.getName()))
                 .findFirst()
                 .orElse(null);
-        
+
         Assertions.assertNotNull(robot, "Robot " + robotName + " should exist");
-        
+
         RobotStatus expectedStatus;
         switch (expectedState.toLowerCase()) {
             case "destroyed":
@@ -150,7 +155,7 @@ public class HitPointsSteps {
             default:
                 throw new IllegalArgumentException("Unknown robot state: " + expectedState);
         }
-        
+
         Assertions.assertEquals(expectedStatus, robot.getStatus(),
                 "Robot " + robotName + " should have status " + expectedState);
     }
@@ -158,14 +163,14 @@ public class HitPointsSteps {
     @And("{string} should no longer participate in the battle")
     public void shouldNoLongerParticipateInTheBattle(String robotName) {
         Assertions.assertNotNull(currentBattle);
-        
+
         Robot robot = currentBattle.getRobots().stream()
                 .filter(r -> robotName.equals(r.getName()))
                 .findFirst()
                 .orElse(null);
-        
+
         Assertions.assertNotNull(robot, "Robot " + robotName + " should exist");
-        Assertions.assertFalse(robot.isActive(), 
+        Assertions.assertFalse(robot.isActive(),
                 "Robot " + robotName + " should not be active");
     }
 
@@ -186,15 +191,14 @@ public class HitPointsSteps {
         for (int i = 0; i < robotNames.length; i++) {
             Map<String, Object> robotRequest = new HashMap<>();
             robotRequest.put("name", robotNames[i]);
-            robotRequest.put("battleId", battleId);
-            robotRequest.put("hitPoints", hitPoints[i]);
 
             Response response = RestAssured.given()
                     .contentType(ContentType.JSON)
                     .body(robotRequest)
-                    .post("/api/robots");
+                    .post("/api/robots/register/" + battleId);
 
             Assertions.assertEquals(200, response.getStatusCode());
+            // Note: Hit points are set by server configuration, not by user
         }
 
         // Update current battle reference
@@ -204,10 +208,10 @@ public class HitPointsSteps {
     @When("all but one robot hit points reduce to zero")
     public void allButOneRobotHitPointsReduceToZero() {
         Assertions.assertNotNull(currentBattle);
-        
+
         List<Robot> robots = currentBattle.getRobots();
         Assertions.assertTrue(robots.size() > 1, "Should have multiple robots");
-        
+
         // Set all robots except the last one to have 0 hit points and crashed status
         for (int i = 0; i < robots.size() - 1; i++) {
             Robot robot = robots.get(i);
@@ -216,7 +220,7 @@ public class HitPointsSteps {
             // Note: In a real implementation, this would be handled by the movement system
             // For testing, we're manually setting the robot to crashed state
         }
-        
+
         // Refresh battle state
         currentBattle = battleService.getBattleStatus(currentBattle.getId());
     }
@@ -224,7 +228,7 @@ public class HitPointsSteps {
     @Then("the battle should end")
     public void theBattleShouldEnd() {
         Assertions.assertNotNull(currentBattle);
-        
+
         // Check if battle is completed
         // Check if battle is completed by checking if only one robot is active
         long activeRobots = currentBattle.getActiveRobotCount();
@@ -235,13 +239,13 @@ public class HitPointsSteps {
     @And("the remaining robot should be declared the winner")
     public void theRemainingRobotShouldBeDeclaredTheWinner() {
         Assertions.assertNotNull(currentBattle);
-        
+
         // Find the remaining active robot
         Robot winner = currentBattle.getRobots().stream()
                 .filter(Robot::isActive)
                 .findFirst()
                 .orElse(null);
-        
+
         Assertions.assertNotNull(winner, "There should be a winner");
         Assertions.assertTrue(winner.getHitPoints() > 0, "Winner should have hit points > 0");
     }
@@ -249,17 +253,17 @@ public class HitPointsSteps {
     @And("the battle state should update to reflect the winner")
     public void theBattleStateShouldUpdateToReflectTheWinner() {
         Assertions.assertNotNull(currentBattle);
-        
+
         // Check if battle has a winner
         String winnerId = currentBattle.getWinnerId();
         Assertions.assertNotNull(winnerId, "Battle should have a winner ID");
-        
+
         // Verify the winner is the active robot
         Robot winner = currentBattle.getRobots().stream()
                 .filter(r -> winnerId.equals(r.getId()))
                 .findFirst()
                 .orElse(null);
-        
+
         Assertions.assertNotNull(winner, "Winner should be found in battle");
         Assertions.assertTrue(winner.isActive(), "Winner should be active");
     }
