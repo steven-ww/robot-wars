@@ -12,7 +12,8 @@ public class Robot {
     public enum RobotStatus {
         IDLE,
         MOVING,
-        CRASHED
+        CRASHED,
+        DESTROYED
     }
 
     /**
@@ -38,6 +39,8 @@ public class Robot {
     private RobotStatus status;
     private int targetBlocks;
     private int blocksRemaining;
+    private int hitPoints;
+    private int maxHitPoints;
 
     public Robot() {
         this.id = UUID.randomUUID().toString();
@@ -47,6 +50,8 @@ public class Robot {
         this.status = RobotStatus.IDLE;
         this.targetBlocks = 0;
         this.blocksRemaining = 0;
+        this.hitPoints = 100; // Default hit points
+        this.maxHitPoints = 100;
     }
 
     public Robot(String name) {
@@ -58,6 +63,8 @@ public class Robot {
         this.status = RobotStatus.IDLE;
         this.targetBlocks = 0;
         this.blocksRemaining = 0;
+        this.hitPoints = 100; // Default hit points
+        this.maxHitPoints = 100;
     }
 
     public Robot(String name, String battleId) {
@@ -70,6 +77,8 @@ public class Robot {
         this.status = RobotStatus.IDLE;
         this.targetBlocks = 0;
         this.blocksRemaining = 0;
+        this.hitPoints = 100; // Default hit points
+        this.maxHitPoints = 100;
     }
 
     public String getId() {
@@ -142,5 +151,35 @@ public class Robot {
 
     public void setBlocksRemaining(int blocksRemaining) {
         this.blocksRemaining = blocksRemaining;
+    }
+
+    public int getHitPoints() {
+        return hitPoints;
+    }
+
+    public void setHitPoints(int hitPoints) {
+        this.hitPoints = hitPoints;
+        if (hitPoints <= 0 && status != RobotStatus.CRASHED) {
+            this.status = RobotStatus.DESTROYED;
+        }
+    }
+
+    public int getMaxHitPoints() {
+        return maxHitPoints;
+    }
+
+    public void setMaxHitPoints(int maxHitPoints) {
+        this.maxHitPoints = maxHitPoints;
+    }
+
+    public void takeDamage(int damage) {
+        this.hitPoints = Math.max(0, this.hitPoints - damage);
+        if (this.hitPoints == 0 && status != RobotStatus.CRASHED) {
+            this.status = RobotStatus.DESTROYED;
+        }
+    }
+
+    public boolean isActive() {
+        return hitPoints > 0 && status != RobotStatus.CRASHED && status != RobotStatus.DESTROYED;
     }
 }

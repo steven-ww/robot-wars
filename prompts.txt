@@ -1,87 +1,109 @@
 # Prompts Received
 
-## First Prompt
+## 1st Prompt
 Junie, generate a Quarkus sub project following the guidelines.
 
 This quarkus project will need to be deployed to k8s, have a native build, support rest api endpoints and possibly need to interact with a fe via websockets.
 
 Generate the basic foundation for this.
 
-## Second Prompt
+
+## 2nd Prompt
 Ensure the resulting changes build.
 
-## Third Prompt
+
+## 3rd Prompt
 Review the guidelines document and make sure the current projects align with those guidelines.
 
-## Fourth Prompt
+
+## 4th Prompt
 Confirm that the FE project builds correctly with the intended output for a react build
 
-## Fifth Prompt
+
+## 5th Prompt
 Given the FE build no longer need to be packaged with docker, please clean up the docker resources, update the readme and ensure that the github workflows build the project correctly.
 
-## Sixth Prompt - this time to Warp 2.0
+
+## 6th Prompt - this time to Warp 2.0
 The todo.txt lists 3 items that need fixing. Can you review these issues and make the required changes to solve them?
 
-## Seventh Prompt - to Warp 2.0
+
+## 7th Prompt - to Warp 2.0
 I've updated the todo.txt with additional items to address. Have a look at the file and implement the required updates. Also, update the prompts.txt with this prompt in order to keep a list of all prompts used for the project.
 
-## Eighth Prompt - to Warp 2.0
+
+## 8th Prompt - to Warp 2.0
 Remember to update the prompts file to reflect this prompt. Change the deployment of the docker container from github to use aws Elastic container registry instead. Use OIDC for authentication. Use a secret defined in GitHub secrets called "AWS_ACCOUNT_ID" for the value of the AWS account to use. The role to use is in a GitHub secret called AWS_ROLE_ARN. Use af-south-1 as the aws region to deploy to.
 
-## Ninth Prompt - to Warp 2.0
+
+## 9th Prompt - to Warp 2.0
 Update the backend readme file to reflect the change to aws ecr and OIDC. (And update the prompts file with this prompt)
 
-## Tenth Prompt
+
+## 10th Prompt
 For the backend quarkus project, I'm going to be using cucumber for BDD.
 
 Prepare the project for the use of Cucumber with Gherkin by adding the quarkus cucumber extension.
 
 Create the recommended folder structure for gherkin files and create a sample gherkin file.
 
-## Eleventh Prompt
+
+## 11th Prompt
 The project uses checkstyle. Validate that the checkstyle rules pass and make updates if they don't.
 
-## Twelfth Prompt
+
+## 12th Prompt
 Using the cucumber feature file in the backend project, implement the cucumber step file and the rest API's to support the cucumber tests
 
 Ensure that tests execute and pass.
 
-## Thirteenth Prompt
+
+## 13th Prompt
 Quarkus is not starting for the Cucumber tests.
 Add the cucumber quarkus ext "io.quarkiverse.cucumber.quarkus-cucumber" and then use the CucumberQuarkusTest "test" to bootstrap cucumber in the project.
 
-## Fourteenth Prompt
+
+## 14th Prompt
 I'm having trouble using cucumber with Quarkus and the cucumber ext for Quarkus. It looks like my quarkus server is not starting so my calls to the rest endpoints fail. What could be the issue?
 
-## Fifteenth Prompt
+
+## 15th Prompt
 Fix the linting issues on the backend build
 
-## Sixteenth Prompt (Warp)
+
+## 16th Prompt (Warp)
 2025-07-03 - Please follow the guidelines in .junie/guidelines.md for this task. The current implementation of the BE is based on the features defined in the feature file test/java/resource/features/add_a_robot.feature. The cucumber tests work, however, the implementation does not distinquise between a battle id (of the entire battle) and the id of a robot. Each robot should be provided it's own id for the battle and send that back on each request to the server. Update the feature file to make this more explicit, then update the tests and implementation to work with a battle id (for the battle) and a robot id for each robot.
 
-## Seventeenth Prompt
+
+## 17th Prompt
 I've updated the add_a_robot.feature file. It doesn't change the behavior of the solution, but does improve the language of the feature file. Apply the changes to the tests.
 
-## Eighteenth Prompt
+
+## 18th Prompt
 For some reason, junie (you) is not following the guidlines defined in the .junie/guidelines.md file, specifically the one related to updating the prompts.txt with the prompts received.
 
 How can I improve the guidelines to make it clearer and easier for junie to use.
 
-## Nineteenth Prompt
+
+## 19th Prompt
 Review the .junie/guidelines.md file.
 
 Determine how to improve the structure of the guidelines to make them more meaningfull as guidelines to junie AI.
 
-## Twentieth Prompt
+
+## 20th Prompt
 On the last request, junie did not update the prompts file. This is a requirement of the .junie/guidelines.md. Are the guidelines not being applied and if so, why is that?
 
-## Twenty-first Prompt
+
+## 21st Prompt
 Fix the checkstyle errors in the RobotSteps.java file. Rember to follow the guidelines in the .junie/guidelines.md file
 
-## Twenty-second Prompt
+
+## 22nd Prompt
 When you updated the RobotSteps file, you broke the cucumber test. it no longer matches the gherkin file for the When "I register my Robot supplying it's name"
 
-## Twenty-third Prompt
+
+## 23rd Prompt
 Create new feature file in backend project that deals with creating a battle.
 
 The following scenarios should be described in the feature file in the best practices for cucumber and gherkin.
@@ -99,36 +121,22 @@ Adjust the existing code that implements the existing features to align with the
 
 Remember to follow the .junie/guidelines.md file off of the the rool folder.
 
-## Twenty-fourth Prompt
+
+## 24th Prompt
 You didn't update the prompts.txt file with the previous prompt. Please do so now.
 
-## Twenty-fifth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 25th Prompt
 Review the updated .junie/guidelines.md file section 7. Apply the process required.
-</issue_description>
 
-## Fifty-second Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
-Create a script in the root project that uses jbang. This script should start the bank-end server in quarkus dev mode and spin up a brower that loads the front-end up locally. This script is used to get the local environment running for local testing and dev. It will also be used by developers working on robots for the game to create a test environment where they can test there robots.
-</issue_description>
 
-## Twenty-sixth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+## 26th Prompt
 Update the add_a_robot.feature feature file to ensure that adding a robot does not create a battle, but requires that one has already been created. That is, using the features in the create_a_battle.feature file, a battle would have been created. Only then can a user add a robot to the battle. 
 
 Follow the process for prompts in section 7 of the .junie/guidelines.md file.
-</issue_description>
 
-## Twenty-seventh Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 27th Prompt
 Add a new feature file for the backend project following the cucumber and gherkin best practices. The new feature set must support the following features.
 
 Allow a user to move the robot by specifying the id of the robot, the direction of the robot (North, south, east, west or nw, ne, sw, se) and how many blocks to move. Each block represents on block on the arena map.
@@ -140,43 +148,38 @@ If the robot attempts to move past the last block of the arena, then it stops mo
 While the robot is moving, it's state should indicate "moving".
 
 Follow the guidelines in the .junie/guidelines.md file, specifically section 7 that defines what's required for each prompt.
-</issue_description>
 
-## Twenty-eighth Prompt
+
+## 28th Prompt
 The cucumber tests are not passing. Fix this.
 
-## Twenty-ninth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
-Following the .junie/guidelines.md file (spefically section 7) change the way you've validated the move_robots.feature features. You've create an API to position the robot at a specific spot "public Response updateRobotPosition(@PathParam("battleId")..." This is ont an API that should be available to users and as such please use a different mechanism to position the robot for the related tests. 
-</issue_description>
 
-## Thirtieth Prompt
+## 29th Prompt
+Following the .junie/guidelines.md file (spefically section 7) change the way you've validated the move_robots.feature features. You've create an API to position the robot at a specific spot "public Response updateRobotPosition(@PathParam("battleId")..." This is ont an API that should be available to users and as such please use a different mechanism to position the robot for the related tests.
+
+
+## 30th Prompt
 Remember to update the prompts.txt file. The updateRobotPosition api is still available. This should have been removed as part of the last prompts outcome.
 
-## Thirty-first Prompt
+
+## 31st Prompt
 Update the prompts.txt file with the previous prompt
 
-## Thirty-second Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 32nd Prompt
 Follow the guidelines in the .junie/guidelines.md file. 
 Update the feature files for creating a battle to allow the user to specify how much time it takes the robot to move a block. Load the default value of 1 second from the property file. Use a value of .5 seconds for all the test scenarios.
 
 update the feature file to reflect the above requirement. Update the tests to use the new .5 second value, update thie implementation to support the supplied value or fallback to the value from the configuration. 
 
 Update the prompts and run a root level build as per the guidelines to ensure everything still works.
-</issue_description>
 
-## Thirty-third Prompt
+
+## 33rd Prompt
 Two tests are failing. Fix those. Remember to update the prompts.txt file
 
-## Thirty-fourth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 34th Prompt
 Create a new sub-project called robo-demo in the robot-wars project.
 This one must use Kotlin as the language.
 It must form part of the existing gradle build.
@@ -196,113 +199,74 @@ requirements to be defined in the feature files and implemented and tested:
 ** more than 5 minutes has passed 
 * Create a script that will start the backend service localy. (Using quarkus dev mode), then start the battle as above 
 * Update the prompts.txt with this prompt.
-</issue_description>
 
-## Thirty-fifth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 35th Prompt
 The tests are failing because they require the backend-api to be running.
 
 Using wiremock, mockout the backend-server API's for the tests.
 
 update the prompts.txt and also create a readme for the robot-demo project
-</issue_description>
 
-## Thirty-sixth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 36th Prompt
 Update the prompts.txt for this task. Fix the linting issues in the robo-demo project.  Validate the results with a build 
-</issue_description>
 
-## Thirty-seventh Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 37th Prompt
 Modify the start-battle script to reference gradlew from the parent directory. Update the prompts.txt
-</issue_description>
 
-## Thirty-eighth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 38th Prompt
 Update the prompts.txt.
 Update the robo-demo project to create a 20 * 20 arena.
 Have it display the initial starting position of each robot.
 Render the arena in the output, showing the start position of each robot.
-</issue_description>
 
-## Thirty-ninth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 39th Prompt
 Update the prompts.txt, run a complete build for the backend including tests and linting for this task.
 
 Add a scenario to the move robot feature that allows the user to make a request to the API in order to get the details of the users Robot. This would be all the information for this users robot only. 
 
 Add a scenario to the move robot feature that verifies that the initial location of the robot is randomly generated with the space of the arena. 
-</issue_description>
 
-## Fortieth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 40th Prompt
 Update the robo-demo to retrieve the status for each robot as it moves and rerender the arena with the new location displayed. A  Update the prompts.txt.
 
 Add a scenario to the Robot Battle feature that has the user tracking the movement of the robot to confirm that it is moving as expected. 
-</issue_description>
 
-## Forty-first Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 41st Prompt
 Update the prompts.txt file with the last prompt. 
 Also fix the checkstyle issues in the backend project and update the prompts.txt file with this prompt
-</issue_description>
 
-## Forty-second Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 42nd Prompt
 Apply the guidelines as defined in the .junie/guidelines.md file while implementing this task.
 Review the code in the backend project to ensure it's using virtual threads where possible (e.g. the API's and any threading that's been implemented.
 Also, review the code to make sure it's using modern java features like Records where it could be.
 Apply changes to align the code with what you discover above.
-</issue_description>
 
-## Forty-third Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 43rd Prompt
 Update the prompts.txt file with the previous prompt and this prompt. Also ensure that the linting rules pass for the backend project.
-</issue_description>
 
-## Forty-fourth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 44th Prompt
 While following the guidelines in .junie/guidelines.md, add virtual thread support to the API endpoints by using the Quarkus Virtual thread annotation on each api method. Remember to update the prompts.txt
-</issue_description>
 
-## Forty-fifth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 45th Prompt
 Udpate the prompt.txt. Fix the checkstyle issues for the backend.
-</issue_description>
 
-## Forty-sixth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 46th Prompt
 Review the junie agent guidelines in the .junie/guidelines.md file. Are these structured in the best way for the Intellij Junie agent to consume them? If not, make changes to improve them as guidelines for Junie.
-</issue_description>
 
-## Forty-seventh Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 47th Prompt
 Pay attention to the .junie/guidelines.md while executing this task.
 
 Add a feature to the backend project, define the feature and scenarios in Gherkin
@@ -312,41 +276,28 @@ As a Front End instance I want to be able to determine the state of a battle on 
 For the Front-end project
 Add the ability to use BDD in the frontend project.
 Once configured, add a feature using BDD to the front-end that renders the initial arena for a battle on a page. 
-</issue_description>
 
-## Forty-eighth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 48th Prompt
 Fix the checkstyle violations. Update the .junie/guidelines.md to be explicit about the requirement to verify that the checkstyle rules pass.
-</issue_description>
 
-## Forty-ninth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 49th Prompt
 The Front-end project is not being built when running the root ./gradlew build command. Enhance the root gradle build to ensure the front-end project also forms part of the build. Follow the .junie/guidelines.md file. 
-</issue_description>
 
-## Fiftieth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 50th Prompt
 Event with the changes you just made, running ./gradle build at the project root, did not build the front-end project. Correct this to ensure the FE also builds
-</issue_description>
 
-## Fifty-first Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 51st Prompt
 Follow the guidelines in the .junie/guidelines file for this task.
 Fix the errors in the FE build and ensure that the build fails on these compile errors.
-</issue_description>
 
-## Fifty-third Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+## 52nd Prompt
+[Placeholder for missing 52nd Prompt]
+
+## 53rd Prompt
 I've configured jbang wrapper in the project. This allows the user to start the development environment without the need for jbang to be installed.
 
 update the readme file to reference that jbang is not a requirement to run the app locally, but will install itself.
@@ -356,124 +307,324 @@ Also, update the jbang script to ensure that java 21 and node.js are also manage
 Update the readme to describe the requirements in terms of
 * making changes to the project (in which case the prerequists are required 
 * or, if just starting the application in to use it, that jbang will take care of all the dependencies.
-</issue_description>
 
-## Fifty-fourth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 54th Prompt
 If jbang is not installed on the system and the jbang wrapper is being used, woudn't the user be required to specify "jbang start_dev.java" rather than just start_dev.java? If so, update the readme to reflect this difference.
-</issue_description>
 
-## Fifty-fifth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 55th Prompt
 The jbag script is starting the fe before the backend is up. Have the FE wait for the backend to start
-</issue_description>
 
-## Fifty-sixth Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 56th Prompt
 Fix the linting errors on the front-end. Update the .junie/guidelines to include that the front-end build must include linting and must pass.
-</issue_description>
 
-## Fifty-seventh Prompt
-Given the following issue description `<issue_description>`, could you help me in implementing the necessary changes to the repository to meet the specified requirements?
-<issue_description>
-## 
+
+## 57th Prompt
 Enhance the github action for the Front-end to run the cucumber tests and also not to fail the existing test step "npm test -- --watchAll=false" if there are not tests to run yet.
-</issue_description>
 
 Switched to Warp 2.0 (Out of June credits)
-## Fifty-eighth Prompt
+
+## 58th Prompt
 Given the issues with trying to mock out the websocket, can you rather convert the tests to use the "jest-websocket-mock" library for the websocket mocks. Follow the guidelines in the ../junie/guidelines.md and update the ../prompts.txt file with all prompts you receive.
 
-## Fifty-ninth Prompt
+
+## 59th Prompt
 Fix the eslint errors
 
-## Sixtieth Prompt
+
+## 60th Prompt
 add a commit hoot to the fe that builds, tests and lints the code before allowing a commit to git. Follow the guidelines and remember to update the ../prompts.txt file
 
-## Sixty-first Prompt
+
+## 61st Prompt
 I don't like the root level node requirement to get the hooks working. Revert all commits for the commit hooks. Update the ../prompts.txt file.
 
-## Sixty-second Prompt
+
+## 62nd Prompt
 Add prettier to the front-end project, also update the front-end github action to run it. Validate that it passes. If not, fix the issues.
 
-## Sixty-third Prompt
+
+## 63rd Prompt
 The GitHub cucumber job "run cucumber tests" is using the wrong pattern for the tests and is failing to find any tests. Given the changes to the naming standard you applied to the tests, do we still need a specific cucumber job in the github action or can it just be replaced with the standard test run? Do we loose anything by doing that?
 
-## Sixty-fourth Prompt
+
+## 64th Prompt
 Enhance the backend project. Enable support for multiple battles to be created and be in various states. update the feature files to align with the new approach and create scenarios that validate the new approach of supporting multiple battles. Create a new rest API on the BattleResource (driven by a BDD scenario) that allows a user to get a list of all the battles, the robots in them, there current state (but not position in the arena) so that the FE can use this to display the battles and what they look like.
 
-## Sixty-fifth Prompt
+
+## 65th Prompt
 Fix the checkstyle errors, apply the ./.junie/guidelines.md and commit the changes.
 
-## Sixty-sixth Prompt
+
+## 66th Prompt
 Follow the guidelines in ./junie/guidelins.md for this task. Use BDD to define a scenario and features based on the task. Given a user of the FE loads the initial page, show a list of all Battles currently created, along with the status of each and any robots in each battle and there state and show a button that when pressed allows the user to creae a battle, with optional parameters as per the API in the backend project.
 
-## Sixty-seventh Prompt
+
+## 67th Prompt
 Implement tests for the battle_management.feature as done for the arena_rendering.feature.
 
-## Sixty-eighth Prompt
+
+## 68th Prompt
 Remember to follow the guidelines in the .junie/guideline.md. There are two issues with the solution. Firstly the root project build does not run the tests, fix this. Secondly, the tests aren't passing. Fix them.
 
-## Sixty-ninth Prompt
+
+## 69th Prompt
 You have still left off a most of the file. Rather do this. Restore the file from the last commit. Then add in all prompts you've received today, including this one.
+
 
 ## Note: I've had to manually try and recreate the last few prompts as the agent was not able to correctly determine what the prompts where.
 
-## Seventieth Prompt
+
+## 70th Prompt
 Three tests are still failing. Try and fix these
 
-## Seventy-first Prompt
+
+## 71st Prompt
 Enhance the robot-demo with a test and implementation to match the new scenario I've added to the robot_battle.feature called "Create a battle and move robots until the time limit is reached". This is partially implemented already. For the test, set the duration tht the robots will move around to 5 seconds. However, in the start_battle.sh script, allow the user to supply this and default the value to 5 minutes.
 
-## Seventy-second Prompt
+
+## 72nd Prompt
 Implement the missing step definition for the scenario "Create a battle and move robots until the time limit is reached" in the robot-demo project. The step "I should be able to move the robots around the arena until a specified time has passed" is undefined and causing the test to fail.
 
-## Seventy-third Prompt
+
+## 73rd Prompt
 In the robo-demo project, the start-battle.sh script does not pass parameters correctly to the Kotlin main program. Change the main program to accept named parameters. Adjust the script to support any combination of those parameters being supplied (url, time, stop_on_crash). Update the script to, default to using the default values. The stop on crash default should be false. add instructions on how to use these parameters to the readme. Make sure the tests still work. Update the prompts.txt with this prompt.
 
-## Seventy-fourth Prompt - Amazon Q from here down
+
+## 74th Prompt - Amazon Q from here down
 The Frontend code uses BDD. I've updated the battle_management.feature file with a new scenario. Write the tests for this feature file and implement the changes required. Use existing react components for the arena render. The new scenario is the one called "Render the arena for a selected battle"
 
-## Seventy-fifth Prompt
+
+## 75th Prompt
 When the user selects a battle and the arena component is rendered, there seems to be a websocket connection issue. Given the way the backend project provides for the websocket and any configuration that is setup of runni
 ng locally, why would the arena not be able to connect to the websocket successfully?
 
-## Seventy-sixth Prompt
+
+## 76th Prompt
 The battle arena tab/button on the main/starting page of the front-end app should show the state of only one battle. That should be the last selected battle or the default battle. It should never attempt to show a battle without first getting the battle id (selected or default). Create a new scenario in the feature file to drive this behaviour out with BDD. Create the test and adjust the implementation to have it pass
 
-## Seventy-seventh Prompt
+
+## 77th Prompt
 I'm not sure why, but when the battle arena is shown, there is always a box showing a web socket connection error. There is also a value arena below it. Can you see why the page would be rendering an error even when there
  is a valid battle?
 
-## Seventy-eighth Prompt
+
+## 78th Prompt
 In the frontend project Add a new scenario to the arena rendering to describe the fact that the view of the arena should auto refresh. That is, the movements and other states of the robot should reflect on the arena without the user needing to refresh. The react component should automatically update it's view based on information obtained via the websocket. This should be implemented with BDD and the tests should pass. Update the prompts.txt in the root to record this prompt.
 
-## Seventy-ninth Prompt
+
+## 79th Prompt
 In the frontend project the arena still has a refresh button (that shouldn't be needed any more - so remove it) and still does not automatically track the robots. That is, there is no automatic rerender of the screen with the latest robot movements. This is strange as there is a test for it. Are both the code and the test wrong? Can you fix both?
 
-## Eightieth Prompt
+
+## 80th Prompt
 fix the linting errors in the frontend project.
 
-## Eighty-first Prompt
+
+## 81st Prompt
 Why when I run the start_dev.java script (using jbang) does it open two windows the the front-end app
 
-## Eighty-second Prompt
+
+## 82nd Prompt
 The front-end projects Arena automatically applies updates received via a websocket to the view. The view does not show changes though. Could it be that the backend project is not updating the websocket whenever something changes for a robot? If so, create a scenario in BBD following the existing style in the backend project, implement the test and the logic to make sure that any change to a robot is communicated via the websocket to the front-end.
 
-## Eighty-third Prompt
+
+## 83rd Prompt
 fix the checkstyle issues in the backend project
 
-## Eighty-forth Prompt
+
+## 84th Prompt
 The robots started in the robo-demo project seem to move in turn. That is, robot A moves, thnen robot B moves. Is this because of the way the robot-demo is written or a issue with the backend and how it implements the moving of the robots? The robots should move completing independently of each other
 
-## Eighty-fourth Prompt
+
+## 85th Prompt
 fix the robo-demo ktlint errors
 
-## Eighty-fifth Prompt
+
+## 86th Prompt
 Add the check for formatting to the root build triggered by gradle. E.g. ./gradlew build does not seem to run the pretty check.
+
+
+## 87th Prompt
+The file ./backend/featuresPrompt.txt contains a prompt. Follow that prompt.
+
+
+## 88th Prompt - Back to Warp
+Pay attention to the .junie/guidelines.md file while completing this task. Fix the test errors in the backend project that resulted from an incomplete implementation of the last prompt.
+  ### prompt to refine a change
+    The register Robot for battle should NOT allow the user to set the hit points. The hit points are configured on the server for all Robots, not per robot and definitely not by the user registering the robot
+
+
+## 89th Prompt
+Strictly follow the guidelines in the.junie/guidelines.md file while implementing this task. Fix the failing tests in the backend project.
+### prompt to refine a change (Didn't work - manually edited this file)
+    Don't add the additional context. Just the prompt text (including this refinement)
+
+
+## 90th Prompt
+Strictly follow the guidelines in the.junie/guidelines.md file while implementing this task. Fix the failing tests in the backend project.
+
+
+## 91st Prompt - Back to Amazon Q
+Does the backend project include the walls defined within the arena in the data provided via the websocket or does this still need to be added to it
+
+
+## 92nd Prompt
+Go ahead and implement the required changes you identified. Follow the .junie/guidelines.md file for guidelines.
+
+## 93rd Prompt
+The robo-demo project creates a battle with two robots as a demo of the game. Follow the guidelines in the .junie/guidelines file while performing this task. Change the robo-demo to no longer output the arena to the console. Change it to play the game until a robot wins (see what winning means in the backend project). Change the start script and the parameters to remove the option to ignore crashes as the battle ends when only one robot still have hit points.
+
+## 94th Prompt
+Follow the guidlines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. However, if I run it twice, on the second time I receive a 409 from the backend server (in the backend project). Is there a problem with the how the backend is implemented that creating a second battle causes an issue?
+
+## 95th Prompt
+Follow the guidelines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. Enhance the demo so that it creates a unique battle name each time it runs.
+
+## 96th Prompt
+
+Follow the guidlines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. The demo still seems to print out a lot of information during testing. Looks like it's debug level information. Remove this so that there is less noise while running the tests
+
+## 97th Prompt
+
+Follow the guidelines in the .junie/guidelines.md file. The robo-demo still fails when starting the battle the second time.
+13:02:23.156 [main] INFO Main -- Using base URL: http://localhost:8080
+13:02:23.156 [main] INFO Main -- Time limit set to: PT5M
+13:02:23.362 [main] INFO Main -- Creating a new battle with a 20x20 arena: Demo Battle 2025-07-09 13:02:23 [3c785664]
+13:02:23.609 [main] INFO Main -- Battle created: 1505c7dc-c5b5-4178-9148-7e7ed205acf0 - Demo Battle 2025-07-09 13:02:23 [3c785664] - Arena size: 20x20
+13:02:23.611 [main] INFO Main -- Registering robot 'CyberWarrior-9cfba7'
+13:02:23.618 [main] INFO Main -- Robot registered: fe7699e8-005f-4b80-919b-a90230c0d6ff - CyberWarrior-9cfba7
+13:02:23.618 [main] INFO Main -- Registering robot 'QuantumRanger-4cb792'
+13:02:23.620 [main] INFO Main -- Robot registered: 1221f450-16df-473b-b164-48e0d923cab9 - QuantumRanger-4cb792
+13:02:23.620 [main] INFO Main -- Starting the battle
+13:02:23.622 [main] ERROR Main -- Error during demo execution
+java.io.IOException: Unexpected response code: 409
+        at za.co.sww.rwars.robodemo.api.RobotApiClient.startBattle(RobotApiClient.kt:66)
+        at za.co.sww.rwars.robodemo.MainKt$main$1.invokeSuspend(Main.kt:159)
+
+## 98th Prompt
+
+that worked, but now the move robot fails with the following error. (remember to follow the guidelines.)
+14:16:56.612 [main] INFO  Main - Using base URL: http://localhost:8080
+14:16:56.612 [main] INFO  Main - Time limit set to: PT5M
+14:16:56.814 [main] INFO  Main - Creating a new battle with a 20x20 arena: Demo Battle 2025-07-09 14:16:56 [9a9aa61d]
+14:16:57.058 [main] INFO  Main - Battle created: 083ba960-9f08-4a6f-ad79-59604a660899 - Demo Battle 2025-07-09 14:16:56 [9a9aa61d] - Arena size: 20x20
+14:16:57.060 [main] INFO  Main - Registering robot 'ThunderBolt-018d0a' for battle 083ba960-9f08-4a6f-ad79-59604a660899
+14:16:57.066 [main] INFO  Main - Robot registered: d1ecbc5b-7a8b-4dfd-86df-419be024e00b - ThunderBolt-018d0a
+14:16:57.067 [main] INFO  Main - Registering robot 'QuantumRanger-fe7346' for battle 083ba960-9f08-4a6f-ad79-59604a660899
+14:16:57.069 [main] INFO  Main - Robot registered: 96f2de9a-9960-475e-9ee2-d5fa45cf111d - QuantumRanger-fe7346
+14:16:57.069 [main] INFO  Main - Starting the battle
+14:16:57.075 [main] INFO  Main - Battle started: IN_PROGRESS
+14:16:57.081 [main] INFO  Main - Initial position of ThunderBolt-018d0a: (12, 1)
+14:16:57.081 [main] INFO  Main - Initial position of QuantumRanger-fe7346: (14, 18)
+14:16:57.084 [main] INFO  Main - Moving robots around the arena concurrently
+14:16:57.093 [main] INFO  Main - 📍 ThunderBolt-018d0a: (12, 1) - Status: IDLE
+14:16:57.093 [main] INFO  Main - 📍 QuantumRanger-fe7346: (14, 18) - Status: IDLE
+14:16:57.101 [main] INFO  Main - 🚀 Moving ThunderBolt-018d0a 1 blocks SW
+14:16:57.104 [main] INFO  Main - 🚀 Moving QuantumRanger-fe7346 2 blocks NORTH
+14:16:58.108 [main] INFO  Main - 💥 QuantumRanger-fe7346 crashed into a wall at position (14, 19)!
+14:16:58.110 [main] ERROR Main - Error in continuous movement for QuantumRanger-fe7346
+kotlinx.coroutines.JobCancellationException: StandaloneCoroutine was cancelled
+14:16:58.287 [main] INFO  Main - 🚀 Moving ThunderBolt-018d0a 2 blocks NORTH
+14:16:58.293 [main] ERROR Main - Error in continuous movement for ThunderBolt-018d0a
+java.io.IOException: Unexpected response code: 409
+        at za.co.sww.rwars.robodemo.api.RobotApiClient.moveRobot(RobotApiClient.kt:178)
+
+
+## 99th Prompt
+Follow the guidelines in the .junie/guidelines.md file. Update the robo-demo project to no longer print out the arena for any tests. The entire logic to render or view the arena on the console should be removed along with any tests for it.
+
+## 100th Prompt
+In the backend project the api to start a battle is in the Robots Resource. Given this is not a robot function, but a battle function, move this to the Battle Resource. Fix all tests, update the robo-demo and ensure that the frontend project still works. Follow the guidelines in the .junie/guidelines.md file.
+
+
+## 101st Prompt
+Following the guidelines, enhance the robo-demo such that both robots use the radar api to determine if there is a wall close to them. The robots will use this information to attempt to avoid crashing into a wall. Either an interal wall or a wall on the edge of the arena. Also confirm that the radar logic in the backend does report the walls on the edge of the arena as a wall in the radar response.
+
+## 102nd Prompt
+Follow the guidelines in the guidelines.md file. The robo-demo project has robots that are using radar to avoid collisions.
+15:03:32.004 [main] INFO  Main - Using base URL: http://localhost:8080
+15:03:32.004 [main] INFO  Main - Time limit set to: PT5M
+15:03:32.201 [main] INFO  Main - Creating a new battle with a 20x20 arena: Demo Battle 2025-07-09 15:03:32 [2654aeae]
+15:03:32.491 [main] INFO  Main - Battle created: 2423dc09-389c-4c90-b560-fc582244be30 - Demo Battle 2025-07-09 15:03:32 [2654aeae] - Arena size: 20x20
+15:03:32.492 [main] INFO  Main - Registering robot 'BattleBot-ca86ff' for battle 2423dc09-389c-4c90-b560-fc582244be30
+15:03:32.507 [main] INFO  Main - Robot registered: 626b66d0-eb9f-47b5-8f36-bbb31207f5f5 - BattleBot-ca86ff
+15:03:32.507 [main] INFO  Main - Registering robot 'SteelStorm-4d3ee8' for battle 2423dc09-389c-4c90-b560-fc582244be30
+15:03:32.509 [main] INFO  Main - Robot registered: c0769392-909a-4d1e-912c-54b3bc5ac328 - SteelStorm-4d3ee8
+15:03:32.509 [main] INFO  Main - Starting the battle
+15:03:32.514 [main] INFO  Main - Battle started: IN_PROGRESS
+15:03:32.520 [main] INFO  Main - Initial position of BattleBot-ca86ff: (2, 3)
+15:03:32.521 [main] INFO  Main - Initial position of SteelStorm-4d3ee8: (8, 13)
+15:03:32.523 [main] INFO  Main - Moving robots around the arena concurrently
+15:03:32.533 [main] INFO  Main - 📍 BattleBot-ca86ff: (2, 3) - Status: IDLE
+15:03:32.533 [main] INFO  Main - 📍 SteelStorm-4d3ee8: (8, 13) - Status: IDLE
+15:03:32.650 [main] INFO  Main - 🚀 Moving BattleBot-ca86ff 1 blocks NE (radar-guided)
+15:03:32.659 [main] INFO  Main - 🚀 Moving SteelStorm-4d3ee8 2 blocks EAST (radar-guided)
+15:03:34.841 [main] INFO  Main - 🚀 Moving SteelStorm-4d3ee8 2 blocks NE (radar-guided)
+15:03:35.090 [main] INFO  Main - 🚀 Moving BattleBot-ca86ff 2 blocks NE (radar-guided)
+15:03:35.576 [main] INFO  Main - 🎉 BATTLE WON! Winner: SteelStorm-4d3ee8 (ID: c0769392-909a-4d1e-912c-54b3bc5ac328)
+15:03:35.578 [main] INFO  Main - 🏁 Battle ended with state: COMPLETED
+15:03:35.578 [main] INFO  Main - 🏆 Final Winner: SteelStorm-4d3ee8
+15:03:35.580 [main] INFO  Main - 📊 Final Status:
+15:03:35.580 [main] INFO  Main -    BattleBot-ca86ff: CRASHED at (3, 4)
+15:03:35.580 [main] INFO  Main -    SteelStorm-4d3ee8: MOVING at (11, 14)
+15:03:35.581 [main] ERROR Main - Error in continuous movement for BattleBot-ca86ff
+kotlinx.coroutines.JobCancellationException: StandaloneCoroutine was cancelled
+15:03:35.582 [main] ERROR Main - Error in continuous movement for SteelStorm-4d3ee8
+kotlinx.coroutines.JobCancellationException: StandaloneCoroutine was cancelled
+15:03:35.582 [main] INFO  Main - Demo completed successfully
+
+## 101st Prompt
+I keep seeing crashes. To try get more information on this, show the radar results for each scan if the radar detected anything. Also show the decision that the "radar guided" movement made based on the results of the scan.
+
+## 102nd Prompt
+Given that a robot should not know its absolute position in the arena it makes sense that the radar data returned conveys items detected in relation to the robot and not in absolute co-ordinates in the arena. Confirm that the backend api does return radar results relative to the robot and add a scenario to the feature that tests for this.
+
+## 103rd Prompt
+Go ahead and implement the changes to make the test pass based on the solution you've identified.
+
+## 104th Prompt
+Follow the guidlines in the guidelines.md file. Add a unit tests in the backend project to test the radar service. Test that the radar detects the arena edge accurately, that it detects inner walls accurately and that it detects other robots. Also confirm that the results are relative to where the robot performing the scan is located and that x and y a represented correctly in the response.
+
+## 105th Prompt
+Fix the checkstyle errors in the backend service
+
+## 106th Prompt
+The robot should not be aware of it's position. How does it determine this? We need to fix the api so that the robot can't be aware of it's absolution position
+
+## 107th Prompt
+building the robo-demo in github with the action failed with the below. Fix this. Run ./gradlew :robo-demo:test
+> Task :robo-demo:checkKotlinGradlePluginConfigurationErrors
+> Task :robo-demo:compileKotlin UP-TO-DATE
+> Task :robo-demo:compileJava NO-SOURCE
+> Task :robo-demo:processResources UP-TO-DATE
+> Task :robo-demo:classes UP-TO-DATE
+> Task :robo-demo:processTestResources
+
+> Task :robo-demo:compileTestKotlin FAILED
+e: file:///home/runner/work/robot-wars/robot-wars/robo-demo/src/test/kotlin/za/co/sww/rwars/robodemo/wiremock/WireMockStubs.kt:214:13 Cannot find a parameter with this name: active
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':robo-demo:compileTestKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+5 actionable tasks: 3 executed, 2 up-to-date
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+## 108th Prompt
+Following the guidelines, fix the backend projects test as they are failing
+
+## 109th Prompt
+Following the guidelines, remove this scenario "Scenario: Robot scans empty area" and the related test implementation as it's a flaky test.
+
+## 110th Prompt
+Following the guidelines in the .junie/guidelines.md file for this task, determine what is still using the "@Path("/battle/{battleId}/robot/{robotId}/details")" api and how best to remove it as it exposes to much detail to the client. this @Path("/battle/{battleId}/robot/{robotId}/status") should be used instead.

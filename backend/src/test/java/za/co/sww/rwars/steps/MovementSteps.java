@@ -72,7 +72,7 @@ public class MovementSteps {
         registerResponse.then().statusCode(200);
 
         // Start the battle
-        response = request.post("/api/robots/battle/" + battleId + "/start");
+        response = request.post("/api/battles/" + battleId + "/start");
         response.then().statusCode(200);
 
         // Verify the battle is actually started
@@ -95,11 +95,11 @@ public class MovementSteps {
         robot.setPositionX(arenaWidth / 2);
         robot.setPositionY(arenaHeight / 2);
 
-        // Get the current position of the robot before moving
-        Response positionResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
-        positionResponse.then().statusCode(200);
-        initialX = positionResponse.jsonPath().getInt("positionX");
-        initialY = positionResponse.jsonPath().getInt("positionY");
+        // Get the current position of the robot before moving using BattleService directly
+        // This is appropriate for tests as we need to verify internal state
+        Robot robotBeforeMove = battleService.getRobotDetails(battleId, robotId);
+        initialX = robotBeforeMove.getPositionX();
+        initialY = robotBeforeMove.getPositionY();
 
         // Create movement request
         Map<String, Object> movementRequest = new HashMap<>();
@@ -121,11 +121,11 @@ public class MovementSteps {
             Thread.currentThread().interrupt();
         }
 
-        // Get the final position of the robot
-        Response positionResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
-        positionResponse.then().statusCode(200);
-        int finalX = positionResponse.jsonPath().getInt("positionX");
-        int finalY = positionResponse.jsonPath().getInt("positionY");
+        // Get the final position of the robot using BattleService directly
+        // This is appropriate for tests as we need to verify internal state
+        Robot robotAfterMove = battleService.getRobotDetails(battleId, robotId);
+        int finalX = robotAfterMove.getPositionX();
+        int finalY = robotAfterMove.getPositionY();
 
         // Verify the robot moved the expected distance in the expected direction
         switch (direction) {
@@ -160,7 +160,7 @@ public class MovementSteps {
         // and the robot status might already be back to IDLE by the time we check it
 
         // Check the status immediately after initiating movement
-        Response statusResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
+        Response statusResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/status");
         statusResponse.then().statusCode(200);
 
         // Get the actual status
@@ -194,11 +194,11 @@ public class MovementSteps {
         robot.setPositionX(arenaWidth / 2);
         robot.setPositionY(arenaHeight / 2);
 
-        // Get the current position of the robot before moving
-        Response positionResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
-        positionResponse.then().statusCode(200);
-        initialX = positionResponse.jsonPath().getInt("positionX");
-        initialY = positionResponse.jsonPath().getInt("positionY");
+        // Get the current position of the robot before moving using BattleService directly
+        // This is appropriate for tests as we need to verify internal state
+        Robot robotBeforeMove = battleService.getRobotDetails(battleId, robotId);
+        initialX = robotBeforeMove.getPositionX();
+        initialY = robotBeforeMove.getPositionY();
 
         // Create movement request
         Map<String, Object> movementRequest = new HashMap<>();
@@ -209,13 +209,10 @@ public class MovementSteps {
         response = request.body(movementRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/move");
         response.then().statusCode(200);
 
-        // Verify the robot is moving
-        Response statusResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
-        statusResponse.then().statusCode(200);
-
-        // Convert the status to uppercase for comparison since the enum values are uppercase
-        String actualStatus = statusResponse.jsonPath().getString("status");
-        Assertions.assertEquals("MOVING", actualStatus);
+        // Verify the robot is moving using BattleService directly
+        // This is appropriate for tests as we need to verify internal state
+        Robot robotStatus = battleService.getRobotDetails(battleId, robotId);
+        Assertions.assertEquals(Robot.RobotStatus.MOVING, robotStatus.getStatus());
     }
 
     @When("I move my robot in direction {string} for {int} blocks before the first movement completes")
@@ -244,18 +241,19 @@ public class MovementSteps {
 
     @And("the robot should start moving in the {string} direction")
     public void theRobotShouldStartMovingInTheDirection(String direction) {
-        // Verify the robot is moving in the new direction
-        Response directionResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
-        directionResponse.then().statusCode(200).body("direction", Matchers.equalTo(direction));
+        // Verify the robot is moving in the new direction using BattleService directly
+        // This is appropriate for tests as we need to verify internal state
+        Robot robotDirection = battleService.getRobotDetails(battleId, robotId);
+        Assertions.assertEquals(Robot.Direction.valueOf(direction), robotDirection.getDirection());
     }
 
     @And("my robot is positioned near the edge of the arena")
     public void myRobotIsPositionedNearTheEdgeOfTheArena() {
-        // Get the current position of the robot
-        Response positionResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
-        positionResponse.then().statusCode(200);
-        initialX = positionResponse.jsonPath().getInt("positionX");
-        initialY = positionResponse.jsonPath().getInt("positionY");
+        // Get the current position of the robot using BattleService directly
+        // This is appropriate for tests as we need to verify internal state
+        Robot robotPosition = battleService.getRobotDetails(battleId, robotId);
+        initialX = robotPosition.getPositionX();
+        initialY = robotPosition.getPositionY();
 
         // Get the arena dimensions
         Response battleResponse = request.get("/api/robots/battle/" + battleId);
@@ -300,10 +298,10 @@ public class MovementSteps {
         battleResponse.then().statusCode(200);
         int arenaHeight = battleResponse.jsonPath().getInt("arenaHeight");
 
-        // Get the final position of the robot
-        Response positionResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
-        positionResponse.then().statusCode(200);
-        int finalY = positionResponse.jsonPath().getInt("positionY");
+        // Get the final position of the robot using BattleService directly
+        // This is appropriate for tests as we need to verify internal state
+        Robot robotFinalPosition = battleService.getRobotDetails(battleId, robotId);
+        int finalY = robotFinalPosition.getPositionY();
 
         // Verify the robot is at or near the boundary (it might be at arenaHeight-1 due to 0-based indexing)
         Assertions.assertTrue(finalY == arenaHeight - 1 || finalY == arenaHeight,
@@ -319,8 +317,8 @@ public class MovementSteps {
 
     @And("the robot status should be {string}")
     public void theRobotStatusShouldBe(String status) {
-        // Check the robot status
-        Response statusResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
+        // Check the robot status using /status endpoint
+        Response statusResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/status");
         statusResponse.then().statusCode(200);
 
         // Convert the status to uppercase for comparison since the enum values are uppercase
@@ -328,17 +326,17 @@ public class MovementSteps {
         Assertions.assertEquals(status.toUpperCase(), actualStatus);
     }
 
-    @When("I request the details of my robot via the API")
-    public void iRequestTheDetailsOfMyRobotViaTheAPI() {
+    @When("I request the status of my robot via the API")
+    public void iRequestTheStatusOfMyRobotViaTheAPI() {
         // Store the response for later assertions
-        robotDetailsResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
+        robotDetailsResponse = request.get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/status");
 
         // Verify the request was successful
         robotDetailsResponse.then().statusCode(200);
     }
 
-    @Then("I should receive all the information about my robot")
-    public void iShouldReceiveAllTheInformationAboutMyRobot() {
+    @Then("I should receive the status information about my robot")
+    public void iShouldReceiveTheStatusInformationAboutMyRobot() {
         // Verify the response contains the robot information
         robotDetailsResponse.then()
                 .statusCode(200)
@@ -347,18 +345,21 @@ public class MovementSteps {
                 .body("battleId", Matchers.equalTo(battleId));
     }
 
-    @And("the information should include the robot's ID, name, position, direction, and status")
-    public void theInformationShouldIncludeTheRobotsIDNamePositionDirectionAndStatus() {
-        // Verify all required fields are present
+    @And("the information should include the robot's ID, name, direction, and status but not position")
+    public void theInformationShouldIncludeTheRobotsIDNameDirectionAndStatusButNotPosition() {
+        // Verify all required fields are present but position is not exposed
         robotDetailsResponse.then()
                 .statusCode(200)
                 .body("id", Matchers.notNullValue())
                 .body("name", Matchers.notNullValue())
                 .body("battleId", Matchers.equalTo(battleId))
-                .body("positionX", Matchers.notNullValue())
-                .body("positionY", Matchers.notNullValue())
                 .body("direction", Matchers.notNullValue())
-                .body("status", Matchers.notNullValue());
+                .body("status", Matchers.notNullValue())
+                .body("hitPoints", Matchers.notNullValue())
+                .body("maxHitPoints", Matchers.notNullValue())
+                // Ensure position information is not exposed
+                .body("$", Matchers.not(Matchers.hasKey("positionX")))
+                .body("$", Matchers.not(Matchers.hasKey("positionY")));
     }
 
     @When("I register multiple robots")
@@ -394,20 +395,14 @@ public class MovementSteps {
                 battleId = responseBattleId;
             }
 
-            Response robotDetailsResponse = RestAssured.given()
-                    .when()
-                    .get("/api/robots/battle/" + battleId + "/robot/" + robotId + "/details");
+            // Get the position values using BattleService directly
+            // This is appropriate for tests as we need to verify internal state
+            Robot robotDetails = battleService.getRobotDetails(battleId, robotId);
+            int posX = robotDetails.getPositionX();
+            int posY = robotDetails.getPositionY();
 
-            // Add debug logging to see the response
-            System.out.println("[DEBUG_LOG] Robot details response: " + robotDetailsResponse.asString());
-            System.out.println("[DEBUG_LOG] Robot details status code: " + robotDetailsResponse.getStatusCode());
-
-            // Verify the response was successful
-            robotDetailsResponse.then().statusCode(200);
-
-            // Get the position values
-            int posX = robotDetailsResponse.jsonPath().getInt("positionX");
-            int posY = robotDetailsResponse.jsonPath().getInt("positionY");
+            // Add debug logging
+            System.out.println("[DEBUG_LOG] Robot " + robotId + " position: (" + posX + ", " + posY + ")");
 
             robotPositions.add(new int[]{posX, posY});
         }

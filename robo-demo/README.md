@@ -1,15 +1,15 @@
 # Robo Demo
 
-A Kotlin-based demo application that interacts with the Robot Wars backend API to create battles, register robots, and move them around the arena.
+A Kotlin-based demo application that interacts with the Robot Wars backend API to create battles, register robots, and move them around the arena until one robot wins.
 
 ## Project Overview
 
 The Robo Demo project demonstrates how to use the Robot Wars backend API to:
 
-1. Create a new battle
+1. Create a new battle with a 20x20 arena
 2. Register robots with names "Restro" and "ReqBot"
 3. Start the battle
-4. Move the robots around the arena until one crashes into a wall or 5 minutes has passed
+4. Move the robots around the arena concurrently until one robot wins or the time limit is reached
 
 The project uses:
 - Kotlin as the programming language
@@ -42,14 +42,34 @@ The project includes a script to start the backend service locally and run the d
 
 ```bash
 cd robo-demo
-./start-battle.sh
+./start-battle.sh [OPTIONS]
 ```
 
-This script will:
-1. Start the backend service in dev mode
-2. Wait for the service to start
-3. Run the Robo Demo application
-4. Clean up resources when done
+#### Available Options:
+
+- `-u, --url URL`: Base URL for the Robot Wars API (default: `http://localhost:8080`)
+- `-t, --time TIME`: Time limit for the battle (e.g., `5m`, `30s`) (default: `5m`)
+- `-h, --help`: Show help message
+
+#### Examples:
+
+```bash
+# Run with default settings (5 minutes time limit)
+./start-battle.sh
+
+# Run for 2 minutes
+./start-battle.sh --time 2m
+
+# Run against a different API server
+./start-battle.sh --url http://remote-server:8080
+
+# Combine multiple options
+./start-battle.sh --url http://localhost:8080 --time 30s
+```
+
+The demo will run until:
+- One robot wins (when the other robot crashes and only one remains active)
+- The time limit is reached
 
 ### Manual Execution
 
@@ -59,11 +79,22 @@ You can also run the application manually:
 ./gradlew :robo-demo:run
 ```
 
-By default, the application connects to the backend at `http://localhost:8080`. You can specify a different URL as a command-line argument:
+Or with custom arguments:
 
 ```bash
-./gradlew :robo-demo:run --args="http://your-backend-url"
+./gradlew :robo-demo:run --args="--url http://your-backend-url --time 2m"
 ```
+
+## How the Demo Works
+
+1. **Battle Creation**: Creates a new battle with a unique name and 20x20 arena
+2. **Robot Registration**: Registers two robots ("Restro" and "ReqBot") 
+3. **Battle Start**: Starts the battle, which changes the state to "IN_PROGRESS"
+4. **Concurrent Movement**: Both robots move independently in random directions
+5. **Battle Monitoring**: The application monitors the battle state until:
+   - The battle state becomes "COMPLETED" (indicating a winner)
+   - The time limit is reached
+6. **Winner Declaration**: When one robot crashes, the backend automatically declares the remaining robot as the winner
 
 ## Testing
 
@@ -96,7 +127,7 @@ These clients handle the HTTP requests and JSON serialization/deserialization.
 
 The project includes two model classes:
 
-- `Battle`: Represents a battle in the Robot Wars game
+- `Battle`: Represents a battle in the Robot Wars game (includes winner information)
 - `Robot`: Represents a robot in the Robot Wars game
 
 These classes are used for JSON serialization/deserialization.

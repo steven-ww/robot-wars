@@ -134,3 +134,24 @@ button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
+
+/* Wall styles */
+.wall {
+  position: absolute;
+  background-color: #8b4513;
+  border: 1px solid #654321;
+  z-index: 5;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.wall-square {
+  background-color: #8b4513;
+}
+
+.wall-long {
+  background-color: #a0522d;
+}
+
+.wall-u_shape {
+  background-color: #cd853f;
+}

@@ -12,6 +12,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
+import za.co.sww.rwars.backend.model.RobotStatus;
+import za.co.sww.rwars.backend.model.RadarResponse;
 import za.co.sww.rwars.backend.service.BattleService;
 
 /**
@@ -123,17 +125,18 @@ public class RobotResource {
     }
 
     /**
-     * Gets a specific robot's details.
+     * Gets a specific robot's status without revealing its absolute position.
+     * This is what robots should use to check their own status.
      *
      * @param battleId The battle ID
      * @param robotId The robot ID
-     * @return The robot details
+     * @return The robot status (without position information)
      */
     @GET
-    @Path("/battle/{battleId}/robot/{robotId}/details")
+    @Path("/battle/{battleId}/robot/{robotId}/status")
     @RunOnVirtualThread
-    public Response getRobotDetails(@PathParam("battleId") String battleId,
-                                    @PathParam("robotId") String robotId) {
+    public Response getRobotStatus(@PathParam("battleId") String battleId,
+                                   @PathParam("robotId") String robotId) {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -141,7 +144,8 @@ public class RobotResource {
                         .build();
             }
             Robot robot = battleService.getRobotDetails(battleId, robotId);
-            return Response.ok(robot).build();
+            RobotStatus robotStatus = new RobotStatus(robot);
+            return Response.ok(robotStatus).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse(e.getMessage()))
@@ -149,29 +153,8 @@ public class RobotResource {
         }
     }
 
-    /**
-     * Starts the battle.
-     *
-     * @param battleId The battle ID
-     * @return The battle status
-     */
-    @POST
-    @Path("/battle/{battleId}/start")
-    @RunOnVirtualThread
-    public Response startBattle(@PathParam("battleId") String battleId) {
-        try {
-            Battle battle = battleService.startBattle(battleId);
-            return Response.ok(battle).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
-                    .build();
-        } catch (IllegalStateException e) {
-            return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponse(e.getMessage()))
-                    .build();
-        }
-    }
+
+
 
     /**
      * Moves a robot in the specified direction for the specified number of blocks.
@@ -211,6 +194,42 @@ public class RobotResource {
     }
 
     /**
+     * Performs a radar scan for a robot.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param radarRequest The radar request containing range
+     * @return The radar response
+     */
+    @POST
+    @Path("/battle/{battleId}/robot/{robotId}/radar")
+    @RunOnVirtualThread
+    public Response performRadarScan(@PathParam("battleId") String battleId,
+                                     @PathParam("robotId") String robotId,
+                                     RadarRequest radarRequest) {
+        try {
+            if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .build();
+            }
+            RadarResponse radarResponse = battleService.performRadarScan(
+                    battleId,
+                    robotId,
+                    radarRequest.range());
+            return Response.ok(radarResponse).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
      * Error response record.
      */
     public record ErrorResponse(String message) {
@@ -225,6 +244,15 @@ public class RobotResource {
     public record MoveRequest(String direction, int blocks) {
         public MoveRequest() {
             this(null, 0);
+        }
+    }
+
+    /**
+     * Radar request record.
+     */
+    public record RadarRequest(int range) {
+        public RadarRequest() {
+            this(5);
         }
     }
 
