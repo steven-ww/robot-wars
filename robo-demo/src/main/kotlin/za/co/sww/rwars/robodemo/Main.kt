@@ -298,6 +298,7 @@ private suspend fun moveRobotsUntilWinnerOrTimeout(
 
 /**
  * Continuously moves a robot in random directions until it crashes or is stopped.
+ * Uses radar to detect and avoid walls when possible.
  */
 private suspend fun moveRobotContinuously(
     robotApiClient: RobotApiClient,
@@ -328,13 +329,34 @@ private suspend fun moveRobotContinuously(
                 }
             }
 
-            // Issue next movement command
-            val direction = directions.random()
-            val blocks = (1..3).random()
-            logger.info("🚀 Moving ${robot.name} $blocks blocks $direction")
+            // Use radar to scan for nearby walls and choose a safe direction
+            val safeDirection = chooseSafeDirection(robotApiClient, battleId, robot, directions)
+            val blocks = (1..2).random() // Reduced range to be more cautious
+
+            if (safeDirection != null) {
+                logger.info("🚀 Moving ${robot.name} $blocks blocks $safeDirection (radar-guided)")
+            } else {
+                // If no safe direction found, try a random direction with minimal movement
+                val direction = directions.random()
+                logger.info("🚀 Moving ${robot.name} 1 block $direction (random - no safe path detected)")
+
+                try {
+                    robotApiClient.moveRobot(battleId, robot.id, direction, 1)
+                } catch (e: IOException) {
+                    if (e.message?.contains("409") == true) {
+                        logger.info("🏁 Battle has ended, stopping movement for ${robot.name}")
+                        break
+                    } else {
+                        throw e
+                    }
+                }
+
+                delay((1000..2500).random().toLong())
+                continue
+            }
 
             try {
-                robotApiClient.moveRobot(battleId, robot.id, direction, blocks)
+                robotApiClient.moveRobot(battleId, robot.id, safeDirection, blocks)
             } catch (e: IOException) {
                 if (e.message?.contains("409") == true) {
                     // Battle has ended (409 Conflict), stop moving this robot
@@ -347,10 +369,105 @@ private suspend fun moveRobotContinuously(
             }
 
             // Add some randomness to movement timing
-            delay((500..2000).random().toLong())
+            delay((1000..2500).random().toLong())
         }
     } catch (e: Exception) {
         logger.error("Error in continuous movement for ${robot.name}", e)
         onCrashed(true)
     }
+}
+
+/**
+ * Uses radar to choose a safe direction for robot movement.
+ * Analyzes radar data to avoid walls and other robots.
+ */
+private suspend fun chooseSafeDirection(
+    robotApiClient: RobotApiClient,
+    battleId: String,
+    robot: Robot,
+    directions: List<String>,
+): String? {
+    try {
+        // Perform radar scan with range of 3 to detect nearby obstacles
+        val radarResponse = robotApiClient.performRadarScan(battleId, robot.id, 3)
+
+        // Get current robot position
+        val robotDetails = robotApiClient.getRobotDetails(battleId, robot.id)
+        val currentX = robotDetails.positionX
+        val currentY = robotDetails.positionY
+
+        // Analyze each direction for safety
+        val safeDirections = mutableListOf<String>()
+
+        for (direction in directions) {
+            if (isDirectionSafe(direction, currentX, currentY, radarResponse.detections)) {
+                safeDirections.add(direction)
+            }
+        }
+
+        // Log radar findings for debugging
+        if (radarResponse.detections.isNotEmpty()) {
+            val wallCount = radarResponse.detections.count { detection -> detection.type.name == "WALL" }
+            val robotCount = radarResponse.detections.count { detection -> detection.type.name == "ROBOT" }
+            logger.debug("📡 ${robot.name} radar: $wallCount walls, $robotCount robots detected. Safe directions: $safeDirections")
+        }
+
+        // Return a random safe direction, or null if none found
+        return safeDirections.randomOrNull()
+    } catch (e: Exception) {
+        logger.warn("Failed to perform radar scan for ${robot.name}: ${e.message}")
+        // Fallback to random direction if radar fails
+        return directions.random()
+    }
+}
+
+/**
+ * Determines if a direction is safe based on radar detections.
+ * Checks if moving in the given direction would lead towards a detected obstacle.
+ */
+private fun isDirectionSafe(
+    direction: String,
+    currentX: Int,
+    currentY: Int,
+    detections: List<za.co.sww.rwars.robodemo.model.RadarResponse.Detection>,
+): Boolean {
+    // Calculate the direction vector
+    val (deltaX, deltaY) = when (direction) {
+        "NORTH" -> Pair(0, -1)
+        "SOUTH" -> Pair(0, 1)
+        "EAST" -> Pair(1, 0)
+        "WEST" -> Pair(-1, 0)
+        "NE" -> Pair(1, -1)
+        "NW" -> Pair(-1, -1)
+        "SE" -> Pair(1, 1)
+        "SW" -> Pair(-1, 1)
+        else -> Pair(0, 0)
+    }
+
+    // Check if any detected walls are in the path of this direction
+    for (detection in detections) {
+        if (detection.type.name == "WALL") {
+            val wallX = detection.x
+            val wallY = detection.y
+
+            // Check if the wall is in the general direction we want to move
+            val wallDeltaX = wallX - currentX
+            val wallDeltaY = wallY - currentY
+
+            // If the wall is in the same direction as our intended movement, it's not safe
+            if (deltaX != 0 && (wallDeltaX * deltaX > 0) && Math.abs(wallDeltaX) <= 2) {
+                if (deltaY == 0 || (wallDeltaY * deltaY >= 0 && Math.abs(wallDeltaY) <= 2)) {
+                    return false
+                }
+            }
+
+            if (deltaY != 0 && (wallDeltaY * deltaY > 0) && Math.abs(wallDeltaY) <= 2) {
+                if (deltaX == 0 || (wallDeltaX * deltaX >= 0 && Math.abs(wallDeltaX) <= 2)) {
+                    return false
+                }
+            }
+        }
+    }
+
+    return true
 }

@@ -556,3 +556,6 @@ java.io.IOException: Unexpected response code: 409
 Follow the guidelines in the .junie/guidelines.md file. Update the robo-demo project to no longer print out the arena for any tests. The entire logic to render or view the arena on the console should be removed along with any tests for it.
 ## Ninety-fourth Prompt
 In the backend project the api to start a battle is in the Robots Resource. Given this is not a robot function, but a battle function, move this to the Battle Resource. Fix all tests, update the robo-demo and ensure that the frontend project still works. Follow the guidelines in the .junie/guidelines.md file.
+
+## Ninety-fifth Prompt
+Following the guidelines, enhance the robo-demo such that both robots use the radar api to determine if there is a wall close to them. The robots will use this information to attempt to avoid crashing into a wall. Either an interal wall or a wall on the edge of the arena. Also confirm that the radar logic in the backend does report the walls on the edge of the arena as a wall in the radar response.
