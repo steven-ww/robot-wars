@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import za.co.sww.rwars.robodemo.api.BattleApiClient
 import za.co.sww.rwars.robodemo.api.RobotApiClient
 import za.co.sww.rwars.robodemo.model.Robot
+import java.io.IOException
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
@@ -143,15 +144,15 @@ fun main(args: Array<String>) = runBlocking {
         val battle = battleApiClient.createBattle(battleName, 20, 20)
         logger.info("Battle created: ${battle.id} - ${battle.name} - Arena size: ${battle.arenaWidth}x${battle.arenaHeight}")
 
-        // Register robots with unique creative names
+        // Register robots with unique creative names for the specific battle
         val restroName = generateUniqueRobotName()
-        logger.info("Registering robot '$restroName'")
-        val restro = robotApiClient.registerRobot(restroName)
+        logger.info("Registering robot '$restroName' for battle ${battle.id}")
+        val restro = robotApiClient.registerRobotForBattle(restroName, battle.id)
         logger.info("Robot registered: ${restro.id} - ${restro.name}")
 
         val reqBotName = generateUniqueRobotName()
-        logger.info("Registering robot '$reqBotName'")
-        val reqBot = robotApiClient.registerRobot(reqBotName)
+        logger.info("Registering robot '$reqBotName' for battle ${battle.id}")
+        val reqBot = robotApiClient.registerRobotForBattle(reqBotName, battle.id)
         logger.info("Robot registered: ${reqBot.id} - ${reqBot.name}")
 
         // Start the battle
@@ -332,7 +333,18 @@ private suspend fun moveRobotContinuously(
             val blocks = (1..3).random()
             logger.info("🚀 Moving ${robot.name} $blocks blocks $direction")
 
-            robotApiClient.moveRobot(battleId, robot.id, direction, blocks)
+            try {
+                robotApiClient.moveRobot(battleId, robot.id, direction, blocks)
+            } catch (e: IOException) {
+                if (e.message?.contains("409") == true) {
+                    // Battle has ended (409 Conflict), stop moving this robot
+                    logger.info("🏁 Battle has ended, stopping movement for ${robot.name}")
+                    break
+                } else {
+                    // Re-throw other IOExceptions
+                    throw e
+                }
+            }
 
             // Add some randomness to movement timing
             delay((500..2000).random().toLong())

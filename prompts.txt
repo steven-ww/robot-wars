@@ -508,3 +508,46 @@ Follow the guidlines in the .junie/guidelines.md file. The robo-demo project cre
 ## Forty-sixth Prompt
 
 Follow the guidlines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. The demo still seems to print out a lot of information during testing. Looks like it's debug level information. Remove this so that there is less noise while running the tests
+## Forty-seventh Prompt
+
+Follow the guidlines in the .junie/guidelines.md file. The robo-demo still fails when starting the battle the second time. This is the error log. 13:02:23.148 [main] INFO Main -- Starting Robot Wars Demo
+13:02:23.156 [main] INFO Main -- Using base URL: http://localhost:8080
+13:02:23.156 [main] INFO Main -- Time limit set to: PT5M
+13:02:23.362 [main] INFO Main -- Creating a new battle with a 20x20 arena: Demo Battle 2025-07-09 13:02:23 [3c785664]
+13:02:23.609 [main] INFO Main -- Battle created: 1505c7dc-c5b5-4178-9148-7e7ed205acf0 - Demo Battle 2025-07-09 13:02:23 [3c785664] - Arena size: 20x20
+13:02:23.611 [main] INFO Main -- Registering robot 'CyberWarrior-9cfba7'
+13:02:23.618 [main] INFO Main -- Robot registered: fe7699e8-005f-4b80-919b-a90230c0d6ff - CyberWarrior-9cfba7
+13:02:23.618 [main] INFO Main -- Registering robot 'QuantumRanger-4cb792'
+13:02:23.620 [main] INFO Main -- Robot registered: 1221f450-16df-473b-b164-48e0d923cab9 - QuantumRanger-4cb792
+13:02:23.620 [main] INFO Main -- Starting the battle
+13:02:23.622 [main] ERROR Main -- Error during demo execution
+java.io.IOException: Unexpected response code: 409
+        at za.co.sww.rwars.robodemo.api.RobotApiClient.startBattle(RobotApiClient.kt:66)
+        at za.co.sww.rwars.robodemo.MainKt$main$1.invokeSuspend(Main.kt:159)
+## Forty-eighth Prompt
+
+that worked, but now the move robot fails with the following error. (remember to follow the guidelines.) 14:16:56.607 [main] INFO  Main - Starting Robot Wars Demo
+14:16:56.612 [main] INFO  Main - Using base URL: http://localhost:8080
+14:16:56.612 [main] INFO  Main - Time limit set to: PT5M
+14:16:56.814 [main] INFO  Main - Creating a new battle with a 20x20 arena: Demo Battle 2025-07-09 14:16:56 [9a9aa61d]
+14:16:57.058 [main] INFO  Main - Battle created: 083ba960-9f08-4a6f-ad79-59604a660899 - Demo Battle 2025-07-09 14:16:56 [9a9aa61d] - Arena size: 20x20
+14:16:57.060 [main] INFO  Main - Registering robot 'ThunderBolt-018d0a' for battle 083ba960-9f08-4a6f-ad79-59604a660899
+14:16:57.066 [main] INFO  Main - Robot registered: d1ecbc5b-7a8b-4dfd-86df-419be024e00b - ThunderBolt-018d0a
+14:16:57.067 [main] INFO  Main - Registering robot 'QuantumRanger-fe7346' for battle 083ba960-9f08-4a6f-ad79-59604a660899
+14:16:57.069 [main] INFO  Main - Robot registered: 96f2de9a-9960-475e-9ee2-d5fa45cf111d - QuantumRanger-fe7346
+14:16:57.069 [main] INFO  Main - Starting the battle
+14:16:57.075 [main] INFO  Main - Battle started: IN_PROGRESS
+14:16:57.081 [main] INFO  Main - Initial position of ThunderBolt-018d0a: (12, 1)
+14:16:57.081 [main] INFO  Main - Initial position of QuantumRanger-fe7346: (14, 18)
+14:16:57.084 [main] INFO  Main - Moving robots around the arena concurrently
+14:16:57.093 [main] INFO  Main - 📍 ThunderBolt-018d0a: (12, 1) - Status: IDLE
+14:16:57.093 [main] INFO  Main - 📍 QuantumRanger-fe7346: (14, 18) - Status: IDLE
+14:16:57.101 [main] INFO  Main - 🚀 Moving ThunderBolt-018d0a 1 blocks SW
+14:16:57.104 [main] INFO  Main - 🚀 Moving QuantumRanger-fe7346 2 blocks NORTH
+14:16:58.108 [main] INFO  Main - 💥 QuantumRanger-fe7346 crashed into a wall at position (14, 19)!
+14:16:58.110 [main] ERROR Main - Error in continuous movement for QuantumRanger-fe7346
+kotlinx.coroutines.JobCancellationException: StandaloneCoroutine was cancelled
+14:16:58.287 [main] INFO  Main - 🚀 Moving ThunderBolt-018d0a 2 blocks NORTH
+14:16:58.293 [main] ERROR Main - Error in continuous movement for ThunderBolt-018d0a
+java.io.IOException: Unexpected response code: 409
+        at za.co.sww.rwars.robodemo.api.RobotApiClient.moveRobot(RobotApiClient.kt:178)
