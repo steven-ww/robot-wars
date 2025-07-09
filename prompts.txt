@@ -593,3 +593,35 @@ Fix the checkstyle errors in the backend service
 
 ## 106th Prompt
 The robot should not be aware of it's position. How does it determine this? We need to fix the api so that the robot can't be aware of it's absolution position
+
+## 107th Prompt
+building the robo-demo in github with the action failed with the below. Fix this. Run ./gradlew :robo-demo:test
+> Task :robo-demo:checkKotlinGradlePluginConfigurationErrors
+> Task :robo-demo:compileKotlin UP-TO-DATE
+> Task :robo-demo:compileJava NO-SOURCE
+> Task :robo-demo:processResources UP-TO-DATE
+> Task :robo-demo:classes UP-TO-DATE
+> Task :robo-demo:processTestResources
+
+> Task :robo-demo:compileTestKotlin FAILED
+e: file:///home/runner/work/robot-wars/robot-wars/robo-demo/src/test/kotlin/za/co/sww/rwars/robodemo/wiremock/WireMockStubs.kt:214:13 Cannot find a parameter with this name: active
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':robo-demo:compileTestKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+5 actionable tasks: 3 executed, 2 up-to-date
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+## 108th Prompt
+Following the guidelines, fix the backend projects test as they are failing
+
+## 109th Prompt
+Following the guidelines, remove this scenario "Scenario: Robot scans empty area" and the related test implementation as it's a flaky test.

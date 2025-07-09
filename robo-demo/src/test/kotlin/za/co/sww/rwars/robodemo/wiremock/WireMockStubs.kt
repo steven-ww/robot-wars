@@ -211,7 +211,6 @@ class WireMockStubs {
             targetBlocks = 0,
             hitPoints = 100,
             maxHitPoints = 100,
-            active = status != "CRASHED",
         )
 
         WireMock.stubFor(

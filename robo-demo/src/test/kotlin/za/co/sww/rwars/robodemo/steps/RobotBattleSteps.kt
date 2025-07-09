@@ -329,9 +329,7 @@ class RobotBattleSteps {
         )
 
         // Track the robot's position over time
-        for ((index, position) in positions.withIndex()) {
-            val (x, y) = position
-
+        for (index in positions.indices) {
             // Set up stub for getting robot status with updated status
             val status = if (index < positions.size - 1) "MOVING" else "IDLE"
             wireMockStubs.stubGetRobotStatus(robot.name, status)
