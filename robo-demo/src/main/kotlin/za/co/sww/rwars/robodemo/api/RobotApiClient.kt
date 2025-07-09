@@ -48,6 +48,35 @@ class RobotApiClient(private val baseUrl: String) {
     }
 
     /**
+     * Registers a robot for a specific battle.
+     *
+     * @param name The name of the robot
+     * @param battleId The ID of the battle to join
+     * @return The registered robot
+     * @throws IOException if the API call fails
+     */
+    @Throws(IOException::class)
+    suspend fun registerRobotForBattle(name: String, battleId: String): Robot {
+        val requestBody = mapper.writeValueAsString(
+            mapOf("name" to name),
+        ).toRequestBody(jsonMediaType)
+
+        val request = Request.Builder()
+            .url("$baseUrl/api/robots/register/$battleId")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw IOException("Unexpected response code: ${response.code}")
+            }
+
+            val responseBody = response.body?.string() ?: throw IOException("Empty response body")
+            return mapper.readValue(responseBody)
+        }
+    }
+
+    /**
      * Starts a battle.
      *
      * @param battleId The ID of the battle to start
