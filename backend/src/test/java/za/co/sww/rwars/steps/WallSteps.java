@@ -43,18 +43,18 @@ public class WallSteps {
     public void theWallsShouldBeOfThreeTypesOnly() {
         Assertions.assertNotNull(currentBattle);
         List<Wall> walls = currentBattle.getWalls();
-        
+
         Set<Wall.WallType> wallTypes = new HashSet<>();
         for (Wall wall : walls) {
             wallTypes.add(wall.getType());
         }
-        
+
         // Check that we have valid wall types
         for (Wall.WallType type : wallTypes) {
-            Assertions.assertTrue(
-                type == Wall.WallType.SQUARE || 
-                type == Wall.WallType.LONG || 
-                type == Wall.WallType.U_SHAPE,
+        Assertions.assertTrue(
+                type == Wall.WallType.SQUARE
+                || type == Wall.WallType.LONG
+                || type == Wall.WallType.U_SHAPE,
                 "Wall type should be one of: SQUARED, LONG, U_SHAPE"
             );
         }
@@ -64,17 +64,17 @@ public class WallSteps {
     public void thereShouldBeSquaredWallsOf4x4Blocks() {
         Assertions.assertNotNull(currentBattle);
         List<Wall> walls = currentBattle.getWalls();
-        
+
         boolean hasSquaredWall = walls.stream()
             .anyMatch(wall -> wall.getType() == Wall.WallType.SQUARE);
-        
+
         if (hasSquaredWall) {
             // Verify the squared wall has correct dimensions
             Wall squaredWall = walls.stream()
                 .filter(wall -> wall.getType() == Wall.WallType.SQUARE)
                 .findFirst()
                 .get();
-            
+
             // A 4x4 squared wall should have 16 positions
             Assertions.assertEquals(16, squaredWall.getPositions().size(),
                 "Squared wall should have 16 positions (4x4)");
@@ -85,17 +85,17 @@ public class WallSteps {
     public void thereShouldBeLongWallsOf1x10Blocks() {
         Assertions.assertNotNull(currentBattle);
         List<Wall> walls = currentBattle.getWalls();
-        
+
         boolean hasLongWall = walls.stream()
             .anyMatch(wall -> wall.getType() == Wall.WallType.LONG);
-        
+
         if (hasLongWall) {
             // Verify the long wall has correct dimensions
             Wall longWall = walls.stream()
                 .filter(wall -> wall.getType() == Wall.WallType.LONG)
                 .findFirst()
                 .get();
-            
+
             // A 1x10 or 10x1 long wall should have 10 positions
             Assertions.assertEquals(10, longWall.getPositions().size(),
                 "Long wall should have 10 positions (1x10 or 10x1)");
@@ -106,17 +106,17 @@ public class WallSteps {
     public void thereShouldBeUShapedWallsOf4x10x4Blocks() {
         Assertions.assertNotNull(currentBattle);
         List<Wall> walls = currentBattle.getWalls();
-        
+
         boolean hasUShapedWall = walls.stream()
             .anyMatch(wall -> wall.getType() == Wall.WallType.U_SHAPE);
-        
+
         if (hasUShapedWall) {
             // Verify the U-shaped wall has correct dimensions
             Wall uShapedWall = walls.stream()
                 .filter(wall -> wall.getType() == Wall.WallType.U_SHAPE)
                 .findFirst()
                 .get();
-            
+
             // A U-shaped wall should have positions for the U shape
             // It should have more than 10 positions but less than full rectangle
             Assertions.assertTrue(uShapedWall.getPositions().size() > 10,
@@ -129,18 +129,18 @@ public class WallSteps {
     @Then("the total wall coverage should not exceed 2% of the arena space")
     public void theTotalWallCoverageShouldNotExceed2PercentOfTheArenaSpace() {
         Assertions.assertNotNull(currentBattle);
-        
+
         int arenaWidth = currentBattle.getArenaWidth();
         int arenaHeight = currentBattle.getArenaHeight();
         int totalArenaSpace = arenaWidth * arenaHeight;
-        
+
         List<Wall> walls = currentBattle.getWalls();
         int totalWallSpace = 0;
-        
+
         for (Wall wall : walls) {
             totalWallSpace += wall.getPositions().size();
         }
-        
+
         double wallPercentage = (double) totalWallSpace / totalArenaSpace * 100;
         Assertions.assertTrue(wallPercentage <= 2.0,
             "Wall coverage (" + wallPercentage + "%) should not exceed 2% of arena space");
@@ -149,21 +149,21 @@ public class WallSteps {
     @And("the number of walls should be based on the arena size")
     public void theNumberOfWallsShouldBeBasedOnTheArenaSize() {
         Assertions.assertNotNull(currentBattle);
-        
+
         int arenaWidth = currentBattle.getArenaWidth();
         int arenaHeight = currentBattle.getArenaHeight();
         int arenaSize = arenaWidth * arenaHeight;
-        
+
         List<Wall> walls = currentBattle.getWalls();
         int wallCount = walls.size();
-        
+
         // Expect at least 1 wall per 1000 arena blocks, but not more than 1 per 100 blocks
         int minWalls = Math.max(1, arenaSize / 1000);
         int maxWalls = arenaSize / 100;
-        
+
         Assertions.assertTrue(wallCount >= minWalls && wallCount <= maxWalls,
-            "Wall count (" + wallCount + ") should be between " + minWalls + " and " + maxWalls + 
-            " for arena size " + arenaSize);
+            "Wall count (" + wallCount + ") should be between " + minWalls + " and " + maxWalls
+            + " for arena size " + arenaSize);
     }
 
     @And("the wall configuration is set to different values")
@@ -195,15 +195,15 @@ public class WallSteps {
             .filter(r -> robotName.equals(r.getName()))
             .findFirst()
             .orElse(null);
-        
+
         Assertions.assertNotNull(robot, "Robot " + robotName + " should exist");
-        
+
         // Simulate the robot moving into a wall position
         // This would typically be done by the movement system
         // For testing, we'll manually set the robot to crashed state
         robot.setHitPoints(0);
         robot.setStatus(RobotStatus.CRASHED);
-        
+
         // Note: In a real implementation, this would be handled by the movement system
         // For testing, we're manually setting the robot to crashed state
     }
@@ -217,9 +217,9 @@ public class WallSteps {
             .filter(r -> robotName.equals(r.getName()))
             .findFirst()
             .orElse(null);
-        
+
         Assertions.assertNotNull(robot, "Robot " + robotName + " should exist");
-        Assertions.assertFalse(robot.isActive(), 
+        Assertions.assertFalse(robot.isActive(),
             "Robot " + robotName + " should be inactive");
         Assertions.assertEquals(RobotStatus.CRASHED, robot.getStatus(),
             "Robot " + robotName + " should be crashed");
