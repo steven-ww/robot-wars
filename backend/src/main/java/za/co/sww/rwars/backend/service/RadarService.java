@@ -24,6 +24,7 @@ public class RadarService {
 
     /**
      * Scan the area around a robot for obstacles and other robots.
+     * Returns coordinates relative to the robot's position.
      */
     public RadarResponse scanArea(Battle battle, Robot robot, int range) {
         List<RadarResponse.Detection> detections = new ArrayList<>();
@@ -48,7 +49,10 @@ public class RadarService {
 
                     // Check for arena edge walls (boundaries)
                     if (x == 0 || x == battle.getArenaWidth() - 1 || y == 0 || y == battle.getArenaHeight() - 1) {
-                        detections.add(new RadarResponse.Detection(x, y, RadarResponse.DetectionType.WALL,
+                        // Convert absolute coordinates to relative coordinates
+                        int relativeX = x - robotX;
+                        int relativeY = y - robotY;
+                        detections.add(new RadarResponse.Detection(relativeX, relativeY, RadarResponse.DetectionType.WALL,
                             "Arena boundary wall"));
                         wallDetected = true;
                     }
@@ -57,7 +61,10 @@ public class RadarService {
                     if (!wallDetected) {
                         for (Wall wall : battle.getWalls()) {
                             if (wall.containsPosition(x, y)) {
-                                detections.add(new RadarResponse.Detection(x, y, RadarResponse.DetectionType.WALL,
+                                // Convert absolute coordinates to relative coordinates
+                                int relativeX = x - robotX;
+                                int relativeY = y - robotY;
+                                detections.add(new RadarResponse.Detection(relativeX, relativeY, RadarResponse.DetectionType.WALL,
                                     "Wall of type " + wall.getType()));
                                 wallDetected = true;
                                 break;
@@ -70,7 +77,10 @@ public class RadarService {
                         for (Robot otherRobot : battle.getRobots()) {
                             if (!otherRobot.getId().equals(robot.getId())
                                 && otherRobot.getPositionX() == x && otherRobot.getPositionY() == y) {
-                                detections.add(new RadarResponse.Detection(x, y, RadarResponse.DetectionType.ROBOT,
+                                // Convert absolute coordinates to relative coordinates
+                                int relativeX = x - robotX;
+                                int relativeY = y - robotY;
+                                detections.add(new RadarResponse.Detection(relativeX, relativeY, RadarResponse.DetectionType.ROBOT,
                                     "Robot: " + otherRobot.getName()));
                             }
                         }

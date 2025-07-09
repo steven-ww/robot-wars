@@ -146,19 +146,16 @@ public class RadarSteps {
         List<Map<String, Object>> detections = radarResponse.jsonPath().getList("detections");
         Assertions.assertNotNull(detections);
 
-        // Verify all detections are within range
+        // Verify all detections are within range (using relative coordinates)
         for (Map<String, Object> detection : detections) {
-            int x = (Integer) detection.get("x");
-            int y = (Integer) detection.get("y");
+            int relativeX = (Integer) detection.get("x");
+            int relativeY = (Integer) detection.get("y");
 
-            // Get robot position to calculate distance
-            Robot robot = battleService.getRobotDetails(currentBattleId, currentRobotId);
-            int robotX = robot.getPositionX();
-            int robotY = robot.getPositionY();
-
-            double distance = Math.sqrt(Math.pow(x - robotX, 2) + Math.pow(y - robotY, 2));
+            // Calculate Manhattan distance from robot position (0,0 in relative coordinates)
+            int distance = Math.abs(relativeX) + Math.abs(relativeY);
             Assertions.assertTrue(distance <= maxRange,
-                "Detection at (" + x + "," + y + ") should be within range " + maxRange);
+                "Detection at relative position (" + relativeX + "," + relativeY + ") should be within range " + maxRange + 
+                ", but distance is " + distance);
         }
     }
 
@@ -181,5 +178,52 @@ public class RadarSteps {
     public void noObstaclesShouldBeDetectedWithinTheScannedArea() {
         // This is already verified in the previous step
         // This step is just for readability
+    }
+
+    @Then("the radar response should contain coordinates relative to the robot's position")
+    public void theRadarResponseShouldContainCoordinatesRelativeToTheRobotsPosition() {
+        Assertions.assertEquals(200, radarResponse.getStatusCode());
+
+        List<Map<String, Object>> detections = radarResponse.jsonPath().getList("detections");
+        Assertions.assertNotNull(detections);
+
+        // Get robot position
+        Robot robot = battleService.getRobotDetails(currentBattleId, currentRobotId);
+        int robotX = robot.getPositionX();
+        int robotY = robot.getPositionY();
+
+        // Verify that detections contain relative coordinates
+        for (Map<String, Object> detection : detections) {
+            int detectionX = (Integer) detection.get("x");
+            int detectionY = (Integer) detection.get("y");
+
+            // Relative coordinates should be within the range around (0,0)
+            // and should not match absolute arena coordinates
+            Assertions.assertTrue(Math.abs(detectionX) <= 5, 
+                "Detection X coordinate should be relative (within range), got: " + detectionX);
+            Assertions.assertTrue(Math.abs(detectionY) <= 5, 
+                "Detection Y coordinate should be relative (within range), got: " + detectionY);
+        }
+    }
+
+    @And("no detection should have the same coordinates as the robot's absolute position")
+    public void noDetectionShouldHaveTheSameCoordinatesAsTheRobotsAbsolutePosition() {
+        List<Map<String, Object>> detections = radarResponse.jsonPath().getList("detections");
+        Assertions.assertNotNull(detections);
+
+        // Get robot position
+        Robot robot = battleService.getRobotDetails(currentBattleId, currentRobotId);
+        int robotX = robot.getPositionX();
+        int robotY = robot.getPositionY();
+
+        // Verify no detection has the robot's absolute position
+        // (since coordinates should be relative, robot position should be (0,0) which is excluded)
+        for (Map<String, Object> detection : detections) {
+            int detectionX = (Integer) detection.get("x");
+            int detectionY = (Integer) detection.get("y");
+
+            Assertions.assertFalse(detectionX == robotX && detectionY == robotY,
+                "Detection should not have robot's absolute position (" + robotX + "," + robotY + ")");
+        }
     }
 }
