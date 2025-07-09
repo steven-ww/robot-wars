@@ -48,12 +48,13 @@ public class RadarService {
                     boolean wallDetected = false;
 
                     // Check for arena edge walls (boundaries)
-                    if (x == 0 || x == battle.getArenaWidth() - 1 || y == 0 || y == battle.getArenaHeight() - 1) {
+                    if (x == 0 || x == battle.getArenaWidth() - 1
+                        || y == 0 || y == battle.getArenaHeight() - 1) {
                         // Convert absolute coordinates to relative coordinates
                         int relativeX = x - robotX;
                         int relativeY = y - robotY;
-                        detections.add(new RadarResponse.Detection(relativeX, relativeY, RadarResponse.DetectionType.WALL,
-                            "Arena boundary wall"));
+                        detections.add(new RadarResponse.Detection(relativeX, relativeY,
+                            RadarResponse.DetectionType.WALL, "Arena boundary wall"));
                         wallDetected = true;
                     }
 
@@ -64,8 +65,8 @@ public class RadarService {
                                 // Convert absolute coordinates to relative coordinates
                                 int relativeX = x - robotX;
                                 int relativeY = y - robotY;
-                                detections.add(new RadarResponse.Detection(relativeX, relativeY, RadarResponse.DetectionType.WALL,
-                                    "Wall of type " + wall.getType()));
+                                detections.add(new RadarResponse.Detection(relativeX, relativeY,
+                                    RadarResponse.DetectionType.WALL, "Wall of type " + wall.getType()));
                                 wallDetected = true;
                                 break;
                             }
@@ -80,8 +81,8 @@ public class RadarService {
                                 // Convert absolute coordinates to relative coordinates
                                 int relativeX = x - robotX;
                                 int relativeY = y - robotY;
-                                detections.add(new RadarResponse.Detection(relativeX, relativeY, RadarResponse.DetectionType.ROBOT,
-                                    "Robot: " + otherRobot.getName()));
+                                detections.add(new RadarResponse.Detection(relativeX, relativeY,
+                                    RadarResponse.DetectionType.ROBOT, "Robot: " + otherRobot.getName()));
                             }
                         }
                     }

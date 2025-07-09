@@ -154,8 +154,8 @@ public class RadarSteps {
             // Calculate Manhattan distance from robot position (0,0 in relative coordinates)
             int distance = Math.abs(relativeX) + Math.abs(relativeY);
             Assertions.assertTrue(distance <= maxRange,
-                "Detection at relative position (" + relativeX + "," + relativeY + ") should be within range " + maxRange + 
-                ", but distance is " + distance);
+                "Detection at relative position (" + relativeX + "," + relativeY + ") should be within range "
+                + maxRange + ", but distance is " + distance);
         }
     }
 
@@ -199,9 +199,9 @@ public class RadarSteps {
 
             // Relative coordinates should be within the range around (0,0)
             // and should not match absolute arena coordinates
-            Assertions.assertTrue(Math.abs(detectionX) <= 5, 
+            Assertions.assertTrue(Math.abs(detectionX) <= 5,
                 "Detection X coordinate should be relative (within range), got: " + detectionX);
-            Assertions.assertTrue(Math.abs(detectionY) <= 5, 
+            Assertions.assertTrue(Math.abs(detectionY) <= 5,
                 "Detection Y coordinate should be relative (within range), got: " + detectionY);
         }
     }
