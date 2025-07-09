@@ -44,21 +44,35 @@ public class RadarService {
 
                 // Check if position is within range (circular/diamond range)
                 if (calculateDistance(robotX, robotY, x, y) <= range) {
-                    // Check for walls at this position
-                    for (Wall wall : battle.getWalls()) {
-                        if (wall.containsPosition(x, y)) {
-                            detections.add(new RadarResponse.Detection(x, y, RadarResponse.DetectionType.WALL,
-                                "Wall of type " + wall.getType()));
-                            break;
+                    boolean wallDetected = false;
+
+                    // Check for arena edge walls (boundaries)
+                    if (x == 0 || x == battle.getArenaWidth() - 1 || y == 0 || y == battle.getArenaHeight() - 1) {
+                        detections.add(new RadarResponse.Detection(x, y, RadarResponse.DetectionType.WALL,
+                            "Arena boundary wall"));
+                        wallDetected = true;
+                    }
+
+                    // Check for internal walls at this position (only if no boundary wall detected)
+                    if (!wallDetected) {
+                        for (Wall wall : battle.getWalls()) {
+                            if (wall.containsPosition(x, y)) {
+                                detections.add(new RadarResponse.Detection(x, y, RadarResponse.DetectionType.WALL,
+                                    "Wall of type " + wall.getType()));
+                                wallDetected = true;
+                                break;
+                            }
                         }
                     }
 
-                    // Check for other robots at this position
-                    for (Robot otherRobot : battle.getRobots()) {
-                        if (!otherRobot.getId().equals(robot.getId())
-                            && otherRobot.getPositionX() == x && otherRobot.getPositionY() == y) {
-                            detections.add(new RadarResponse.Detection(x, y, RadarResponse.DetectionType.ROBOT,
-                                "Robot: " + otherRobot.getName()));
+                    // Check for other robots at this position (only if no wall detected)
+                    if (!wallDetected) {
+                        for (Robot otherRobot : battle.getRobots()) {
+                            if (!otherRobot.getId().equals(robot.getId())
+                                && otherRobot.getPositionX() == x && otherRobot.getPositionY() == y) {
+                                detections.add(new RadarResponse.Detection(x, y, RadarResponse.DetectionType.ROBOT,
+                                    "Robot: " + otherRobot.getName()));
+                            }
                         }
                     }
                 }

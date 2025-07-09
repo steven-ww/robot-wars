@@ -11,6 +11,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import org.slf4j.LoggerFactory
 import za.co.sww.rwars.robodemo.model.Battle
+import za.co.sww.rwars.robodemo.model.RadarResponse
 import za.co.sww.rwars.robodemo.model.Robot
 import java.util.UUID
 
@@ -335,5 +336,42 @@ class WireMockStubs {
 
         logger.info("Stubbed get robot details endpoint for robot: $robotName with status: $status at position: ($positionX, $positionY)")
         return robot
+    }
+
+    /**
+     * Sets up a stub for radar scanning.
+     *
+     * @param robotName The name of the robot
+     * @param range The radar range
+     * @param detections List of detections to return
+     * @return The radar response
+     */
+    fun stubRadarScan(robotName: String, range: Int = 5, detections: List<RadarResponse.Detection> = emptyList()): RadarResponse {
+        val robotId = robotIds[robotName] ?: throw IllegalArgumentException("Robot not found: $robotName")
+
+        val radarResponse = RadarResponse(
+            range = range,
+            detections = detections,
+        )
+
+        WireMock.stubFor(
+            post(urlPathMatching("/api/robots/battle/$battleId/robot/$robotId/radar"))
+                .withRequestBody(
+                    equalToJson(
+                        mapper.writeValueAsString(mapOf("range" to range)),
+                        true,
+                        false,
+                    ),
+                )
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(mapper.writeValueAsString(radarResponse)),
+                ),
+        )
+
+        logger.info("Stubbed radar scan endpoint for robot: $robotName with range: $range, detections: ${detections.size}")
+        return radarResponse
     }
 }

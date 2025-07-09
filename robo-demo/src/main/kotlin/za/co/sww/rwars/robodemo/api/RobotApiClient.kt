@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import za.co.sww.rwars.robodemo.model.Battle
+import za.co.sww.rwars.robodemo.model.RadarResponse
 import za.co.sww.rwars.robodemo.model.Robot
 import java.io.IOException
 
@@ -170,6 +171,36 @@ class RobotApiClient(private val baseUrl: String) {
 
         val request = Request.Builder()
             .url("$baseUrl/api/robots/battle/$battleId/robot/$robotId/move")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw IOException("Unexpected response code: ${response.code}")
+            }
+
+            val responseBody = response.body?.string() ?: throw IOException("Empty response body")
+            return mapper.readValue(responseBody)
+        }
+    }
+
+    /**
+     * Performs a radar scan for a robot to detect nearby walls and other robots.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param range The radar scan range (default: 5)
+     * @return The radar response containing detected objects
+     * @throws IOException if the API call fails
+     */
+    @Throws(IOException::class)
+    suspend fun performRadarScan(battleId: String, robotId: String, range: Int = 5): RadarResponse {
+        val requestBody = mapper.writeValueAsString(
+            mapOf("range" to range),
+        ).toRequestBody(jsonMediaType)
+
+        val request = Request.Builder()
+            .url("$baseUrl/api/robots/battle/$battleId/robot/$robotId/radar")
             .post(requestBody)
             .build()
 
