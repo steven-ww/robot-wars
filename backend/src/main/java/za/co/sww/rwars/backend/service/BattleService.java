@@ -7,6 +7,8 @@ import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
 import za.co.sww.rwars.backend.model.Robot.Direction;
 import za.co.sww.rwars.backend.model.Robot.RobotStatus;
+import za.co.sww.rwars.backend.model.Wall;
+import za.co.sww.rwars.backend.model.RadarResponse;
 import za.co.sww.rwars.backend.websocket.BattleStateSocket;
 
 import java.util.HashMap;
@@ -54,6 +56,15 @@ public class BattleService {
 
     @Inject
     private BattleStateSocket battleStateSocket;
+
+    @Inject
+    private WallService wallService;
+
+    @Inject
+    private RadarService radarService;
+
+    @ConfigProperty(name = "battle.robot.default-hit-points", defaultValue = "100")
+    private int defaultHitPoints;
 
     /**
      * Gets the default arena width.
@@ -181,6 +192,11 @@ public class BattleService {
         }
 
         Battle newBattle = new Battle(battleName, width, height, movementTimeSeconds);
+
+        // Generate random walls for the battle
+        List<Wall> walls = wallService.generateWalls(newBattle);
+        newBattle.setWalls(walls);
+
         battlesById.put(newBattle.getId(), newBattle);
         return newBattle;
     }
@@ -234,14 +250,22 @@ public class BattleService {
         }
 
         Robot robot = new Robot(robotName, battleId);
+        robot.setHitPoints(defaultHitPoints);
+        robot.setMaxHitPoints(defaultHitPoints);
 
-        // Randomly position the robot within the arena boundaries
+        // Randomly position the robot within the arena boundaries, avoiding walls
         int arenaWidth = battle.getArenaWidth();
         int arenaHeight = battle.getArenaHeight();
 
-        // Generate random position within arena boundaries
-        int randomX = (int) (Math.random() * arenaWidth);
-        int randomY = (int) (Math.random() * arenaHeight);
+        // Generate random position within arena boundaries that doesn't overlap with walls
+        int randomX;
+        int randomY;
+        int attempts = 0;
+        do {
+            randomX = (int) (Math.random() * arenaWidth);
+            randomY = (int) (Math.random() * arenaHeight);
+            attempts++;
+        } while (battle.isPositionOccupiedByWall(randomX, randomY) && attempts < 100);
 
         robot.setPositionX(randomX);
         robot.setPositionY(randomY);
@@ -642,9 +666,24 @@ public class BattleService {
         if (newX < 0 || newX >= battle.getArenaWidth()
             || newY < 0 || newY >= battle.getArenaHeight()) {
             // Robot has crashed into the arena boundary
+            robot.setHitPoints(0);
             robot.setStatus(RobotStatus.CRASHED);
             // Broadcast the crash state change
             broadcastBattleStateUpdate(robot.getBattleId());
+            // Check if battle should end
+            checkBattleCompletion(battle);
+            return;
+        }
+
+        // Check if the new position collides with a wall
+        if (battle.isPositionOccupiedByWall(newX, newY)) {
+            // Robot has crashed into a wall
+            robot.setHitPoints(0);
+            robot.setStatus(RobotStatus.CRASHED);
+            // Broadcast the crash state change
+            broadcastBattleStateUpdate(robot.getBattleId());
+            // Check if battle should end
+            checkBattleCompletion(battle);
             return;
         }
 
@@ -657,6 +696,54 @@ public class BattleService {
 
         // Broadcast the position change
         broadcastBattleStateUpdate(robot.getBattleId());
+    }
+
+    /**
+     * Checks if a battle should be completed based on active robot count.
+     *
+     * @param battle The battle to check
+     */
+    private void checkBattleCompletion(Battle battle) {
+        if (battle.getState() == Battle.BattleState.IN_PROGRESS) {
+            long activeRobots = battle.getActiveRobotCount();
+            if (activeRobots <= 1) {
+                Robot winner = battle.getActiveRobot();
+                if (winner != null) {
+                    battle.declareWinner(winner);
+                } else {
+                    battle.setState(Battle.BattleState.COMPLETED);
+                }
+                broadcastBattleStateUpdate(battle.getId());
+            }
+        }
+    }
+
+    /**
+     * Performs a radar scan for a robot.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param range The scan range
+     * @return The radar response
+     * @throws IllegalArgumentException if the battle ID or robot ID is invalid
+     * @throws IllegalStateException if the battle is not in progress
+     */
+    public RadarResponse performRadarScan(String battleId, String robotId, int range) {
+        if (!isValidBattleAndRobotId(battleId, robotId)) {
+            throw new IllegalArgumentException("Invalid battle ID or robot ID");
+        }
+
+        Battle battle = battlesById.get(battleId);
+        if (battle.getState() != Battle.BattleState.IN_PROGRESS) {
+            throw new IllegalStateException("Battle is not in progress");
+        }
+
+        Robot robot = robotsById.get(robotId);
+        if (!robot.isActive()) {
+            throw new IllegalStateException("Robot is not active");
+        }
+
+        return radarService.scanArea(battle, robot, range);
     }
 
     /**

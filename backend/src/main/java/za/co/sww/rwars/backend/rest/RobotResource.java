@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
+import za.co.sww.rwars.backend.model.RadarResponse;
 import za.co.sww.rwars.backend.service.BattleService;
 
 /**
@@ -211,6 +212,42 @@ public class RobotResource {
     }
 
     /**
+     * Performs a radar scan for a robot.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param radarRequest The radar request containing range
+     * @return The radar response
+     */
+    @POST
+    @Path("/battle/{battleId}/robot/{robotId}/radar")
+    @RunOnVirtualThread
+    public Response performRadarScan(@PathParam("battleId") String battleId,
+                                     @PathParam("robotId") String robotId,
+                                     RadarRequest radarRequest) {
+        try {
+            if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .build();
+            }
+            RadarResponse radarResponse = battleService.performRadarScan(
+                    battleId,
+                    robotId,
+                    radarRequest.range());
+            return Response.ok(radarResponse).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
      * Error response record.
      */
     public record ErrorResponse(String message) {
@@ -225,6 +262,15 @@ public class RobotResource {
     public record MoveRequest(String direction, int blocks) {
         public MoveRequest() {
             this(null, 0);
+        }
+    }
+
+    /**
+     * Radar request record.
+     */
+    public record RadarRequest(int range) {
+        public RadarRequest() {
+            this(5);
         }
     }
 
