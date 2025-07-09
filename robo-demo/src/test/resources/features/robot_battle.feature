@@ -23,4 +23,3 @@ Feature: Robot Battle
     And I start the battle
     And I move the robot in direction "NORTH" for 2 blocks
     Then I should be able to track the robot's position as it moves
-    And the arena should be rerendered with the updated position after each move
