@@ -151,30 +151,6 @@ public class RobotResource {
     }
 
     /**
-     * Starts the battle.
-     *
-     * @param battleId The battle ID
-     * @return The battle status
-     */
-    @POST
-    @Path("/battle/{battleId}/start")
-    @RunOnVirtualThread
-    public Response startBattle(@PathParam("battleId") String battleId) {
-        try {
-            Battle battle = battleService.startBattle(battleId);
-            return Response.ok(battle).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
-                    .build();
-        } catch (IllegalStateException e) {
-            return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponse(e.getMessage()))
-                    .build();
-        }
-    }
-
-    /**
      * Moves a robot in the specified direction for the specified number of blocks.
      *
      * @param battleId The battle ID

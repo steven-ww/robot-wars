@@ -135,7 +135,7 @@ class WireMockStubs {
         )
 
         WireMock.stubFor(
-            post(urlPathMatching("/api/robots/battle/$battleId/start"))
+            post(urlPathMatching("/api/battles/$battleId/start"))
                 .willReturn(
                     aResponse()
                         .withStatus(200)

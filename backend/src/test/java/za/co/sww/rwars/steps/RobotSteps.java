@@ -100,7 +100,7 @@ public class RobotSteps {
         registerResponse2.then().statusCode(200);
 
         // Then start the battle to make it IN_PROGRESS
-        Response startResponse = request.post("/api/robots/battle/" + firstBattleId + "/start");
+        Response startResponse = request.post("/api/battles/" + firstBattleId + "/start");
         startResponse.then().statusCode(200);
 
         // Verify the battle is actually started
@@ -206,7 +206,7 @@ public class RobotSteps {
     @And("the battle administrator has started the battle")
     public void theBattleAdministratorHasStartedTheBattle() {
         // Store the response to ensure it's available for subsequent steps
-        response = request.post("/api/robots/battle/" + battleId + "/start");
+        response = request.post("/api/battles/" + battleId + "/start");
         response.then().statusCode(200);
     }
 
@@ -295,7 +295,7 @@ public class RobotSteps {
         iHaveCreatedABattleWithRobotsRegistered(battleName, robotCount);
 
         String battleId = createdBattles.get(battleName);
-        Response startResponse = request.post("/api/robots/battle/" + battleId + "/start");
+        Response startResponse = request.post("/api/battles/" + battleId + "/start");
         startResponse.then().statusCode(200);
     }
 
@@ -371,7 +371,7 @@ public class RobotSteps {
         String battleId = findBattleIdByName(battleName);
         Assertions.assertNotNull(battleId, "Battle '" + battleName + "' should exist");
 
-        response = request.post("/api/robots/battle/" + battleId + "/start");
+        response = request.post("/api/battles/" + battleId + "/start");
         response.then().statusCode(200);
     }
 

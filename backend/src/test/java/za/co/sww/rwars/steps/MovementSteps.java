@@ -72,7 +72,7 @@ public class MovementSteps {
         registerResponse.then().statusCode(200);
 
         // Start the battle
-        response = request.post("/api/robots/battle/" + battleId + "/start");
+        response = request.post("/api/battles/" + battleId + "/start");
         response.then().statusCode(200);
 
         // Verify the battle is actually started
