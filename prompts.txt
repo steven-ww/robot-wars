@@ -625,3 +625,6 @@ Following the guidelines, fix the backend projects test as they are failing
 
 ## 109th Prompt
 Following the guidelines, remove this scenario "Scenario: Robot scans empty area" and the related test implementation as it's a flaky test.
+
+## 110th Prompt
+Following the guidelines in the .junie/guidelines.md file for this task, determine what is still using the "@Path("/battle/{battleId}/robot/{robotId}/details")" api and how best to remove it as it exposes to much detail to the client. this @Path("/battle/{battleId}/robot/{robotId}/status") should be used instead.

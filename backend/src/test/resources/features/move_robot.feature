@@ -45,13 +45,13 @@ Feature: Robot Movement
     And the robot should stop at the boundary
     And the robot status should be "crashed"
 
-  Scenario: Get robot details via API
-    Given I create a new battle with name "Robot Details Battle" and robot movement time 0.5 seconds
+  Scenario: Get robot status via API
+    Given I create a new battle with name "Robot Status Battle" and robot movement time 0.5 seconds
     And I have registered my robot
     And the battle has started
-    When I request the details of my robot via the API
-    Then I should receive all the information about my robot
-    And the information should include the robot's ID, name, position, direction, and status
+    When I request the status of my robot via the API
+    Then I should receive the status information about my robot
+    And the information should include the robot's ID, name, direction, and status but not position
 
   Scenario: Verify random initial robot location
     Given I create a new battle with name "Random Location Battle" and dimensions 20x20 and robot movement time 0.5 seconds
