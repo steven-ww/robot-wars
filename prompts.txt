@@ -505,3 +505,6 @@ The robo-demo project creates a battle with two robots as a demo of the game. Fo
 Follow the guidlines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. However, if I run it twice, on the second time I receive a 409 from the backend server (in the backend project). Is there a problem with the how the backend is implemented that creating a second battle causes an issue?
 ## Forty-seventh Prompt
 Follow the guidlines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. Enhance the demo so that it creates a unique battle name each time it runs.
+## Forty-sixth Prompt
+
+Follow the guidlines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. The demo still seems to print out a lot of information during testing. Looks like it's debug level information. Remove this so that there is less noise while running the tests

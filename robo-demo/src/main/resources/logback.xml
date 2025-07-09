@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Console appender for standard output -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Set specific loggers to reduce noise -->
+    <!-- WireMock related logging -->
+    <logger name="com.github.tomakehurst.wiremock" level="WARN"/>
+    <logger name="WireMock" level="WARN"/>
+    
+    <!-- HTTP Client logging -->
+    <logger name="org.apache.hc" level="WARN"/>
+    <logger name="org.apache.http" level="WARN"/>
+    
+    <!-- Jetty server logging -->
+    <logger name="org.eclipse.jetty" level="WARN"/>
+    
+    <!-- OkHttp logging -->
+    <logger name="okhttp3" level="WARN"/>
+    
+    <!-- Retrofit logging -->
+    <logger name="retrofit2" level="WARN"/>
+    
+    <!-- Jackson logging -->
+    <logger name="com.fasterxml.jackson" level="WARN"/>
+    
+    <!-- Keep our application logging at INFO level -->
+    <logger name="za.co.sww.rwars.robodemo" level="INFO"/>
+    
+    <!-- Root logger set to INFO to reduce overall noise -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
