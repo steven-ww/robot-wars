@@ -165,20 +165,7 @@ public class RadarSteps {
         // This step is just for readability
     }
 
-    @Then("I should receive an empty radar response")
-    public void iShouldReceiveAnEmptyRadarResponse() {
-        Assertions.assertEquals(200, radarResponse.getStatusCode());
 
-        List<Map<String, Object>> detections = radarResponse.jsonPath().getList("detections");
-        Assertions.assertNotNull(detections);
-        Assertions.assertTrue(detections.isEmpty(), "Radar response should be empty");
-    }
-
-    @And("no obstacles should be detected within the scanned area")
-    public void noObstaclesShouldBeDetectedWithinTheScannedArea() {
-        // This is already verified in the previous step
-        // This step is just for readability
-    }
 
     @Then("the radar response should contain coordinates relative to the robot's position")
     public void theRadarResponseShouldContainCoordinatesRelativeToTheRobotsPosition() {

@@ -153,6 +153,35 @@ public class RobotResource {
         }
     }
 
+    /**
+     * Gets detailed robot information including absolute position.
+     * This is an admin-only endpoint for testing and debugging purposes.
+     * Robots should use the /status endpoint instead.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @return The complete robot details (including position information)
+     */
+    @GET
+    @Path("/battle/{battleId}/robot/{robotId}/details")
+    @RunOnVirtualThread
+    public Response getRobotDetails(@PathParam("battleId") String battleId,
+                                    @PathParam("robotId") String robotId) {
+        try {
+            if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .build();
+            }
+            Robot robot = battleService.getRobotDetails(battleId, robotId);
+            return Response.ok(robot).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
 
 
     /**

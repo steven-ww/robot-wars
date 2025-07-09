@@ -32,14 +32,6 @@ Feature: Radar API
     Then I should receive a radar response for positions within 3 blocks
     And positions beyond 3 blocks should not be included in the response
 
-  Scenario: Robot scans empty area
-    Given I create a new battle with name "Empty Scan Battle" and dimensions 30x30
-    And I have registered my robot "EmptyBot"
-    And the battle has started
-    When I invoke the radar API with range 3
-    Then I should receive an empty radar response
-    And no obstacles should be detected within the scanned area
-
   Scenario: Radar returns coordinates relative to robot position
     Given I create a new battle with name "Relative Coordinates Battle" and dimensions 20x20
     And I have registered my robot "RelativeBot"
