@@ -160,12 +160,9 @@ fun main(args: Array<String>) = runBlocking {
         val startedBattle = robotApiClient.startBattle(battle.id)
         logger.info("Battle started: ${startedBattle.state}")
 
-        // Get robot details to display initial positions
-        val restroDetails = robotApiClient.getRobotDetails(battle.id, restro.id)
-        val reqBotDetails = robotApiClient.getRobotDetails(battle.id, reqBot.id)
-
-        logger.info("Initial position of ${restroDetails.name}: (${restroDetails.positionX}, ${restroDetails.positionY})")
-        logger.info("Initial position of ${reqBotDetails.name}: (${reqBotDetails.positionX}, ${reqBotDetails.positionY})")
+        // Note: Robots should not know their absolute positions
+        // They can only know what they can sense through radar
+        logger.info("Robots registered and ready to battle!")
 
         // Move robots until one wins or time limit is reached
         moveRobotsUntilWinnerOrTimeout(robotApiClient, battle.id, restro, reqBot, config.timeLimit)
@@ -232,28 +229,28 @@ private suspend fun moveRobotsUntilWinnerOrTimeout(
                 break
             }
 
-            // Get current robot status for logging
-            val robot1Details = robotApiClient.getRobotDetails(battleId, robot1.id)
-            val robot2Details = robotApiClient.getRobotDetails(battleId, robot2.id)
+            // Get current robot status for logging (without position information)
+            val robot1Status = robotApiClient.getRobotStatus(battleId, robot1.id)
+            val robot2Status = robotApiClient.getRobotStatus(battleId, robot2.id)
 
             // Check for crashes and log status changes
-            if (robot1Details.status == "CRASHED" && !robot1Crashed) {
-                logger.info("💥 ${robot1.name} crashed into a wall at position (${robot1Details.positionX}, ${robot1Details.positionY})!")
+            if (robot1Status.status == "CRASHED" && !robot1Crashed) {
+                logger.info("💥 ${robot1.name} crashed into a wall!")
                 robot1Crashed = true
                 robot1Job.cancel()
             }
 
-            if (robot2Details.status == "CRASHED" && !robot2Crashed) {
-                logger.info("💥 ${robot2.name} crashed into a wall at position (${robot2Details.positionX}, ${robot2Details.positionY})!")
+            if (robot2Status.status == "CRASHED" && !robot2Crashed) {
+                logger.info("💥 ${robot2.name} crashed into a wall!")
                 robot2Crashed = true
                 robot2Job.cancel()
             }
 
-            // Log robot positions periodically
+            // Log robot status periodically
             val elapsed = Duration.between(startTime, Instant.now())
             if (elapsed.seconds % 10 == 0L) { // Log every 10 seconds
-                logger.info("📍 ${robot1Details.name}: (${robot1Details.positionX}, ${robot1Details.positionY}) - Status: ${robot1Details.status}")
-                logger.info("📍 ${robot2Details.name}: (${robot2Details.positionX}, ${robot2Details.positionY}) - Status: ${robot2Details.status}")
+                logger.info("📍 ${robot1Status.name}: Status: ${robot1Status.status}")
+                logger.info("📍 ${robot2Status.name}: Status: ${robot2Status.status}")
             }
         } catch (e: Exception) {
             logger.error("Error monitoring battle status", e)
@@ -285,12 +282,12 @@ private suspend fun moveRobotsUntilWinnerOrTimeout(
 
     // Log final robot status
     try {
-        val finalRobot1 = robotApiClient.getRobotDetails(battleId, robot1.id)
-        val finalRobot2 = robotApiClient.getRobotDetails(battleId, robot2.id)
+        val finalRobot1 = robotApiClient.getRobotStatus(battleId, robot1.id)
+        val finalRobot2 = robotApiClient.getRobotStatus(battleId, robot2.id)
 
         logger.info("📊 Final Status:")
-        logger.info("   ${finalRobot1.name}: ${finalRobot1.status} at (${finalRobot1.positionX}, ${finalRobot1.positionY})")
-        logger.info("   ${finalRobot2.name}: ${finalRobot2.status} at (${finalRobot2.positionX}, ${finalRobot2.positionY})")
+        logger.info("   ${finalRobot1.name}: ${finalRobot1.status}")
+        logger.info("   ${finalRobot2.name}: ${finalRobot2.status}")
     } catch (e: Exception) {
         logger.error("Error getting final robot status", e)
     }
@@ -310,7 +307,7 @@ private suspend fun moveRobotContinuously(
     try {
         while (true) {
             // Wait for robot to be idle before issuing next movement command
-            var robotStatus = robotApiClient.getRobotDetails(battleId, robot.id)
+            var robotStatus = robotApiClient.getRobotStatus(battleId, robot.id)
 
             // If robot crashed, stop moving
             if (robotStatus.status == "CRASHED") {
@@ -321,7 +318,7 @@ private suspend fun moveRobotContinuously(
             // Wait if robot is still moving
             while (robotStatus.status == "MOVING") {
                 delay(500) // Check every 500ms
-                robotStatus = robotApiClient.getRobotDetails(battleId, robot.id)
+                robotStatus = robotApiClient.getRobotStatus(battleId, robot.id)
 
                 if (robotStatus.status == "CRASHED") {
                     onCrashed(true)
@@ -334,13 +331,11 @@ private suspend fun moveRobotContinuously(
             val blocks = (1..2).random() // Reduced range to be more cautious
 
             if (safeDirection != null) {
-                val (destX, destY) = calculateDestination(robotStatus.positionX, robotStatus.positionY, safeDirection, blocks)
-                logger.info("🚀 Moving ${robot.name} $blocks blocks $safeDirection (radar-guided from (${robotStatus.positionX}, ${robotStatus.positionY}) to (~$destX, ~$destY))")
+                logger.info("🚀 Moving ${robot.name} $blocks blocks $safeDirection (radar-guided)")
             } else {
                 // If no safe direction found, try a random direction with minimal movement
                 val direction = directions.random()
-                val (destX, destY) = calculateDestination(robotStatus.positionX, robotStatus.positionY, direction, 1)
-                logger.info("🚀 Moving ${robot.name} 1 block $direction (random fallback from (${robotStatus.positionX}, ${robotStatus.positionY}) to (~$destX, ~$destY))")
+                logger.info("🚀 Moving ${robot.name} 1 block $direction (random fallback)")
 
                 try {
                     robotApiClient.moveRobot(battleId, robot.id, direction, 1)
@@ -412,13 +407,8 @@ private suspend fun chooseSafeDirection(
         // Perform radar scan with range of 3 to detect nearby obstacles
         val radarResponse = robotApiClient.performRadarScan(battleId, robot.id, 3)
 
-        // Get current robot position
-        val robotDetails = robotApiClient.getRobotDetails(battleId, robot.id)
-        val currentX = robotDetails.positionX
-        val currentY = robotDetails.positionY
-
-        // Log detailed radar scan results
-        logger.info("📡 ${robot.name} at ($currentX, $currentY) - Radar scan (range 3):")
+        // Log detailed radar scan results (without revealing absolute position)
+        logger.info("📡 ${robot.name} - Radar scan (range 3):")
         if (radarResponse.detections.isEmpty()) {
             logger.info("   No obstacles detected within range")
         } else {
@@ -438,7 +428,7 @@ private suspend fun chooseSafeDirection(
         val unsafeDirections = mutableListOf<String>()
 
         for (direction in directions) {
-            val isSafe = isDirectionSafe(direction, currentX, currentY, radarResponse.detections)
+            val isSafe = isDirectionSafeRadarOnly(direction, radarResponse.detections)
             if (isSafe) {
                 safeDirections.add(direction)
             } else {
@@ -496,6 +486,57 @@ private fun isDirectionSafe(
     for (detection in detections) {
         if (detection.type.name == "WALL") {
             // Detection coordinates are now relative to robot position (0,0)
+            val relativeX = detection.x
+            val relativeY = detection.y
+
+            // Check if the wall is in the same direction as our intended movement
+            // If we're moving in a direction and there's a wall in that direction within 2 blocks, it's unsafe
+            if (deltaX != 0 && (relativeX * deltaX > 0) && Math.abs(relativeX) <= 2) {
+                if (deltaY == 0 || (relativeY * deltaY >= 0 && Math.abs(relativeY) <= 2)) {
+                    logger.debug("   ❌ $direction unsafe: Wall at relative position ($relativeX, $relativeY) blocks path")
+                    return false
+                }
+            }
+
+            if (deltaY != 0 && (relativeY * deltaY > 0) && Math.abs(relativeY) <= 2) {
+                if (deltaX == 0 || (relativeX * deltaX >= 0 && Math.abs(relativeX) <= 2)) {
+                    logger.debug("   ❌ $direction unsafe: Wall at relative position ($relativeX, $relativeY) blocks path")
+                    return false
+                }
+            }
+        }
+    }
+
+    logger.debug("   ✅ $direction safe: No walls detected in path")
+    return true
+}
+
+/**
+ * Determines if a direction is safe based purely on radar detections.
+ * This version works entirely with relative coordinates from radar data,
+ * without any knowledge of the robot's absolute position.
+ */
+private fun isDirectionSafeRadarOnly(
+    direction: String,
+    detections: List<za.co.sww.rwars.robodemo.model.RadarResponse.Detection>,
+): Boolean {
+    // Calculate the direction vector
+    val (deltaX, deltaY) = when (direction) {
+        "NORTH" -> Pair(0, -1)
+        "SOUTH" -> Pair(0, 1)
+        "EAST" -> Pair(1, 0)
+        "WEST" -> Pair(-1, 0)
+        "NE" -> Pair(1, -1)
+        "NW" -> Pair(-1, -1)
+        "SE" -> Pair(1, 1)
+        "SW" -> Pair(-1, 1)
+        else -> Pair(0, 0)
+    }
+
+    // Check if any detected walls are in the path of this direction
+    for (detection in detections) {
+        if (detection.type.name == "WALL") {
+            // Detection coordinates are relative to robot position (0,0)
             val relativeX = detection.x
             val relativeY = detection.y
 

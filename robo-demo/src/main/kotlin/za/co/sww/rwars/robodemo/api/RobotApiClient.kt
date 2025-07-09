@@ -10,6 +10,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import za.co.sww.rwars.robodemo.model.Battle
 import za.co.sww.rwars.robodemo.model.RadarResponse
 import za.co.sww.rwars.robodemo.model.Robot
+import za.co.sww.rwars.robodemo.model.RobotStatus
 import java.io.IOException
 
 /**
@@ -126,17 +127,18 @@ class RobotApiClient(private val baseUrl: String) {
     }
 
     /**
-     * Gets the details of a robot.
+     * Gets a robot's status without revealing its absolute position.
+     * This is what robots should use to check their own status.
      *
      * @param battleId The ID of the battle
      * @param robotId The ID of the robot
-     * @return The robot details
+     * @return The robot status (without position information)
      * @throws IOException if the API call fails
      */
     @Throws(IOException::class)
-    suspend fun getRobotDetails(battleId: String, robotId: String): Robot {
+    suspend fun getRobotStatus(battleId: String, robotId: String): RobotStatus {
         val request = Request.Builder()
-            .url("$baseUrl/api/robots/battle/$battleId/robot/$robotId/details")
+            .url("$baseUrl/api/robots/battle/$battleId/robot/$robotId/status")
             .get()
             .build()
 

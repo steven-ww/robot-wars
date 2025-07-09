@@ -169,12 +169,12 @@ class RobotBattleSteps {
                     // Determine if the robot should crash based on move count
                     val shouldCrash = moveCount >= crashAfterMoves && robotName == robots.keys.first()
 
-                    // Set up stub for getting robot details with appropriate status
+                    // Set up stub for getting robot status with appropriate status
                     val status = if (shouldCrash) "CRASHED" else "IDLE"
-                    wireMockStubs.stubGetRobotDetails(robotName, status)
+                    wireMockStubs.stubGetRobotStatus(robotName, status)
 
                     // Call the API through the client
-                    val robotStatus = robotApiClient.getRobotDetails(battle.id, robot.id)
+                    val robotStatus = robotApiClient.getRobotStatus(battle.id, robot.id)
 
                     if (robotStatus.status == "CRASHED") {
                         logger.info("$robotName crashed into a wall!")
@@ -332,20 +332,20 @@ class RobotBattleSteps {
         for ((index, position) in positions.withIndex()) {
             val (x, y) = position
 
-            // Set up stub for getting robot details with updated position
+            // Set up stub for getting robot status with updated status
             val status = if (index < positions.size - 1) "MOVING" else "IDLE"
-            wireMockStubs.stubGetRobotDetailsWithPosition(robot.name, status, x, y)
+            wireMockStubs.stubGetRobotStatus(robot.name, status)
 
             // Call the API through the client
-            val robotStatus = robotApiClient.getRobotDetails(battle.id, robot.id)
+            val robotStatus = robotApiClient.getRobotStatus(battle.id, robot.id)
 
-            // Verify the position
-            logger.info("${robot.name} position: (${robotStatus.positionX}, ${robotStatus.positionY}), status: ${robotStatus.status}")
+            // Verify the status (position is no longer available through robot API)
+            logger.info("${robot.name} status: ${robotStatus.status}")
 
             // Short delay to simulate time passing
             Thread.sleep(100)
         }
 
-        logger.info("Successfully tracked robot's position as it moved")
+        logger.info("Successfully tracked robot's status as it moved")
     }
 }

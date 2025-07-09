@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
+import za.co.sww.rwars.backend.model.RobotStatus;
 import za.co.sww.rwars.backend.model.RadarResponse;
 import za.co.sww.rwars.backend.service.BattleService;
 
@@ -124,17 +125,18 @@ public class RobotResource {
     }
 
     /**
-     * Gets a specific robot's details.
+     * Gets a specific robot's status without revealing its absolute position.
+     * This is what robots should use to check their own status.
      *
      * @param battleId The battle ID
      * @param robotId The robot ID
-     * @return The robot details
+     * @return The robot status (without position information)
      */
     @GET
-    @Path("/battle/{battleId}/robot/{robotId}/details")
+    @Path("/battle/{battleId}/robot/{robotId}/status")
     @RunOnVirtualThread
-    public Response getRobotDetails(@PathParam("battleId") String battleId,
-                                    @PathParam("robotId") String robotId) {
+    public Response getRobotStatus(@PathParam("battleId") String battleId,
+                                   @PathParam("robotId") String robotId) {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -142,13 +144,16 @@ public class RobotResource {
                         .build();
             }
             Robot robot = battleService.getRobotDetails(battleId, robotId);
-            return Response.ok(robot).build();
+            RobotStatus robotStatus = new RobotStatus(robot);
+            return Response.ok(robotStatus).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
         }
     }
+
+
 
     /**
      * Moves a robot in the specified direction for the specified number of blocks.
