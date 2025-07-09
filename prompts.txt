@@ -551,3 +551,6 @@ kotlinx.coroutines.JobCancellationException: StandaloneCoroutine was cancelled
 14:16:58.293 [main] ERROR Main - Error in continuous movement for ThunderBolt-018d0a
 java.io.IOException: Unexpected response code: 409
         at za.co.sww.rwars.robodemo.api.RobotApiClient.moveRobot(RobotApiClient.kt:178)
+
+## Ninety-third Prompt
+Follow the guidelines in the .junie/guidelines.md file. Update the robo-demo project to no longer print out the arena for any tests. The entire logic to render or view the arena on the console should be removed along with any tests for it.
