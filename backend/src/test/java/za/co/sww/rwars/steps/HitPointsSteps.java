@@ -108,7 +108,7 @@ public class HitPointsSteps {
             // Refresh battle state to get latest robot data
             currentBattle = battleService.getBattleStatus(currentBattle.getId());
         }
-        
+
         Robot robot = currentBattle.getRobots().stream()
                 .filter(r -> robotName.equals(r.getName()))
                 .findFirst()

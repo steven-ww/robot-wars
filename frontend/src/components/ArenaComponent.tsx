@@ -13,6 +13,16 @@ interface Robot {
   blocksRemaining: number;
 }
 
+interface WallPosition {
+  x: number;
+  y: number;
+}
+
+interface Wall {
+  type: string;
+  positions: WallPosition[];
+}
+
 interface BattleState {
   battleId: string;
   battleName: string;
@@ -21,6 +31,7 @@ interface BattleState {
   robotMovementTimeSeconds: number;
   battleState: string;
   robots: Robot[];
+  walls: Wall[];
 }
 
 interface ArenaComponentProps {
@@ -166,6 +177,34 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
     );
   };
 
+  // Render walls on the arena
+  const renderWalls = () => {
+    if (!battleState?.walls) return null;
+
+    return battleState.walls.map((wall, wallIndex) =>
+      wall.positions.map((position, posIndex) => {
+        const style = {
+          left: `${(position.x / (battleState?.arenaWidth || 1)) * 100}%`,
+          bottom: `${(position.y / (battleState?.arenaHeight || 1)) * 100}%`,
+          width: `${(1 / (battleState?.arenaWidth || 1)) * 100}%`,
+          height: `${(1 / (battleState?.arenaHeight || 1)) * 100}%`,
+        };
+
+        return (
+          <div
+            key={`wall-${wallIndex}-${posIndex}`}
+            className={`wall wall-${wall.type.toLowerCase()}`}
+            style={style}
+            data-testid={`wall-${wallIndex}-${posIndex}`}
+            data-x={position.x}
+            data-y={position.y}
+            data-type={wall.type}
+          />
+        );
+      })
+    );
+  };
+
   return (
     <div className="arena-container">
       <h2>Battle Arena</h2>
@@ -276,6 +315,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
             margin: '0 auto',
           }}
         >
+          {renderWalls()}
           {battleState.robots.map(renderRobot)}
         </div>
       )}
