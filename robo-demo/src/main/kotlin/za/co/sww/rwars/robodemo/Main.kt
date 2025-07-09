@@ -10,9 +10,52 @@ import za.co.sww.rwars.robodemo.api.RobotApiClient
 import za.co.sww.rwars.robodemo.model.Robot
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 import kotlin.system.exitProcess
 
 private val logger = LoggerFactory.getLogger("Main")
+
+/**
+ * Generates a unique battle name using timestamp and UUID to ensure uniqueness
+ * even when multiple instances are run simultaneously.
+ *
+ * @return A unique battle name in the format "Demo Battle YYYY-MM-DD HH:mm:ss [UUID-suffix]"
+ */
+fun generateUniqueBattleName(): String {
+    val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+    val uniqueId = UUID.randomUUID().toString().takeLast(8) // Use last 8 characters of UUID
+    return "Demo Battle $timestamp [$uniqueId]"
+}
+
+/**
+ * Generates unique robot names with creative prefixes and UUID suffixes.
+ * Randomly selects from a pool of creative robot names to make each demo run more interesting.
+ *
+ * @return A unique robot name in the format "CreativeName-[UUID-suffix]"
+ */
+fun generateUniqueRobotName(): String {
+    val creativeNames = listOf(
+        "Restro", "ReqBot", "CyberWarrior", "MechFighter", "BattleBot",
+        "IronGuardian", "SteelStorm", "TitanCrusher", "NeonNinja", "QuantumRanger",
+        "PlasmaStrike", "VortexHunter", "ThunderBolt", "LaserLance", "RocketRider",
+    )
+    val baseName = creativeNames.random()
+    val uniqueId = UUID.randomUUID().toString().takeLast(6) // Use last 6 characters of UUID
+    return "$baseName-$uniqueId"
+}
+
+/**
+ * Generates unique robot names with a specific base name and UUID suffixes.
+ *
+ * @param baseName The base name for the robot
+ * @return A unique robot name in the format "BaseName-[UUID-suffix]"
+ */
+fun generateUniqueRobotName(baseName: String): String {
+    val uniqueId = UUID.randomUUID().toString().takeLast(6) // Use last 6 characters of UUID
+    return "$baseName-$uniqueId"
+}
 
 /**
  * Data class to hold application configuration parsed from command line arguments.
@@ -95,18 +138,20 @@ fun main(args: Array<String>) = runBlocking {
 
     try {
         // Create a new battle with a 20x20 arena and unique name
-        val battleName = "Demo Battle ${System.currentTimeMillis()}"
+        val battleName = generateUniqueBattleName()
         logger.info("Creating a new battle with a 20x20 arena: $battleName")
         val battle = battleApiClient.createBattle(battleName, 20, 20)
         logger.info("Battle created: ${battle.id} - ${battle.name} - Arena size: ${battle.arenaWidth}x${battle.arenaHeight}")
 
-        // Register robots
-        logger.info("Registering robot 'Restro'")
-        val restro = robotApiClient.registerRobot("Restro")
+        // Register robots with unique creative names
+        val restroName = generateUniqueRobotName()
+        logger.info("Registering robot '$restroName'")
+        val restro = robotApiClient.registerRobot(restroName)
         logger.info("Robot registered: ${restro.id} - ${restro.name}")
 
-        logger.info("Registering robot 'ReqBot'")
-        val reqBot = robotApiClient.registerRobot("ReqBot")
+        val reqBotName = generateUniqueRobotName()
+        logger.info("Registering robot '$reqBotName'")
+        val reqBot = robotApiClient.registerRobot(reqBotName)
         logger.info("Robot registered: ${reqBot.id} - ${reqBot.name}")
 
         // Start the battle

@@ -503,3 +503,5 @@ Go ahead and implement the required changes you identified. Follow the .junie/gu
 The robo-demo project creates a battle with two robots as a demo of the game. Follow the guidelines in the .junie/guidelines file while performing this task. Change the robo-demo to no longer output the arena to the console. Change it to play the game until a robot wins (see what winning means in the backend project). Change the start script and the parameters to remove the option to ignore crashes as the battle ends when only one robot still have hit points.
 ## Forty-sixth Prompt
 Follow the guidlines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. However, if I run it twice, on the second time I receive a 409 from the backend server (in the backend project). Is there a problem with the how the backend is implemented that creating a second battle causes an issue?
+## Forty-seventh Prompt
+Follow the guidlines in the .junie/guidelines.md file. The robo-demo project creates a demo battle with two robots. Enhance the demo so that it creates a unique battle name each time it runs.
