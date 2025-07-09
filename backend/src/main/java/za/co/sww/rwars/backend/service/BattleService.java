@@ -187,7 +187,7 @@ public class BattleService {
         // Check if battle name already exists
         for (Battle existingBattle : battlesById.values()) {
             if (battleName.equals(existingBattle.getName())) {
-                throw new IllegalArgumentException("Battle with name '" + battleName + "' already exists");
+                throw new IllegalStateException("Battle with name '" + battleName + "' already exists");
             }
         }
 
