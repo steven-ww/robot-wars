@@ -15,61 +15,20 @@ import kotlin.system.exitProcess
 private val logger = LoggerFactory.getLogger("Main")
 
 /**
- * Renders the arena with the robots' positions.
- *
- * @param width The width of the arena
- * @param height The height of the arena
- * @param robots The list of robots to display
- */
-private fun renderArena(width: Int, height: Int, robots: List<Robot>) {
-    logger.info("Rendering arena ($width x $height):")
-
-    // Create a 2D array to represent the arena
-    val arena = Array(height) { Array(width) { "." } }
-
-    // Place robots on the arena
-    robots.forEachIndexed { _, robot ->
-        // Ensure robot position is within arena bounds
-        if (robot.positionX in 0 until width && robot.positionY in 0 until height) {
-            // Use the first letter of the robot's name as its marker
-            arena[robot.positionY][robot.positionX] = robot.name.first().toString()
-        }
-    }
-
-    // Print the arena
-    val horizontalBorder = "+${"-".repeat(width * 2 - 1)}+"
-    logger.info(horizontalBorder)
-
-    for (y in 0 until height) {
-        val row = arena[y].joinToString(" ")
-        logger.info("| $row |")
-    }
-
-    logger.info(horizontalBorder)
-
-    // Print legend
-    robots.forEach { robot ->
-        logger.info("${robot.name.first()} = ${robot.name} at (${robot.positionX}, ${robot.positionY})")
-    }
-}
-
-/**
  * Data class to hold application configuration parsed from command line arguments.
  */
 data class AppConfig(
     val baseUrl: String = "http://localhost:8080",
     val timeLimit: Duration = Duration.ofMinutes(5),
-    val stopOnCrash: Boolean = false,
 )
 
 /**
  * Parses command line arguments into an AppConfig object.
- * Supports named parameters: --url, --time, --stop-on-crash
+ * Supports named parameters: --url, --time
  */
 fun parseArgs(args: Array<String>): AppConfig {
     var baseUrl = "http://localhost:8080"
     var timeLimit = Duration.ofMinutes(5)
-    var stopOnCrash = false
 
     var i = 0
     while (i < args.size) {
@@ -89,9 +48,15 @@ fun parseArgs(args: Array<String>): AppConfig {
                 }
                 i += 2
             }
-            args[i] == "--stop-on-crash" -> {
-                stopOnCrash = true
-                i += 1
+            args[i] == "--help" || args[i] == "-h" -> {
+                println("Usage: robo-demo [OPTIONS]")
+                println("Options:")
+                println("  --url <baseUrl>     Base URL for the Robot Wars API (default: http://localhost:8080)")
+                println("  --time <time>       Time limit for the battle (e.g., 5m, 30s) (default: 5m)")
+                println("  --help, -h          Show this help message")
+                println()
+                println("The demo will run until one robot wins or the time limit is reached.")
+                exitProcess(0)
             }
             args[i].startsWith("--") -> {
                 logger.warn("Unknown parameter: ${args[i]}")
@@ -103,7 +68,7 @@ fun parseArgs(args: Array<String>): AppConfig {
         }
     }
 
-    return AppConfig(baseUrl, timeLimit, stopOnCrash)
+    return AppConfig(baseUrl, timeLimit)
 }
 
 /**
@@ -112,12 +77,11 @@ fun parseArgs(args: Array<String>): AppConfig {
  * 1. Create a new battle
  * 2. Register robots
  * 3. Start the battle
- * 4. Move robots around until one crashes or time limit is reached
+ * 4. Move robots around until one wins or time limit is reached
  *
  * Supported parameters:
  * --url <baseUrl> : Base URL for the Robot Wars API (default: http://localhost:8080)
  * --time <time>   : Time limit for the battle (e.g., 5m, 30s) (default: 5m)
- * --stop-on-crash : Stop the demo when the first robot crashes (default: false)
  */
 fun main(args: Array<String>) = runBlocking {
     logger.info("Starting Robot Wars Demo")
@@ -125,7 +89,6 @@ fun main(args: Array<String>) = runBlocking {
     val config = parseArgs(args)
     logger.info("Using base URL: ${config.baseUrl}")
     logger.info("Time limit set to: ${config.timeLimit}")
-    logger.info("Stop on crash: ${config.stopOnCrash}")
 
     val battleApiClient = BattleApiClient(config.baseUrl)
     val robotApiClient = RobotApiClient(config.baseUrl)
@@ -158,11 +121,8 @@ fun main(args: Array<String>) = runBlocking {
         logger.info("Initial position of ${restroDetails.name}: (${restroDetails.positionX}, ${restroDetails.positionY})")
         logger.info("Initial position of ${reqBotDetails.name}: (${reqBotDetails.positionX}, ${reqBotDetails.positionY})")
 
-        // Render the arena showing the initial positions of the robots
-        renderArena(battle.arenaWidth, battle.arenaHeight, listOf(restroDetails, reqBotDetails))
-
-        // Move robots until one crashes or time limit is reached
-        moveRobotsUntilCrashOrTimeout(robotApiClient, battle.id, restro, reqBot, config.timeLimit, config.stopOnCrash)
+        // Move robots until one wins or time limit is reached
+        moveRobotsUntilWinnerOrTimeout(robotApiClient, battle.id, restro, reqBot, config.timeLimit)
 
         logger.info("Demo completed successfully")
     } catch (e: Exception) {
@@ -172,63 +132,21 @@ fun main(args: Array<String>) = runBlocking {
 }
 
 /**
- * Tracks robot movement by polling its position during movement and rerendering the arena.
- *
- * @param robotApiClient The API client for interacting with the robot API
- * @param battleId The ID of the battle
- * @param movingRobotId The ID of the robot that is moving
- * @param otherRobotId The ID of the other robot
- * @param blocks The number of blocks the robot is moving
- */
-private suspend fun trackRobotMovement(
-    robotApiClient: RobotApiClient,
-    battleId: String,
-    movingRobotId: String,
-    otherRobotId: String,
-    blocks: Int,
-) {
-    // Get battle details to know arena dimensions
-    val battle = robotApiClient.getBattleStatus(battleId)
-
-    // Poll robot position every 200ms during movement
-    // Total movement time is blocks * 1000ms (1 second per block)
-    val pollInterval = 200L // milliseconds
-    val totalMovementTime = blocks * 1000L
-    var elapsedTime = 0L
-
-    while (elapsedTime < totalMovementTime) {
-        // Get current position of both robots
-        val movingRobot = robotApiClient.getRobotDetails(battleId, movingRobotId)
-        val otherRobot = robotApiClient.getRobotDetails(battleId, otherRobotId)
-
-        // Log current position of the moving robot
-        logger.info("${movingRobot.name} current position: (${movingRobot.positionX}, ${movingRobot.positionY}), status: ${movingRobot.status}")
-
-        // Rerender the arena with current positions
-        renderArena(battle.arenaWidth, battle.arenaHeight, listOf(movingRobot, otherRobot))
-
-        // Wait for the next poll
-        Thread.sleep(pollInterval)
-        elapsedTime += pollInterval
-    }
-}
-
-/**
- * Moves robots around the arena until one crashes or the time limit is reached.
+ * Moves robots around the arena until one wins or the time limit is reached.
  * Robots move concurrently and independently.
  */
-private suspend fun moveRobotsUntilCrashOrTimeout(
+private suspend fun moveRobotsUntilWinnerOrTimeout(
     robotApiClient: RobotApiClient,
     battleId: String,
     robot1: Robot,
     robot2: Robot,
     timeLimit: Duration,
-    stopOnCrash: Boolean,
 ) = coroutineScope {
     val startTime = Instant.now()
     val directions = listOf("NORTH", "EAST", "SOUTH", "WEST", "NE", "SE", "SW", "NW")
     var robot1Crashed = false
     var robot2Crashed = false
+    var battleCompleted = false
 
     logger.info("Moving robots around the arena concurrently")
 
@@ -245,50 +163,63 @@ private suspend fun moveRobotsUntilCrashOrTimeout(
         }
     }
 
-    // Monitor the battle state and render arena periodically
+    // Monitor the battle state until completion or timeout
     while (
         Duration.between(startTime, Instant.now()) < timeLimit &&
-        (!stopOnCrash || (!robot1Crashed && !robot2Crashed))
+        !battleCompleted
     ) {
-        // Get current robot positions and render arena
         try {
+            // Check battle status
+            val battleStatus = robotApiClient.getBattleStatus(battleId)
+
+            // Check if battle is completed
+            if (battleStatus.state == "COMPLETED") {
+                battleCompleted = true
+                robot1Job.cancel()
+                robot2Job.cancel()
+
+                if (battleStatus.winnerName != null) {
+                    logger.info("🎉 BATTLE WON! Winner: ${battleStatus.winnerName} (ID: ${battleStatus.winnerId})")
+                } else {
+                    logger.info("Battle completed with no winner")
+                }
+                break
+            }
+
+            // Get current robot status for logging
             val robot1Details = robotApiClient.getRobotDetails(battleId, robot1.id)
             val robot2Details = robotApiClient.getRobotDetails(battleId, robot2.id)
 
-            // Get battle details for arena dimensions
-            val battle = robotApiClient.getBattleStatus(battleId)
-            renderArena(battle.arenaWidth, battle.arenaHeight, listOf(robot1Details, robot2Details))
-
-            // Check for crashes
+            // Check for crashes and log status changes
             if (robot1Details.status == "CRASHED" && !robot1Crashed) {
-                logger.info("${robot1.name} crashed into a wall!")
+                logger.info("💥 ${robot1.name} crashed into a wall at position (${robot1Details.positionX}, ${robot1Details.positionY})!")
                 robot1Crashed = true
                 robot1Job.cancel()
             }
 
             if (robot2Details.status == "CRASHED" && !robot2Crashed) {
-                logger.info("${robot2.name} crashed into a wall!")
+                logger.info("💥 ${robot2.name} crashed into a wall at position (${robot2Details.positionX}, ${robot2Details.positionY})!")
                 robot2Crashed = true
                 robot2Job.cancel()
             }
 
-            // Stop if crash occurred and stopOnCrash is enabled
-            if (stopOnCrash && (robot1Crashed || robot2Crashed)) {
-                robot1Job.cancel()
-                robot2Job.cancel()
-                break
+            // Log robot positions periodically
+            val elapsed = Duration.between(startTime, Instant.now())
+            if (elapsed.seconds % 10 == 0L) { // Log every 10 seconds
+                logger.info("📍 ${robot1Details.name}: (${robot1Details.positionX}, ${robot1Details.positionY}) - Status: ${robot1Details.status}")
+                logger.info("📍 ${robot2Details.name}: (${robot2Details.positionX}, ${robot2Details.positionY}) - Status: ${robot2Details.status}")
             }
         } catch (e: Exception) {
-            logger.error("Error monitoring robot status", e)
+            logger.error("Error monitoring battle status", e)
         }
 
         // Wait before next status check
         delay(1000) // Check every second
 
-        // Log time elapsed
+        // Log time elapsed every 30 seconds
         val elapsed = Duration.between(startTime, Instant.now())
-        if (elapsed.seconds % 30 == 0L) { // Log every 30 seconds
-            logger.info("Time elapsed: ${elapsed.toMinutes()} minutes ${elapsed.toSecondsPart()} seconds")
+        if (elapsed.seconds % 30 == 0L && elapsed.seconds > 0) {
+            logger.info("⏱️  Time elapsed: ${elapsed.toMinutes()} minutes ${elapsed.toSecondsPart()} seconds")
         }
     }
 
@@ -297,19 +228,25 @@ private suspend fun moveRobotsUntilCrashOrTimeout(
     robot2Job.cancel()
 
     // Final status
-    val battleStatus = robotApiClient.getBattleStatus(battleId)
-    logger.info("Battle ended with state: ${battleStatus.state}")
+    val finalBattleStatus = robotApiClient.getBattleStatus(battleId)
+    logger.info("🏁 Battle ended with state: ${finalBattleStatus.state}")
 
-    if (robot1Crashed) {
-        logger.info("${robot1.name} crashed into a wall")
+    if (finalBattleStatus.state == "COMPLETED" && finalBattleStatus.winnerName != null) {
+        logger.info("🏆 Final Winner: ${finalBattleStatus.winnerName}")
+    } else if (!battleCompleted) {
+        logger.info("⏰ Time limit reached without a winner")
     }
 
-    if (robot2Crashed) {
-        logger.info("${robot2.name} crashed into a wall")
-    }
+    // Log final robot status
+    try {
+        val finalRobot1 = robotApiClient.getRobotDetails(battleId, robot1.id)
+        val finalRobot2 = robotApiClient.getRobotDetails(battleId, robot2.id)
 
-    if (!robot1Crashed && !robot2Crashed) {
-        logger.info("Time limit reached without any crashes")
+        logger.info("📊 Final Status:")
+        logger.info("   ${finalRobot1.name}: ${finalRobot1.status} at (${finalRobot1.positionX}, ${finalRobot1.positionY})")
+        logger.info("   ${finalRobot2.name}: ${finalRobot2.status} at (${finalRobot2.positionX}, ${finalRobot2.positionY})")
+    } catch (e: Exception) {
+        logger.error("Error getting final robot status", e)
     }
 }
 
@@ -348,7 +285,7 @@ private suspend fun moveRobotContinuously(
             // Issue next movement command
             val direction = directions.random()
             val blocks = (1..3).random()
-            logger.info("Moving ${robot.name} $blocks blocks $direction")
+            logger.info("🚀 Moving ${robot.name} $blocks blocks $direction")
 
             robotApiClient.moveRobot(battleId, robot.id, direction, blocks)
 
