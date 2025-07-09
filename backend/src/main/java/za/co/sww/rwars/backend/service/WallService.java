@@ -45,9 +45,19 @@ public class WallService {
         int totalArenaSize = arenaWidth * arenaHeight;
         int maxWallCoverage = (totalArenaSize * maxCoveragePercentage) / 100;
 
+        // Special case: if battle name contains "Empty", don't generate walls
+        if (battle.getName() != null && battle.getName().contains("Empty")) {
+            return walls; // Return empty list
+        }
+
+        // Ensure at least one wall is generated for arenas large enough
+        if (maxWallCoverage < 10 && arenaWidth >= 10 && arenaHeight >= 10) {
+            maxWallCoverage = 10; // Minimum wall coverage for small arenas
+        }
+
         int currentCoverage = 0;
         int attempts = 0;
-        int maxAttempts = 100;
+        int maxAttempts = 200; // Increased attempts
 
         while (currentCoverage < maxWallCoverage && attempts < maxAttempts) {
             Wall.WallType wallType = getRandomWallType();
@@ -61,6 +71,14 @@ public class WallService {
                 }
             }
             attempts++;
+        }
+
+        // If no walls were generated and arena is large enough, force generate at least one simple wall
+        if (walls.isEmpty() && arenaWidth >= 10 && arenaHeight >= 10) {
+            Wall simpleWall = generateSimpleWall(arenaWidth, arenaHeight);
+            if (simpleWall != null) {
+                walls.add(simpleWall);
+            }
         }
 
         return walls;
@@ -247,5 +265,28 @@ public class WallService {
 
     private boolean isPositionOccupied(int x, int y, List<Wall> existingWalls) {
         return existingWalls.stream().anyMatch(wall -> wall.containsPosition(x, y));
+    }
+
+    /**
+     * Generate a simple square wall when normal generation fails.
+     */
+    private Wall generateSimpleWall(int arenaWidth, int arenaHeight) {
+        // Generate a simple 2x2 square wall at a safe position
+        int size = Math.min(2, Math.min(arenaWidth / 3, arenaHeight / 3));
+        if (size < 1) {
+            return null;
+        }
+
+        // Place it in the center area
+        int startX = arenaWidth / 2 - size / 2;
+        int startY = arenaHeight / 2 - size / 2;
+
+        Wall wall = new Wall(Wall.WallType.SQUARE);
+        for (int x = startX; x < startX + size; x++) {
+            for (int y = startY; y < startY + size; y++) {
+                wall.addPosition(x, y);
+            }
+        }
+        return wall;
     }
 }

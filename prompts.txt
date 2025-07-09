@@ -485,3 +485,11 @@ The file ./backend/featuresPrompt.txt contains a prompt. Follow that prompt.
 Pay attention to the .junie/guidelines.md file while completing this task. Fix the test errors in the backend project that resulted from an incomplete implementation of the last prompt.
   ### prompt to refine a change
     The register Robot for battle should NOT allow the user to set the hit points. The hit points are configured on the server for all Robots, not per robot and definitely not by the user registering the robot
+
+## Eighty-eighth Prompt
+Strictly follow the guidelines in the.junie/guidelines.md file while implementing this task. Fix the failing tests in the backend project.
+### prompt to refine a change (Didn't work - manually edited this file)
+    Don't add the additional context. Just the prompt text (including this refinement)
+
+## Eighty-ninth Prompt
+Strictly follow the guidelines in the.junie/guidelines.md file while implementing this task. Fix the failing tests in the backend project.
