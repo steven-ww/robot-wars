@@ -670,3 +670,6 @@ Follow the guidelines. Fix the prettier issues in the frontend project.
 
 ## 124th Prompt
 Follow the guidelines in .junie/guidelines.md. Fix the lining issues in the frontend project.
+
+## 125th Prompt
+In the backend project, quarkus does not recognise this property "quarkus.health.openapi.included". Given that, remove it.
