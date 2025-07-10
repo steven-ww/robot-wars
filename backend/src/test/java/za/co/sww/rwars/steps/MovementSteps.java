@@ -116,7 +116,8 @@ public class MovementSteps {
         // Wait for the movement to complete (blocks * 0.5 seconds per block)
         try {
             // Using milliseconds for more precise timing
-            TimeUnit.MILLISECONDS.sleep((long) (blocks * 500) + 500); // Add a small buffer
+            // Increased buffer time to account for thread scheduling delays
+            TimeUnit.MILLISECONDS.sleep((long) (blocks * 500) + 1000); // Add a larger buffer
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

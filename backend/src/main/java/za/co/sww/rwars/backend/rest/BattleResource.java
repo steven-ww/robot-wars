@@ -3,6 +3,7 @@ package za.co.sww.rwars.backend.rest;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -95,6 +96,30 @@ public class BattleResource {
                     .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
+     * Deletes a completed battle and all associated data.
+     *
+     * @param battleId The battle ID to delete
+     * @return Empty response with status 204 if successful
+     */
+    @DELETE
+    @Path("/{battleId}")
+    @RunOnVirtualThread
+    public Response deleteBattle(@PathParam("battleId") String battleId) {
+        try {
+            battleService.deleteBattle(battleId);
+            return Response.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
         }
