@@ -136,3 +136,44 @@ Feature: Battle Management
     And I should see a success notification "Battle 'Epic Robot Showdown' has been successfully deleted"
     And the battle should no longer be visible in the management page
     And the total battle count should be reduced by one
+
+  Scenario: Display latest battle states and winner information for completed battles
+    Given there are battles in various states on the server
+    And one battle named "Championship Final" has been completed with "MegaBot" as the winner
+    And another battle named "Training Match" is still in progress
+    And a third battle named "Quick Duel" is waiting for robots
+    When I navigate to the battle management page
+    Then I should see all battles with their current states
+    And the "Championship Final" battle should display status "COMPLETED"
+    And the "Championship Final" battle should show "Winner: MegaBot"
+    And the "Training Match" battle should display its current status
+    And the "Quick Duel" battle should display its current status
+    When I navigate away from the battle management page and return
+    Then I should still see the latest states of all battles
+    And completed battles should continue to show their winner information
+    And the winner information should be clearly visible for each completed battle
+
+  Scenario: Automatically refresh battle list to reflect changes
+    Given I am on the battle management page
+    And the page is showing the current list of battles
+    When new battles are created on the server
+    And existing battles change their status
+    And battles are completed with winners
+    Then the battle list should automatically refresh to show the changes
+    And new battles should appear in the list without manual page refresh
+    And updated battle statuses should be displayed immediately
+    And completed battles should show their winner information automatically
+    And the refresh should happen without user intervention
+
+  Scenario: Display winner information when battle completes
+    Given I am on the battle management page
+    And the page is showing a list of battles
+    And there is an ongoing battle named "Robot Championship"
+    And the battle status shows "IN_PROGRESS"
+    When the battle "Robot Championship" completes
+    And "TitanBot" is declared the winner
+    Then the battle list should automatically update
+    And the "Robot Championship" battle should show status "COMPLETED"
+    And the battle should display "Winner: TitanBot"
+    And the winner information should be prominently visible
+    And this should happen without requiring a manual page refresh
