@@ -143,11 +143,13 @@ const BattleManagement: React.FC = () => {
 
       if (response.ok) {
         // Remove the battle from the list
-        setBattles(prevBattles => 
+        setBattles(prevBattles =>
           prevBattles.filter(battle => battle.id !== battleToDelete.id)
         );
-        setSuccessMessage(`Battle '${battleToDelete.name}' has been successfully deleted`);
-        
+        setSuccessMessage(
+          `Battle '${battleToDelete.name}' has been successfully deleted`
+        );
+
         // Clear success message after 3 seconds
         setTimeout(() => setSuccessMessage(''), 3000);
       } else {
@@ -399,7 +401,8 @@ const BattleManagement: React.FC = () => {
           >
             <h3>Confirm Deletion</h3>
             <p>
-              Are you sure you want to delete the battle '{battleToDelete.name}'? This action cannot be undone.
+              Are you sure you want to delete the battle '{battleToDelete.name}
+              '? This action cannot be undone.
             </p>
             <div style={{ marginTop: '20px', textAlign: 'right' }}>
               <button
