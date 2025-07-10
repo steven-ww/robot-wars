@@ -667,3 +667,6 @@ The list of battles on the battle management page does not show the winner of a 
 
 ## 123th Prompt
 Follow the guidelines. Fix the prettier issues in the frontend project.
+
+## 124th Prompt
+Follow the guidelines in .junie/guidelines.md. Fix the lining issues in the frontend project.
