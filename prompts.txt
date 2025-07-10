@@ -640,3 +640,7 @@ Follow the .junie/guidelines.md file. The frontend project has a battle arena pa
 Follow the guidelines in .junie/guidelines.md. Create a scenario for the battle page management page that, given a battle has been completed and the results (including the winner) have been displayed on the battle management page, then a user should have the ability to remove that battle from the list of battles that are displayed. Create a similiar scenario in the backend project to support deleting a battle that has completed.
 ## 116th Prompt
 Go ahead and follow the Next steps you've defined.
+## 117th Prompt
+Follow the guidelines in .junie/guidelines.md. Create a scenario for the battle page management page that, given a battle has been completed and the results (including the winner) have been displayed on the battle management page, then a user should have the ability to remove that battle from the list of battles that are displayed.
+## 118th Prompt
+Update the tests by implementing the features that are missing as you identified.

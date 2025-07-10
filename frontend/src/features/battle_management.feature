@@ -120,3 +120,19 @@ Feature: Battle Management
     And the deletion fails due to a server error
     Then I should see an error message
     And the battle should remain in the battle list
+
+  Scenario: Remove completed battle with winner results from management page
+    Given I am on the battle management page
+    And there is a completed battle named "Epic Robot Showdown"
+    And the battle results show "RobotWarrior" as the winner
+    And the battle status displays as "COMPLETED"
+    And the winner information is visible in the battle list entry
+    When I locate the completed battle in the list
+    Then I should see a "Delete" button available for this battle
+    When I click the "Delete" button for "Epic Robot Showdown"
+    Then I should see a confirmation dialog with the message "Are you sure you want to delete the battle 'Epic Robot Showdown'? This action cannot be undone."
+    When I click "Confirm" in the deletion dialog
+    Then the battle "Epic Robot Showdown" should be removed from the battle list
+    And I should see a success notification "Battle 'Epic Robot Showdown' has been successfully deleted"
+    And the battle should no longer be visible in the management page
+    And the total battle count should be reduced by one
