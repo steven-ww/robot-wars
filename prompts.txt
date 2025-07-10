@@ -673,3 +673,5 @@ Follow the guidelines in .junie/guidelines.md. Fix the lining issues in the fron
 
 ## 125th Prompt
 In the backend project, quarkus does not recognise this property "quarkus.health.openapi.included". Given that, remove it.
+## 126th Prompt
+Follow the guidelines in .junie/guidelines.md. Write a unit test for the backend project to confirm that a robot will never spawn at a position that is on or in a wall. Ensure this passes.

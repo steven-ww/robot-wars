@@ -4,14 +4,14 @@ Feature: Battle State WebSocket
   So that I can render the initial arena state
 
   Background:
-    Given a battle with name "WebSocket Test Battle" and dimensions 20x20 exists
+    Given a battle with name "WebSocket Test Battle" and dimensions 50x50 exists
     And a robot named "TestBot1" is registered for the battle
     And a robot named "TestBot2" is registered for the battle
 
   Scenario: Connect to battle state websocket
     When I connect to the battle state websocket
     Then I should receive the battle state information
-    And the battle state should include the arena dimensions 20x20
+    And the battle state should include the arena dimensions 50x50
     And the battle state should include 2 registered robots
     And the battle state should include the robot "TestBot1"
     And the battle state should include the robot "TestBot2"
@@ -20,7 +20,7 @@ Feature: Battle State WebSocket
     Given I am connected to the battle state websocket
     When I send an "update" message to the websocket
     Then I should receive the updated battle state information
-    And the battle state should include the arena dimensions 20x20
+    And the battle state should include the arena dimensions 50x50
     And the battle state should include 2 registered robots
 
   Scenario: Receive battle state after robot movement
