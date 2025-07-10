@@ -36,6 +36,23 @@ interface BattleState {
   winnerName?: string;
 }
 
+interface LaserPosition {
+  x: number;
+  y: number;
+}
+
+interface LaserEvent {
+  hit: boolean;
+  hitRobotId?: string;
+  hitRobotName?: string;
+  damageDealt?: number;
+  range: number;
+  direction: string;
+  laserPath: LaserPosition[];
+  hitPosition?: LaserPosition;
+  blockedBy?: string;
+}
+
 interface ArenaComponentProps {
   battleId: string;
 }
@@ -48,9 +65,32 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
   const [webSocketError, setWebSocketError] = useState<string | null>(null);
   const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
   const [updateCount, setUpdateCount] = useState<number>(0);
+  const [activeLaser, setActiveLaser] = useState<LaserEvent | null>(null);
+  const [laserEffects, setLaserEffects] = useState<LaserEvent[]>([]);
 
   // Reference to the WebSocket connection
   const webSocketRef = useRef<WebSocket | null>(null);
+
+  // Handle laser event
+  const handleLaserEvent = (data: LaserEvent) => {
+    console.log('Laser event:', data);
+
+    // Set the active laser for immediate rendering
+    setActiveLaser(data);
+
+    // Add to laser effects history
+    setLaserEffects(prev => [...prev, data]);
+
+    // Clear the active laser after animation duration
+    setTimeout(() => {
+      setActiveLaser(null);
+    }, 1000); // 1 second animation
+
+    // Clear from effects history after a longer duration
+    setTimeout(() => {
+      setLaserEffects(prev => prev.filter(effect => effect !== data));
+    }, 3000); // 3 seconds total display
+  };
 
   // Function to connect to the WebSocket
   const connectWebSocket = useCallback(() => {
@@ -97,7 +137,14 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
           }
 
           // Update battle state and tracking info
-          setBattleState(data);
+          // Check for laser event
+          if (data.laserPath) {
+            handleLaserEvent(data);
+            // Don't update battle state with laser event data
+          } else {
+            // Only update battle state with actual battle state data
+            setBattleState(data);
+          }
           setLastUpdateTime(new Date());
           setUpdateCount(prev => prev + 1);
         } catch (err) {
@@ -215,6 +262,62 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
           />
         );
       })
+    );
+  };
+
+  // Render laser effects on the arena
+  const renderLaser = (laser: LaserEvent, index: number) => {
+    if (!battleState || !laser.laserPath || laser.laserPath.length === 0)
+      return null;
+
+    const startPosition = laser.laserPath[0];
+    const endPosition = laser.laserPath[laser.laserPath.length - 1];
+
+    // Calculate laser beam style
+    const deltaX = endPosition.x - startPosition.x;
+    const deltaY = endPosition.y - startPosition.y;
+    const length = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+
+    const laserStyle = {
+      position: 'absolute' as const,
+      left: `${(startPosition.x / battleState.arenaWidth) * 100}%`,
+      bottom: `${(startPosition.y / battleState.arenaHeight) * 100}%`,
+      width: `${(length / battleState.arenaWidth) * 100}%`,
+      height: '3px',
+      backgroundColor: laser.hit ? '#ff0000' : '#00ff00',
+      transform: `rotate(${angle}deg)`,
+      transformOrigin: '0 50%',
+      zIndex: 10,
+      opacity: laser === activeLaser ? 1 : 0.5,
+      boxShadow: `0 0 8px ${laser.hit ? '#ff0000' : '#00ff00'}`,
+    };
+
+    const hitEffect =
+      laser.hit && laser.hitPosition ? (
+        <div
+          className="laser-hit-effect"
+          style={{
+            position: 'absolute',
+            left: `${(laser.hitPosition.x / battleState.arenaWidth) * 100}%`,
+            bottom: `${(laser.hitPosition.y / battleState.arenaHeight) * 100}%`,
+            width: '20px',
+            height: '20px',
+            borderRadius: '50%',
+            backgroundColor: '#ff6600',
+            transform: 'translate(-50%, 50%)',
+            zIndex: 11,
+            animation: 'pulse 0.5s ease-in-out',
+          }}
+          data-testid={`laser-hit-${index}`}
+        />
+      ) : null;
+
+    return (
+      <div key={`laser-${index}`} data-testid={`laser-${index}`}>
+        <div className="laser-beam" style={laserStyle} />
+        {hitEffect}
+      </div>
     );
   };
 
@@ -421,6 +524,10 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
         >
           {renderWalls()}
           {battleState.robots.map(renderRobot)}
+          {/* Render active laser */}
+          {activeLaser && renderLaser(activeLaser, 0)}
+          {/* Render laser effects */}
+          {laserEffects.map((laser, index) => renderLaser(laser, index + 1))}
         </div>
       )}
 

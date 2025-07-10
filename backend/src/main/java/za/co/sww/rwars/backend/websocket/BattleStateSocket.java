@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
+import za.co.sww.rwars.backend.model.LaserResponse;
 import za.co.sww.rwars.backend.model.Wall;
 import za.co.sww.rwars.backend.service.BattleService;
 
@@ -182,6 +183,27 @@ public class BattleStateSocket {
         if (battleSessions != null && !battleSessions.isEmpty()) {
             for (Session session : battleSessions.values()) {
                 sendBattleState(battleId, session);
+            }
+        }
+    }
+
+    /**
+     * Broadcasts laser event details when a laser is fired.
+     *
+     * @param battleId The battle ID
+     * @param response The laser response
+     */
+    public void broadcastLaserEvent(String battleId, LaserResponse response) {
+        Map<String, Session> battleSessions = sessionsByBattleId.get(battleId);
+        if (battleSessions != null && !battleSessions.isEmpty()) {
+            for (Session session : battleSessions.values()) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    String jsonResponse = mapper.writeValueAsString(response);
+                    session.getAsyncRemote().sendText(jsonResponse);
+                } catch (JsonProcessingException e) {
+                    LOGGER.severe("Error serializing laser event to JSON: " + e.getMessage());
+                }
             }
         }
     }

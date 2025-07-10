@@ -581,6 +581,44 @@ public class BattleService {
     }
 
     /**
+     * Sets the position of a robot for testing purposes with validation.
+     * This method ensures the position is valid (within arena bounds and not on walls).
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param positionX The X coordinate
+     * @param positionY The Y coordinate
+     * @return The robot with updated position
+     * @throws IllegalArgumentException if the battle ID, robot ID, or position is invalid
+     */
+    public Robot setRobotPositionForTesting(String battleId, String robotId, int positionX, int positionY) {
+        if (!isValidBattleAndRobotId(battleId, robotId)) {
+            throw new IllegalArgumentException("Invalid battle ID or robot ID");
+        }
+
+        Battle battle = battlesById.get(battleId);
+
+        // Validate position is within arena bounds
+        if (positionX < 0 || positionX >= battle.getArenaWidth()
+                || positionY < 0 || positionY >= battle.getArenaHeight()) {
+            throw new IllegalArgumentException("Position " + positionX + "," + positionY
+                + " is outside arena bounds (0,0 to " + (battle.getArenaWidth() - 1)
+                + "," + (battle.getArenaHeight() - 1) + ")");
+        }
+
+        // Validate position is not on a wall
+        if (battle.isPositionOccupiedByWall(positionX, positionY)) {
+            throw new IllegalArgumentException("Position " + positionX + "," + positionY + " is occupied by a wall");
+        }
+
+        Robot robot = robotsById.get(robotId);
+        robot.setPositionX(positionX);
+        robot.setPositionY(positionY);
+
+        return robot;
+    }
+
+    /**
      * Starts the robot movement process.
      *
      * @param robot The robot to move
