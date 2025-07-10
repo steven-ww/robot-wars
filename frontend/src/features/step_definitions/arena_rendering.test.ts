@@ -490,9 +490,10 @@ defineFeature(feature, test => {
 
         // Verify that battle state shows IN_PROGRESS (updated from READY)
         await waitFor(() => {
-          expect(
-            screen.getByText('Battle State: IN_PROGRESS')
-          ).toBeInTheDocument();
+          expect(screen.getByText('Battle State:')).toBeInTheDocument();
+        });
+        await waitFor(() => {
+          expect(screen.getByText('IN_PROGRESS')).toBeInTheDocument();
         });
       }
     );

@@ -628,3 +628,11 @@ Following the guidelines, remove this scenario "Scenario: Robot scans empty area
 
 ## 110th Prompt
 Following the guidelines in the .junie/guidelines.md file for this task, determine what is still using the "@Path("/battle/{battleId}/robot/{robotId}/details")" api and how best to remove it as it exposes to much detail to the client. this @Path("/battle/{battleId}/robot/{robotId}/status") should be used instead.
+## 111th Prompt
+Follow the .junie/guidelines.md file. fix the vulnerabilities in the frontend project.
+## 112th Prompt
+Follow the .junie/guidelines.md file. The frontend project has a battle arena page. This page shows the progress of a battle. Once the battle has completed, update the page to show the results. That is, which robot won.
+## 113th Prompt
+Follow the .junie/guidelines.md file. The frontend project has a battle arena page. Why does the final status of the battle reflect as "no clear winner". When 1 robot remains that has not crashed or been reduce to 0 hit points, that robot is the winner. The robo-demo project correctly notes the winner in the output. Why is the frontend project not able to do this?
+
+114. Fixed robot movement test timing issue where the test was failing due to insufficient wait time for asynchronous robot movement to complete. The test was expecting the robot to move 3 blocks NORTH but was checking the position before all movements finished. Increased the buffer time from 500ms to 1000ms in the MovementSteps.theRobotShouldMoveBlocksInTheDirection method to account for thread scheduling delays in the asynchronous robot movement system. This resolved the race condition where the test was checking robot position at Y=27 instead of the expected Y=28.

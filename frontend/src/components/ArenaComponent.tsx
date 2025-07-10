@@ -32,6 +32,8 @@ interface BattleState {
   battleState: string;
   robots: Robot[];
   walls: Wall[];
+  winnerId?: string;
+  winnerName?: string;
 }
 
 interface ArenaComponentProps {
@@ -161,18 +163,29 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
       bottom: `${(robot.positionY / (battleState?.arenaHeight || 1)) * 100}%`,
     };
 
+    const isWinner = battleState?.winnerId === robot.id;
+    const robotClasses = [
+      'robot',
+      `robot-${robot.status.toLowerCase()}`,
+      isWinner ? 'robot-winner' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
     return (
       <div
         key={robot.id}
-        className={`robot robot-${robot.status.toLowerCase()}`}
+        className={robotClasses}
         style={style}
         data-testid={`robot-${robot.id}`}
         data-x={robot.positionX}
         data-y={robot.positionY}
         data-status={robot.status}
+        data-winner={isWinner}
       >
         <div className="robot-name">{robot.name}</div>
         <div className="robot-status">{robot.status}</div>
+        {isWinner && <div className="robot-crown">👑</div>}
       </div>
     );
   };
@@ -202,6 +215,87 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
           />
         );
       })
+    );
+  };
+
+  // Render battle results when battle is completed
+  const renderBattleResults = () => {
+    if (battleState?.battleState !== 'COMPLETED') {
+      return null;
+    }
+
+    return (
+      <div className="battle-results">
+        <div className="battle-results-header">
+          <h3>🏆 Battle Complete!</h3>
+        </div>
+        <div className="battle-results-content">
+          {battleState.winnerName ? (
+            <div className="winner-announcement">
+              <h4>Winner: {battleState.winnerName}</h4>
+              <p>
+                Congratulations! {battleState.winnerName} has won the battle!
+              </p>
+            </div>
+          ) : (
+            <div className="no-winner-announcement">
+              <h4>Battle Ended</h4>
+              <p>The battle has completed with no clear winner.</p>
+            </div>
+          )}
+
+          <div className="battle-summary">
+            <h5>Battle Summary:</h5>
+            <ul>
+              <li>Battle: {battleState.battleName}</li>
+              <li>
+                Arena Size: {battleState.arenaWidth}x{battleState.arenaHeight}
+              </li>
+              <li>Total Robots: {battleState.robots.length}</li>
+              <li>
+                Active Robots:{' '}
+                {
+                  battleState.robots.filter(
+                    robot =>
+                      robot.status === 'IDLE' || robot.status === 'MOVING'
+                  ).length
+                }
+              </li>
+              <li>
+                Crashed/Destroyed Robots:{' '}
+                {
+                  battleState.robots.filter(
+                    robot =>
+                      robot.status === 'CRASHED' || robot.status === 'DESTROYED'
+                  ).length
+                }
+              </li>
+            </ul>
+          </div>
+
+          <div className="robot-final-status">
+            <h5>Final Robot Status:</h5>
+            <div className="robot-status-list">
+              {battleState.robots.map(robot => (
+                <div
+                  key={robot.id}
+                  className={`robot-status-item ${robot.id === battleState.winnerId ? 'winner' : ''}`}
+                >
+                  <span className="robot-name">{robot.name}</span>
+                  <span
+                    className={`robot-status-badge status-${robot.status.toLowerCase()}`}
+                  >
+                    {robot.status}
+                  </span>
+                  {robot.id === battleState.winnerId && (
+                    <span className="winner-badge">👑 WINNER</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     );
   };
 
@@ -251,11 +345,21 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
         </div>
       )}
 
+      {/* Show battle results if battle is completed */}
+      {renderBattleResults()}
+
       {/* Show connection status when we have battle data */}
       {battleState && (
         <div className="battle-info">
           <h3>{battleState.battleName}</h3>
-          <p>Battle State: {battleState.battleState}</p>
+          <p>
+            Battle State:
+            <span
+              className={`battle-state-badge state-${battleState.battleState.toLowerCase()}`}
+            >
+              {battleState.battleState}
+            </span>
+          </p>
           <p>
             Arena Size: {battleState.arenaWidth}x{battleState.arenaHeight}
           </p>
