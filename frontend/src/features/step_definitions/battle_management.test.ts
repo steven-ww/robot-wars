@@ -170,7 +170,7 @@ defineFeature(feature, test => {
 
     then('I should see a message indicating no battles exist', async () => {
       await waitFor(() => {
-        expect(screen.getByText('No battles available.')).toBeInTheDocument();
+        expect(screen.getByText('No battles found')).toBeInTheDocument();
       });
     });
 
@@ -771,6 +771,529 @@ defineFeature(feature, test => {
 
       // Check that we can go back to the battle list
       expect(screen.getByText('Back to Battle List')).toBeInTheDocument();
+    });
+  });
+
+  test('Delete a completed battle from the battle list', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    const completedBattle = {
+      id: 'completed-battle-123',
+      name: 'Completed Battle',
+      arenaWidth: 20,
+      arenaHeight: 20,
+      robotMovementTimeSeconds: 1,
+      state: 'COMPLETED',
+      robotCount: 2,
+      robots: [
+        {
+          id: 'robot-winner',
+          name: 'WinnerBot',
+          status: 'IDLE',
+        },
+        {
+          id: 'robot-loser',
+          name: 'LoserBot',
+          status: 'CRASHED',
+        },
+      ],
+      winnerId: 'robot-winner',
+      winnerName: 'WinnerBot',
+    };
+
+    given('the battle management API is available', () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => [completedBattle],
+      } as Response);
+    });
+
+    given('I am on the battle management page', () => {
+      render(React.createElement(BattleManagement));
+    });
+
+    and('there is a completed battle with results displayed', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Completed Battle')).toBeInTheDocument();
+      });
+    });
+
+    and('the battle shows a winner in the battle list', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('WinnerBot')).toBeInTheDocument();
+        expect(screen.getByText('Winner:')).toBeInTheDocument();
+      });
+    });
+
+    when('I click the "Delete" button for the completed battle', async () => {
+      const deleteButton = screen.getByTestId(
+        'delete-battle-completed-battle-123'
+      );
+      await userInteraction(() => {
+        fireEvent.click(deleteButton);
+      });
+    });
+
+    then(
+      'I should see a confirmation dialog asking if I want to delete the battle',
+      async () => {
+        await waitFor(() => {
+          expect(
+            screen.getByText(/Are you sure you want to delete/)
+          ).toBeInTheDocument();
+        });
+      }
+    );
+
+    when('I confirm the deletion', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+      } as Response);
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      } as Response);
+
+      const confirmButton = screen.getByText('Confirm');
+      await userInteraction(() => {
+        fireEvent.click(confirmButton);
+      });
+    });
+
+    then('the battle should be removed from the battle list', async () => {
+      await waitFor(() => {
+        expect(screen.queryByText('Completed Battle')).not.toBeInTheDocument();
+      });
+    });
+
+    and(
+      'I should see a success message confirming the battle was deleted',
+      async () => {
+        await waitFor(() => {
+          expect(screen.getByText(/successfully deleted/)).toBeInTheDocument();
+        });
+      }
+    );
+
+    and('the battle should no longer appear in the list', async () => {
+      await waitFor(() => {
+        expect(screen.queryByText('Completed Battle')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  test('Cancel deletion of a completed battle', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    const completedBattle = {
+      id: 'completed-battle-456',
+      name: 'Battle to Cancel',
+      arenaWidth: 20,
+      arenaHeight: 20,
+      robotMovementTimeSeconds: 1,
+      state: 'COMPLETED',
+      robotCount: 1,
+      robots: [
+        {
+          id: 'robot-survivor',
+          name: 'SurvivorBot',
+          status: 'IDLE',
+        },
+      ],
+      winnerId: 'robot-survivor',
+      winnerName: 'SurvivorBot',
+    };
+
+    given('the battle management API is available', () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => [completedBattle],
+      } as Response);
+    });
+
+    given('I am on the battle management page', () => {
+      render(React.createElement(BattleManagement));
+    });
+
+    and('there is a completed battle with results displayed', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Battle to Cancel')).toBeInTheDocument();
+      });
+    });
+
+    when('I click the "Delete" button for the completed battle', async () => {
+      const deleteButton = screen.getByTestId(
+        'delete-battle-completed-battle-456'
+      );
+      await userInteraction(() => {
+        fireEvent.click(deleteButton);
+      });
+    });
+
+    and('I see a confirmation dialog', async () => {
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Are you sure you want to delete/)
+        ).toBeInTheDocument();
+      });
+    });
+
+    when('I cancel the deletion', async () => {
+      const cancelButton = screen.getByText('Cancel');
+      await userInteraction(() => {
+        fireEvent.click(cancelButton);
+      });
+    });
+
+    then('the battle should remain in the battle list', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Battle to Cancel')).toBeInTheDocument();
+      });
+    });
+
+    and('no changes should be made', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Battle to Cancel')).toBeInTheDocument();
+      });
+      expect(screen.getByText('SurvivorBot')).toBeInTheDocument();
+      expect(screen.getByText('Winner:')).toBeInTheDocument();
+    });
+  });
+
+  test('Only completed battles can be deleted', ({ given, and, then }) => {
+    const battles = [
+      {
+        id: 'waiting-battle',
+        name: 'Waiting Battle',
+        state: 'WAITING_ON_ROBOTS',
+        robotCount: 0,
+        robots: [],
+      },
+      {
+        id: 'ready-battle',
+        name: 'Ready Battle',
+        state: 'READY',
+        robotCount: 2,
+        robots: [],
+      },
+      {
+        id: 'in-progress-battle',
+        name: 'In Progress Battle',
+        state: 'IN_PROGRESS',
+        robotCount: 2,
+        robots: [],
+      },
+      {
+        id: 'completed-battle',
+        name: 'Completed Battle',
+        state: 'COMPLETED',
+        robotCount: 2,
+        robots: [],
+        winnerId: 'robot-1',
+        winnerName: 'Winner',
+      },
+    ];
+
+    given('the battle management API is available', () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => battles,
+      } as Response);
+    });
+
+    given('I am on the battle management page', () => {
+      render(React.createElement(BattleManagement));
+    });
+
+    and('there are battles in different states', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Waiting Battle')).toBeInTheDocument();
+      });
+      expect(screen.getByText('Ready Battle')).toBeInTheDocument();
+      expect(screen.getByText('In Progress Battle')).toBeInTheDocument();
+      expect(screen.getByText('Completed Battle')).toBeInTheDocument();
+    });
+
+    then(
+      'I should only see "Delete" buttons for battles with COMPLETED status',
+      async () => {
+        await waitFor(() => {
+          expect(
+            screen.getByTestId('delete-battle-completed-battle')
+          ).toBeInTheDocument();
+        });
+      }
+    );
+
+    and(
+      'battles with WAITING_ON_ROBOTS, READY, or IN_PROGRESS status should not have delete buttons',
+      async () => {
+        await waitFor(() => {
+          expect(
+            screen.queryByTestId('delete-battle-waiting-battle')
+          ).not.toBeInTheDocument();
+        });
+        expect(
+          screen.queryByTestId('delete-battle-ready-battle')
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId('delete-battle-in-progress-battle')
+        ).not.toBeInTheDocument();
+      }
+    );
+  });
+
+  test('Handle battle deletion errors', ({ given, and, when, then }) => {
+    const completedBattle = {
+      id: 'error-battle-789',
+      name: 'Error Battle',
+      arenaWidth: 20,
+      arenaHeight: 20,
+      robotMovementTimeSeconds: 1,
+      state: 'COMPLETED',
+      robotCount: 1,
+      robots: [
+        {
+          id: 'robot-error',
+          name: 'ErrorBot',
+          status: 'IDLE',
+        },
+      ],
+      winnerId: 'robot-error',
+      winnerName: 'ErrorBot',
+    };
+
+    given('the battle management API is available', () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => [completedBattle],
+      } as Response);
+    });
+
+    given('I am on the battle management page', () => {
+      render(React.createElement(BattleManagement));
+    });
+
+    and('there is a completed battle', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Error Battle')).toBeInTheDocument();
+      });
+    });
+
+    when('I attempt to delete the battle', async () => {
+      const deleteButton = screen.getByTestId('delete-battle-error-battle-789');
+      await userInteraction(() => {
+        fireEvent.click(deleteButton);
+      });
+    });
+
+    and('the deletion fails due to a server error', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+      } as Response);
+
+      const confirmButton = screen.getByText('Confirm');
+      await userInteraction(() => {
+        fireEvent.click(confirmButton);
+      });
+    });
+
+    then('I should see an error message', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Failed to delete battle. Please try again.')).toBeInTheDocument();
+      });
+    });
+
+    and('the battle should remain in the battle list', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Error Battle')).toBeInTheDocument();
+      });
+    });
+  });
+
+  test('Remove completed battle with winner results from management page', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    const completedBattle = {
+      id: 'epic-battle-123',
+      name: 'Epic Robot Showdown',
+      arenaWidth: 20,
+      arenaHeight: 20,
+      robotMovementTimeSeconds: 1,
+      state: 'COMPLETED',
+      robotCount: 2,
+      robots: [
+        {
+          id: 'robot-warrior',
+          name: 'RobotWarrior',
+          status: 'IDLE',
+        },
+        {
+          id: 'robot-defeated',
+          name: 'DefeatedBot',
+          status: 'CRASHED',
+        },
+      ],
+      winnerId: 'robot-warrior',
+      winnerName: 'RobotWarrior',
+    };
+
+    given('the battle management API is available', () => {
+      // Mock GET request with completed battle
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => [completedBattle],
+      } as Response);
+    });
+
+    given('I am on the battle management page', () => {
+      render(React.createElement(BattleManagement));
+    });
+
+    and('there is a completed battle named "Epic Robot Showdown"', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Epic Robot Showdown')).toBeInTheDocument();
+      });
+    });
+
+    and('the battle results show "RobotWarrior" as the winner', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('RobotWarrior')).toBeInTheDocument();
+        expect(screen.getByText('Winner:')).toBeInTheDocument();
+      });
+    });
+
+    and('the battle status displays as "COMPLETED"', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+      });
+    });
+
+    and(
+      'the winner information is visible in the battle list entry',
+      async () => {
+        await waitFor(() => {
+          expect(screen.getByText('RobotWarrior')).toBeInTheDocument();
+          expect(screen.getByText('Winner:')).toBeInTheDocument();
+        });
+      }
+    );
+
+    when('I locate the completed battle in the list', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Epic Robot Showdown')).toBeInTheDocument();
+      });
+    });
+
+    then(
+      'I should see a "Delete" button available for this battle',
+      async () => {
+        await waitFor(() => {
+          const deleteButton = screen.getByTestId(
+            'delete-battle-epic-battle-123'
+          );
+          expect(deleteButton).toBeInTheDocument();
+        });
+
+        const deleteButton = screen.getByTestId(
+          'delete-battle-epic-battle-123'
+        );
+        expect(deleteButton).toHaveTextContent('Delete');
+      }
+    );
+
+    when('I click the "Delete" button for "Epic Robot Showdown"', async () => {
+      const deleteButton = screen.getByTestId('delete-battle-epic-battle-123');
+      await userInteraction(() => {
+        fireEvent.click(deleteButton);
+      });
+    });
+
+    then(
+      'I should see a confirmation dialog with the message "Are you sure you want to delete the battle \'Epic Robot Showdown\'? This action cannot be undone."',
+      async () => {
+        await waitFor(() => {
+          expect(
+            screen.getByText(
+              "Are you sure you want to delete the battle 'Epic Robot Showdown'? This action cannot be undone."
+            )
+          ).toBeInTheDocument();
+        });
+      }
+    );
+
+    when('I click "Confirm" in the deletion dialog', async () => {
+      // Mock successful DELETE request
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+      } as Response);
+
+      // Mock updated battle list without the deleted battle
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      } as Response);
+
+      const confirmButton = screen.getByText('Confirm');
+      await userInteraction(() => {
+        fireEvent.click(confirmButton);
+      });
+    });
+
+    then(
+      'the battle "Epic Robot Showdown" should be removed from the battle list',
+      async () => {
+        await waitFor(() => {
+          expect(
+            screen.queryByText('Epic Robot Showdown')
+          ).not.toBeInTheDocument();
+        });
+      }
+    );
+
+    and(
+      'I should see a success notification "Battle \'Epic Robot Showdown\' has been successfully deleted"',
+      async () => {
+        await waitFor(() => {
+          expect(
+            screen.getByText(
+              "Battle 'Epic Robot Showdown' has been successfully deleted"
+            )
+          ).toBeInTheDocument();
+        });
+      }
+    );
+
+    and(
+      'the battle should no longer be visible in the management page',
+      async () => {
+        await waitFor(() => {
+          expect(
+            screen.queryByText('Epic Robot Showdown')
+          ).not.toBeInTheDocument();
+        });
+      }
+    );
+
+    and('the total battle count should be reduced by one', async () => {
+      await waitFor(() => {
+        // Since we started with 1 battle and deleted it, we should see the empty state
+        expect(screen.getByText('No battles found')).toBeInTheDocument();
+      });
     });
   });
 });

@@ -444,13 +444,13 @@ public class BattleSteps {
                 endpoint = endpoint.replace("{battleOneId}", battleOneId);
             }
         }
-        
+
         // Replace {battleId} placeholder with actual battle ID
         String currentBattleId = testContext.getCurrentBattleId();
         if (currentBattleId != null && endpoint.contains("{battleId}")) {
             endpoint = endpoint.replace("{battleId}", currentBattleId);
         }
-        
+
         response = request.delete(endpoint);
     }
 
@@ -464,8 +464,8 @@ public class BattleSteps {
                 Assertions.fail("Battle should have been deleted but still exists");
             } catch (IllegalArgumentException e) {
                 // Expected - battle should not exist
-                Assertions.assertTrue(e.getMessage().contains("Invalid battle ID") || 
-                                    e.getMessage().contains("Battle not found"));
+                Assertions.assertTrue(e.getMessage().contains("Invalid battle ID")
+                                    || e.getMessage().contains("Battle not found"));
             }
         }
     }
@@ -478,7 +478,7 @@ public class BattleSteps {
             List<Map<String, Object>> battles = response.jsonPath().getList("$");
             for (Map<String, Object> battle : battles) {
                 String battleId = (String) battle.get("id");
-                Assertions.assertNotEquals(currentBattleId, battleId, 
+                Assertions.assertNotEquals(currentBattleId, battleId,
                     "Deleted battle should not appear in battle list");
             }
         }
@@ -608,7 +608,7 @@ public class BattleSteps {
         List<Map<String, Object>> battles = response.jsonPath().getList("$");
         for (Map<String, Object> battle : battles) {
             String name = (String) battle.get("name");
-            Assertions.assertNotEquals(battleName, name, 
+            Assertions.assertNotEquals(battleName, name,
                 "Response should not contain battle: " + battleName);
         }
     }
@@ -623,7 +623,7 @@ public class BattleSteps {
                 testContext.setCurrentBattleId(currentBattleId);
             }
         }
-        
+
         if (currentBattleId != null) {
             try {
                 var battle = battleService.getBattleStatus(currentBattleId);
@@ -646,14 +646,14 @@ public class BattleSteps {
         if (currentBattleId != null && endpoint.contains("{battleId}")) {
             endpoint = endpoint.replace("{battleId}", currentBattleId);
         }
-        
+
         // Make the first request
         response = request.delete(endpoint);
-        
+
         // Store the first response status
         int firstStatus = response.getStatusCode();
         testContext.setFirstDeleteStatus(firstStatus);
-        
+
         // Make a second request immediately
         Response secondResponse = request.delete(endpoint);
         testContext.setSecondDeleteStatus(secondResponse.getStatusCode());
@@ -663,18 +663,18 @@ public class BattleSteps {
     public void oneRequestShouldReturnStatus(int expectedStatus) {
         int firstStatus = testContext.getFirstDeleteStatus();
         int secondStatus = testContext.getSecondDeleteStatus();
-        
+
         boolean oneMatches = (firstStatus == expectedStatus) || (secondStatus == expectedStatus);
-        Assertions.assertTrue(oneMatches, 
-            "One request should return status " + expectedStatus + 
-            ", but got " + firstStatus + " and " + secondStatus);
+        Assertions.assertTrue(oneMatches,
+            "One request should return status " + expectedStatus
+            + ", but got " + firstStatus + " and " + secondStatus);
     }
 
     @Then("subsequent requests should return status {int}")
     public void subsequentRequestsShouldReturnStatus(int expectedStatus) {
         int firstStatus = testContext.getFirstDeleteStatus();
         int secondStatus = testContext.getSecondDeleteStatus();
-        
+
         // If first request was successful (204), second should be 404
         // If first request failed, we need to check the pattern
         if (firstStatus == 204) {
