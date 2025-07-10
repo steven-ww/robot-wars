@@ -628,24 +628,39 @@ Following the guidelines, remove this scenario "Scenario: Robot scans empty area
 
 ## 110th Prompt
 Following the guidelines in the .junie/guidelines.md file for this task, determine what is still using the "@Path("/battle/{battleId}/robot/{robotId}/details")" api and how best to remove it as it exposes to much detail to the client. this @Path("/battle/{battleId}/robot/{robotId}/status") should be used instead.
+
 ## 111th Prompt
 Follow the .junie/guidelines.md file. fix the vulnerabilities in the frontend project.
+
 ## 112th Prompt
 Follow the .junie/guidelines.md file. The frontend project has a battle arena page. This page shows the progress of a battle. Once the battle has completed, update the page to show the results. That is, which robot won.
+
 ## 113th Prompt
 Follow the .junie/guidelines.md file. The frontend project has a battle arena page. Why does the final status of the battle reflect as "no clear winner". When 1 robot remains that has not crashed or been reduce to 0 hit points, that robot is the winner. The robo-demo project correctly notes the winner in the output. Why is the frontend project not able to do this?
 
-114. Fixed robot movement test timing issue where the test was failing due to insufficient wait time for asynchronous robot movement to complete. The test was expecting the robot to move 3 blocks NORTH but was checking the position before all movements finished. Increased the buffer time from 500ms to 1000ms in the MovementSteps.theRobotShouldMoveBlocksInTheDirection method to account for thread scheduling delays in the asynchronous robot movement system. This resolved the race condition where the test was checking robot position at Y=27 instead of the expected Y=28.
+## 114th Prompt
+Fixed robot movement test timing issue where the test was failing due to insufficient wait time for asynchronous robot movement to complete. The test was expecting the robot to move 3 blocks NORTH but was checking the position before all movements finished. Increased the buffer time from 500ms to 1000ms in the MovementSteps.theRobotShouldMoveBlocksInTheDirection method to account for thread scheduling delays in the asynchronous robot movement system. This resolved the race condition where the test was checking robot position at Y=27 instead of the expected Y=28.
+
 ## 115th Prompt
 Follow the guidelines in .junie/guidelines.md. Create a scenario for the battle page management page that, given a battle has been completed and the results (including the winner) have been displayed on the battle management page, then a user should have the ability to remove that battle from the list of battles that are displayed. Create a similiar scenario in the backend project to support deleting a battle that has completed.
+
 ## 116th Prompt
 Go ahead and follow the Next steps you've defined.
+
 ## 117th Prompt
 Follow the guidelines in .junie/guidelines.md. Create a scenario for the battle page management page that, given a battle has been completed and the results (including the winner) have been displayed on the battle management page, then a user should have the ability to remove that battle from the list of battles that are displayed.
+
 ## 118th Prompt
 Update the tests by implementing the features that are missing as you identified.
+
 ## 119th Prompt
 The frontend battle management page shows a list of battles. Add a scenario : Given a battle has been completed and the user is on the battle management page or nagivates back to the battle management page, show the lastest states of all battles AND for those that have compelete, show the winner of the battle.
+
 ## 120th Prompt
 The battle management shows a list of current battles. This list is currently not being updated unless the page is manually being refreshed. Add a scenario : Given the user user in on the battle management page and it showing the list of battles, refresh the list on the page to reflect any changes to the battles (new battles, battles completed). Also add a scenario : Given that user is on the battle page and the page is showing the list of battles, and a battle has completed, show the winner of the battle.
-121. Fixed battle management page automatic refresh functionality and corrected corresponding tests. The issue was that tests were passing despite missing functionality because they used artificial simulation rather than testing real automatic refresh behavior.
+#
+# 121st Prompt
+Fixed battle management page automatic refresh functionality and corrected corresponding tests. The issue was that tests were passing despite missing functionality because they used artificial simulation rather than testing real automatic refresh behavior.
+
+## 122nd Prompt
+The list of battles on the battle management page does not show the winner of a battle. Is this because the winner information is not being provided by the backend or because of a issue on the frontend that doesn't display the winner information in the list of current battles?
