@@ -134,6 +134,8 @@ public class BattleStateSocket {
                 response.setBattleState(battle.getState().toString());
                 response.setRobots(battle.getRobots());
                 response.setWalls(battle.getWalls());
+                response.setWinnerId(battle.getWinnerId());
+                response.setWinnerName(battle.getWinnerName());
 
                 // Convert to JSON and send
                 ObjectMapper mapper = new ObjectMapper();
@@ -196,6 +198,8 @@ public class BattleStateSocket {
         private String battleState;
         private java.util.List<Robot> robots;
         private java.util.List<Wall> walls;
+        private String winnerId;
+        private String winnerName;
 
         public BattleStateResponse() {
         }
@@ -262,6 +266,22 @@ public class BattleStateSocket {
 
         public void setWalls(java.util.List<Wall> walls) {
             this.walls = walls;
+        }
+
+        public String getWinnerId() {
+            return winnerId;
+        }
+
+        public void setWinnerId(String winnerId) {
+            this.winnerId = winnerId;
+        }
+
+        public String getWinnerName() {
+            return winnerName;
+        }
+
+        public void setWinnerName(String winnerName) {
+            this.winnerName = winnerName;
         }
     }
 
