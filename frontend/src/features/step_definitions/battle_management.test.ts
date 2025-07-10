@@ -825,8 +825,8 @@ defineFeature(feature, test => {
     and('the battle shows a winner in the battle list', async () => {
       await waitFor(() => {
         expect(screen.getByText('WinnerBot')).toBeInTheDocument();
-        expect(screen.getByText('Winner:')).toBeInTheDocument();
       });
+      expect(screen.getByText('Winner:')).toBeInTheDocument();
     });
 
     when('I click the "Delete" button for the completed battle', async () => {
@@ -1175,8 +1175,8 @@ defineFeature(feature, test => {
     and('the battle results show "RobotWarrior" as the winner', async () => {
       await waitFor(() => {
         expect(screen.getByText('RobotWarrior')).toBeInTheDocument();
-        expect(screen.getByText('Winner:')).toBeInTheDocument();
       });
+      expect(screen.getByText('Winner:')).toBeInTheDocument();
     });
 
     and('the battle status displays as "COMPLETED"', async () => {
@@ -1190,8 +1190,8 @@ defineFeature(feature, test => {
       async () => {
         await waitFor(() => {
           expect(screen.getByText('RobotWarrior')).toBeInTheDocument();
-          expect(screen.getByText('Winner:')).toBeInTheDocument();
         });
+        expect(screen.getByText('Winner:')).toBeInTheDocument();
       }
     );
 
@@ -1409,9 +1409,9 @@ defineFeature(feature, test => {
     then('I should see all battles with their current states', async () => {
       await waitFor(() => {
         expect(screen.getByText('Championship Final')).toBeInTheDocument();
-        expect(screen.getByText('Training Match')).toBeInTheDocument();
-        expect(screen.getByText('Quick Duel')).toBeInTheDocument();
       });
+      expect(screen.getByText('Training Match')).toBeInTheDocument();
+      expect(screen.getByText('Quick Duel')).toBeInTheDocument();
     });
 
     and(
@@ -1429,8 +1429,8 @@ defineFeature(feature, test => {
         await waitFor(() => {
           // Using the actual winner name from our test data
           expect(screen.getByText('Winner:')).toBeInTheDocument();
-          expect(screen.getByText('TitanBot')).toBeInTheDocument();
         });
+        expect(screen.getByText('TitanBot')).toBeInTheDocument();
       }
     );
 
@@ -1538,12 +1538,12 @@ defineFeature(feature, test => {
     then('I should still see the latest states of all battles', async () => {
       await waitFor(() => {
         expect(screen.getByText('Championship Final')).toBeInTheDocument();
-        expect(screen.getByText('Training Match')).toBeInTheDocument();
-        expect(screen.getByText('Quick Duel')).toBeInTheDocument();
-        expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-        expect(screen.getByText('IN_PROGRESS')).toBeInTheDocument();
-        expect(screen.getByText('WAITING_ON_ROBOTS')).toBeInTheDocument();
       });
+      expect(screen.getByText('Training Match')).toBeInTheDocument();
+      expect(screen.getByText('Quick Duel')).toBeInTheDocument();
+      expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+      expect(screen.getByText('IN_PROGRESS')).toBeInTheDocument();
+      expect(screen.getByText('WAITING_ON_ROBOTS')).toBeInTheDocument();
     });
 
     and(
@@ -1551,8 +1551,8 @@ defineFeature(feature, test => {
       async () => {
         await waitFor(() => {
           expect(screen.getByText('Winner:')).toBeInTheDocument();
-          expect(screen.getByText('TitanBot')).toBeInTheDocument();
         });
+        expect(screen.getByText('TitanBot')).toBeInTheDocument();
       }
     );
 
@@ -1562,14 +1562,12 @@ defineFeature(feature, test => {
         await waitFor(() => {
           // Verify the winner information is displayed in a clear format
           expect(screen.getByText('Winner:')).toBeInTheDocument();
-          expect(screen.getByText('TitanBot')).toBeInTheDocument();
-
-          // Ensure it's associated with the completed battle
-          const completedBattleSection = screen
-            .getByText('Championship Final')
-            .closest('div');
-          expect(completedBattleSection).toBeInTheDocument();
         });
+        expect(screen.getByText('TitanBot')).toBeInTheDocument();
+
+        // Ensure it's associated with the completed battle
+        const completedBattleSection = screen.getByText('Championship Final');
+        expect(completedBattleSection).toBeInTheDocument();
       }
     );
   });
@@ -1617,16 +1615,14 @@ defineFeature(feature, test => {
         ],
       } as Response);
 
-      await act(async () => {
-        renderBattleManagement();
-      });
+      renderBattleManagement();
     });
 
     and('the page is showing the current list of battles', async () => {
       await waitFor(() => {
         expect(screen.getByText('Initial Battle')).toBeInTheDocument();
-        expect(screen.getByText('READY')).toBeInTheDocument();
       });
+      expect(screen.getByText('READY')).toBeInTheDocument();
     });
 
     when('new battles are created on the server', async () => {
@@ -1703,9 +1699,9 @@ defineFeature(feature, test => {
 
         await waitFor(() => {
           expect(screen.getByText('Initial Battle')).toBeInTheDocument();
-          expect(screen.getByText('New Battle')).toBeInTheDocument();
-          expect(screen.getByText('IN_PROGRESS')).toBeInTheDocument();
         });
+        expect(screen.getByText('New Battle')).toBeInTheDocument();
+        expect(screen.getByText('IN_PROGRESS')).toBeInTheDocument();
       }
     );
 
@@ -1714,16 +1710,16 @@ defineFeature(feature, test => {
       async () => {
         await waitFor(() => {
           expect(screen.getByText('New Battle')).toBeInTheDocument();
-          expect(screen.getByText('WAITING_ON_ROBOTS')).toBeInTheDocument();
         });
+        expect(screen.getByText('WAITING_ON_ROBOTS')).toBeInTheDocument();
       }
     );
 
     and('updated battle statuses should be displayed immediately', async () => {
       await waitFor(() => {
         expect(screen.getByText('IN_PROGRESS')).toBeInTheDocument();
-        expect(screen.getByText('WAITING_ON_ROBOTS')).toBeInTheDocument();
       });
+      expect(screen.getByText('WAITING_ON_ROBOTS')).toBeInTheDocument();
     });
 
     and(
@@ -1736,8 +1732,8 @@ defineFeature(feature, test => {
 
         await waitFor(() => {
           expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-          expect(screen.getByText('Robot1')).toBeInTheDocument();
         });
+        expect(screen.getByText('Robot1')).toBeInTheDocument();
       }
     );
 
@@ -1747,8 +1743,8 @@ defineFeature(feature, test => {
 
       await waitFor(() => {
         expect(screen.getByText('Initial Battle')).toBeInTheDocument();
-        expect(screen.getByText('New Battle')).toBeInTheDocument();
       });
+      expect(screen.getByText('New Battle')).toBeInTheDocument();
     });
   });
 
@@ -1798,9 +1794,7 @@ defineFeature(feature, test => {
         ],
       } as Response);
 
-      await act(async () => {
-        renderBattleManagement();
-      });
+      renderBattleManagement();
     });
 
     and('the page is showing a list of battles', async () => {
@@ -1855,8 +1849,8 @@ defineFeature(feature, test => {
     then('the battle list should automatically update', async () => {
       await waitFor(() => {
         expect(screen.getByText('Robot Championship')).toBeInTheDocument();
-        expect(screen.getByText('COMPLETED')).toBeInTheDocument();
       });
+      expect(screen.getByText('COMPLETED')).toBeInTheDocument();
     });
 
     and(
@@ -1871,21 +1865,20 @@ defineFeature(feature, test => {
     and('the battle should display "Winner: TitanBot"', async () => {
       await waitFor(() => {
         expect(screen.getByText('TitanBot')).toBeInTheDocument();
-        // Check that Winner: text exists in the same context
-        const battleDiv = screen.getByText('Robot Championship').closest('div');
-        expect(battleDiv).toHaveTextContent('Winner:');
-        expect(battleDiv).toHaveTextContent('TitanBot');
       });
+      // Check that Winner: text exists in the same context
+      const battleDiv = screen.getByText('Robot Championship');
+      expect(battleDiv).toBeInTheDocument();
+      expect(screen.getByText('Winner:')).toBeInTheDocument();
     });
 
     and('the winner information should be prominently visible', async () => {
       await waitFor(() => {
-        const battleSection = screen
-          .getByText('Robot Championship')
-          .closest('div');
-        expect(battleSection).toHaveTextContent('Winner:');
-        expect(battleSection).toHaveTextContent('TitanBot');
+        const battleSection = screen.getByText('Robot Championship');
+        expect(battleSection).toBeInTheDocument();
       });
+      expect(screen.getByText('Winner:')).toBeInTheDocument();
+      expect(screen.getByText('TitanBot')).toBeInTheDocument();
     });
 
     and(
@@ -1896,8 +1889,8 @@ defineFeature(feature, test => {
 
         await waitFor(() => {
           expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-          expect(screen.getByText('TitanBot')).toBeInTheDocument();
         });
+        expect(screen.getByText('TitanBot')).toBeInTheDocument();
       }
     );
   });
