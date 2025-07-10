@@ -36,20 +36,32 @@ const BattleManagement: React.FC = () => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   // Fetch battles from the backend API
-  useEffect(() => {
-    const fetchBattles = async () => {
-      try {
-        const response = await fetch('/api/battles');
-        const data = await response.json();
-        setBattles(data);
-      } catch (error) {
-        setError('Failed to fetch battles.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchBattles = async () => {
+    try {
+      const response = await fetch('/api/battles');
+      const data = await response.json();
+      setBattles(data);
+      setError(null);
+    } catch (error) {
+      setError('Failed to fetch battles.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // Initial fetch and setup automatic refresh
+  useEffect(() => {
     fetchBattles();
+
+    // Set up automatic refresh every 5 seconds
+    const refreshInterval = setInterval(() => {
+      fetchBattles();
+    }, 5000);
+
+    // Cleanup interval on component unmount
+    return () => {
+      clearInterval(refreshInterval);
+    };
   }, []);
 
   // Handle creating a new battle

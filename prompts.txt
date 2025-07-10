@@ -644,3 +644,8 @@ Go ahead and follow the Next steps you've defined.
 Follow the guidelines in .junie/guidelines.md. Create a scenario for the battle page management page that, given a battle has been completed and the results (including the winner) have been displayed on the battle management page, then a user should have the ability to remove that battle from the list of battles that are displayed.
 ## 118th Prompt
 Update the tests by implementing the features that are missing as you identified.
+## 119th Prompt
+The frontend battle management page shows a list of battles. Add a scenario : Given a battle has been completed and the user is on the battle management page or nagivates back to the battle management page, show the lastest states of all battles AND for those that have compelete, show the winner of the battle.
+## 120th Prompt
+The battle management shows a list of current battles. This list is currently not being updated unless the page is manually being refreshed. Add a scenario : Given the user user in on the battle management page and it showing the list of battles, refresh the list on the page to reflect any changes to the battles (new battles, battles completed). Also add a scenario : Given that user is on the battle page and the page is showing the list of battles, and a battle has completed, show the winner of the battle.
+121. Fixed battle management page automatic refresh functionality and corrected corresponding tests. The issue was that tests were passing despite missing functionality because they used artificial simulation rather than testing real automatic refresh behavior.
