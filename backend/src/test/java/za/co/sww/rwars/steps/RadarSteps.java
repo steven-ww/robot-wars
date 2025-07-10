@@ -75,6 +75,20 @@ public class RadarSteps {
                 .post("/api/robots/register/" + currentBattleId);
 
         Assertions.assertEquals(200, response.getStatusCode());
+        String anotherRobotId = response.jsonPath().getString("id");
+
+        // Position robots deterministically for reliable radar testing
+        // Put the main robot at (10, 10) and the other robot at (12, 10)
+        // so they are 2 blocks apart horizontally and within radar range (15)
+        try {
+            battleService.setRobotPositionForTesting(currentBattleId, currentRobotId, 10, 10);
+            battleService.setRobotPositionForTesting(currentBattleId, anotherRobotId, 12, 10);
+        } catch (Exception e) {
+            // If positioning fails, try alternative positions
+            // This might happen if walls are generated at those positions
+            battleService.setRobotPositionForTesting(currentBattleId, currentRobotId, 5, 5);
+            battleService.setRobotPositionForTesting(currentBattleId, anotherRobotId, 7, 5);
+        }
     }
 
     @And("there are walls placed in the arena")

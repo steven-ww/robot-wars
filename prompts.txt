@@ -673,7 +673,24 @@ Follow the guidelines in .junie/guidelines.md. Fix the lining issues in the fron
 
 ## 125th Prompt
 In the backend project, quarkus does not recognise this property "quarkus.health.openapi.included". Given that, remove it.
+
 ## 126th Prompt
 Follow the guidelines in .junie/guidelines.md. Write a unit test for the backend project to confirm that a robot will never spawn at a position that is on or in a wall. Ensure this passes.
+
 ## 127th Prompt
 Following the guidelines in .junie/guidelines.md complete this task : Add the ability to fire a lazer to the backend: Given a battle has stared AND a Robot issues the fire layer api call, AND provides the direction for the lazer to be fired in THEN fire a lazer in the direction indicated from the position of the robot firing, in the direction indicated and for a configurable length of spaces (default 10) AND if any robots are along that line then indicate a hit in the response to the robot API and deduct 20 (configurable) points from the first robot that was hit. The lazer is blocked by walls of any type and any hit on a robot.
+
+## 128th Prompt
+Follow the .junie/guidelines.md guidelines file for this task. The backend project supports a firelazer API. Update the arena view in the frontend project to render a lazer being shot when this is triggered. It should also show any hits. (The lazer stops when it hits anything). The backend project might need to be enhanced to ensure that the websocket contains enough information for the front-end to be able to determine that the lazer was fired, if it hit anything, and how far it needs to be rendered. Update the BDD files to cater for these scenarios.
+
+## 129th Prompt
+Confirm that when a lazer fire event is triggered, the front-end will render it. Ensure that there is a test to validate this using mocks.
+
+## 130th Prompt
+Two tests are failing. Fix these. Follow the guidelines.
+
+## 131st Prompt
+Two tests are failing on the frontend project. Fix these. Follow the guidelines.
+
+## 132nd Prompt
+this scenario in the backend tests keeps failing. It looks like it's flaky test that passes sometimes. Can you update the test to be more definitive in it's positioning of the robots so that the test is guarenteed to pass? Don't change the API, but if you need to add a function to the backed service that's not exposed to the fe to support this definitive placement, than go ahead.
