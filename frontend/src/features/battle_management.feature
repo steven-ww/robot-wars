@@ -86,3 +86,37 @@ Feature: Battle Management
     When new battles are created by other users
     And I select a battle to view
     Then I should see arena for the battle rendered
+
+  Scenario: Delete a completed battle from the battle list
+    Given I am on the battle management page
+    And there is a completed battle with results displayed
+    And the battle shows a winner in the battle list
+    When I click the "Delete" button for the completed battle
+    Then I should see a confirmation dialog asking if I want to delete the battle
+    When I confirm the deletion
+    Then the battle should be removed from the battle list
+    And I should see a success message confirming the battle was deleted
+    And the battle should no longer appear in the list
+
+  Scenario: Cancel deletion of a completed battle
+    Given I am on the battle management page
+    And there is a completed battle with results displayed
+    When I click the "Delete" button for the completed battle
+    And I see a confirmation dialog
+    When I cancel the deletion
+    Then the battle should remain in the battle list
+    And no changes should be made
+
+  Scenario: Only completed battles can be deleted
+    Given I am on the battle management page
+    And there are battles in different states
+    Then I should only see "Delete" buttons for battles with COMPLETED status
+    And battles with WAITING_ON_ROBOTS, READY, or IN_PROGRESS status should not have delete buttons
+
+  Scenario: Handle battle deletion errors
+    Given I am on the battle management page
+    And there is a completed battle
+    When I attempt to delete the battle
+    And the deletion fails due to a server error
+    Then I should see an error message
+    And the battle should remain in the battle list

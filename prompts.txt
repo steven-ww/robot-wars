@@ -636,3 +636,7 @@ Follow the .junie/guidelines.md file. The frontend project has a battle arena pa
 Follow the .junie/guidelines.md file. The frontend project has a battle arena page. Why does the final status of the battle reflect as "no clear winner". When 1 robot remains that has not crashed or been reduce to 0 hit points, that robot is the winner. The robo-demo project correctly notes the winner in the output. Why is the frontend project not able to do this?
 
 114. Fixed robot movement test timing issue where the test was failing due to insufficient wait time for asynchronous robot movement to complete. The test was expecting the robot to move 3 blocks NORTH but was checking the position before all movements finished. Increased the buffer time from 500ms to 1000ms in the MovementSteps.theRobotShouldMoveBlocksInTheDirection method to account for thread scheduling delays in the asynchronous robot movement system. This resolved the race condition where the test was checking robot position at Y=27 instead of the expected Y=28.
+## 115th Prompt
+Follow the guidelines in .junie/guidelines.md. Create a scenario for the battle page management page that, given a battle has been completed and the results (including the winner) have been displayed on the battle management page, then a user should have the ability to remove that battle from the list of battles that are displayed. Create a similiar scenario in the backend project to support deleting a battle that has completed.
+## 116th Prompt
+Go ahead and follow the Next steps you've defined.

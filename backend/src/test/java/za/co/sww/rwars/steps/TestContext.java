@@ -13,6 +13,9 @@ public class TestContext {
 
     private final Map<String, String> battlesByName = new HashMap<>(); // battleName -> battleId
     private final Map<String, String> robotsByName = new HashMap<>(); // robotName -> robotId
+    private String currentBattleId;
+    private int firstDeleteStatus;
+    private int secondDeleteStatus;
 
     public static TestContext getInstance() {
         return INSTANCE;
@@ -21,10 +24,17 @@ public class TestContext {
     public void clear() {
         battlesByName.clear();
         robotsByName.clear();
+        currentBattleId = null;
+        firstDeleteStatus = 0;
+        secondDeleteStatus = 0;
     }
 
     public void storeBattle(String battleName, String battleId) {
         battlesByName.put(battleName, battleId);
+        // Set as current battle if none is set
+        if (currentBattleId == null) {
+            currentBattleId = battleId;
+        }
     }
 
     public String getBattleId(String battleName) {
@@ -39,6 +49,14 @@ public class TestContext {
         return battlesByName.values().stream().reduce((first, second) -> second).orElse(null);
     }
 
+    public String getCurrentBattleId() {
+        return currentBattleId != null ? currentBattleId : getLastBattleId();
+    }
+
+    public void setCurrentBattleId(String battleId) {
+        this.currentBattleId = battleId;
+    }
+
     public void storeRobot(String robotName, String robotId) {
         robotsByName.put(robotName, robotId);
     }
@@ -49,5 +67,21 @@ public class TestContext {
 
     public Map<String, String> getAllRobots() {
         return new HashMap<>(robotsByName);
+    }
+
+    public void setFirstDeleteStatus(int status) {
+        this.firstDeleteStatus = status;
+    }
+
+    public int getFirstDeleteStatus() {
+        return firstDeleteStatus;
+    }
+
+    public void setSecondDeleteStatus(int status) {
+        this.secondDeleteStatus = status;
+    }
+
+    public int getSecondDeleteStatus() {
+        return secondDeleteStatus;
     }
 }
