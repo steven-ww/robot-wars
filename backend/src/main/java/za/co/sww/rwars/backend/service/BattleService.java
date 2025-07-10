@@ -9,6 +9,7 @@ import za.co.sww.rwars.backend.model.Robot.Direction;
 import za.co.sww.rwars.backend.model.Robot.RobotStatus;
 import za.co.sww.rwars.backend.model.Wall;
 import za.co.sww.rwars.backend.model.RadarResponse;
+import za.co.sww.rwars.backend.model.LaserResponse;
 import za.co.sww.rwars.backend.websocket.BattleStateSocket;
 
 import java.util.HashMap;
@@ -65,6 +66,15 @@ public class BattleService {
 
     @ConfigProperty(name = "battle.robot.default-hit-points", defaultValue = "100")
     private int defaultHitPoints;
+
+    @ConfigProperty(name = "battle.laser.default-range", defaultValue = "10")
+    private int defaultLaserRange;
+
+    @ConfigProperty(name = "battle.laser.max-range", defaultValue = "50")
+    private int maxLaserRange;
+
+    @ConfigProperty(name = "battle.laser.damage", defaultValue = "20")
+    private int laserDamage;
 
     /**
      * Gets the default arena width.
@@ -785,6 +795,138 @@ public class BattleService {
 
         // Remove the battle itself
         battlesById.remove(battleId);
+    }
+
+    /**
+     * Fires a laser from a robot in the specified direction.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param direction The direction to fire the laser
+     * @param range The range of the laser (optional, uses default if 0 or negative)
+     * @return The laser response
+     * @throws IllegalArgumentException if the battle ID, robot ID, or direction is invalid
+     * @throws IllegalStateException if the battle is not in progress or robot is not active
+     */
+    public LaserResponse fireLaser(String battleId, String robotId, String direction, int range) {
+        if (!isValidBattleAndRobotId(battleId, robotId)) {
+            throw new IllegalArgumentException("Invalid battle ID or robot ID");
+        }
+
+        Battle battle = battlesById.get(battleId);
+        if (battle.getState() != Battle.BattleState.IN_PROGRESS) {
+            throw new IllegalStateException("Battle is not in progress");
+        }
+
+        Robot firingRobot = robotsById.get(robotId);
+        if (!firingRobot.isActive()) {
+            throw new IllegalStateException("Robot is not active and cannot fire laser");
+        }
+
+        // Validate and normalize direction
+        Direction laserDirection;
+        try {
+            laserDirection = Direction.valueOf(direction.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid direction: " + direction);
+        }
+
+        // Use default range if not specified or invalid
+        int effectiveRange = (range > 0 && range <= maxLaserRange) ? range : defaultLaserRange;
+
+        // Calculate laser path and check for hits
+        List<LaserResponse.Position> laserPath = new ArrayList<>();
+        int currentX = firingRobot.getPositionX();
+        int currentY = firingRobot.getPositionY();
+
+        // Direction deltas
+        int deltaX = 0;
+        int deltaY = 0;
+        switch (laserDirection) {
+            case NORTH:
+                deltaY = -1;
+                break;
+            case SOUTH:
+                deltaY = 1;
+                break;
+            case EAST:
+                deltaX = 1;
+                break;
+            case WEST:
+                deltaX = -1;
+                break;
+            case NE:
+                deltaX = 1;
+                deltaY = -1;
+                break;
+            case NW:
+                deltaX = -1;
+                deltaY = -1;
+                break;
+            case SE:
+                deltaX = 1;
+                deltaY = 1;
+                break;
+            case SW:
+                deltaX = -1;
+                deltaY = 1;
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported direction: " + laserDirection);
+        }
+
+        // Trace the laser path
+        for (int i = 1; i <= effectiveRange; i++) {
+            int nextX = currentX + (deltaX * i);
+            int nextY = currentY + (deltaY * i);
+
+            // Check if laser goes out of bounds
+            if (nextX < 0 || nextX >= battle.getArenaWidth()
+                || nextY < 0 || nextY >= battle.getArenaHeight()) {
+                laserPath.add(new LaserResponse.Position(nextX, nextY));
+                return new LaserResponse(effectiveRange, direction, laserPath, "BOUNDARY");
+            }
+
+            laserPath.add(new LaserResponse.Position(nextX, nextY));
+
+            // Check if laser hits a wall
+            boolean hitWall = false;
+            for (Wall wall : battle.getWalls()) {
+                if (wall.containsPosition(nextX, nextY)) {
+                    hitWall = true;
+                    break;
+                }
+            }
+            if (hitWall) {
+                return new LaserResponse(effectiveRange, direction, laserPath, "WALL");
+            }
+
+            // Check if laser hits a robot
+            for (Robot robot : battle.getRobots()) {
+                if (!robot.getId().equals(robotId) && robot.isActive()
+                    && robot.getPositionX() == nextX && robot.getPositionY() == nextY) {
+
+                    // Hit! Deal damage to the robot
+                    robot.takeDamage(laserDamage);
+
+                    // Broadcast battle state update due to robot damage
+                    broadcastBattleStateUpdate(battleId);
+
+                    return new LaserResponse(
+                        robot.getId(),
+                        robot.getName(),
+                        laserDamage,
+                        effectiveRange,
+                        direction,
+                        laserPath,
+                        new LaserResponse.Position(nextX, nextY)
+                    );
+                }
+            }
+        }
+
+        // Laser reached maximum range without hitting anything
+        return new LaserResponse(effectiveRange, direction, laserPath, null);
     }
 
     /**

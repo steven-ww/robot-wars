@@ -14,6 +14,7 @@ import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.model.Robot;
 import za.co.sww.rwars.backend.model.RobotStatus;
 import za.co.sww.rwars.backend.model.RadarResponse;
+import za.co.sww.rwars.backend.model.LaserResponse;
 import za.co.sww.rwars.backend.service.BattleService;
 
 /**
@@ -230,6 +231,43 @@ public class RobotResource {
     }
 
     /**
+     * Fires a laser for a robot.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param laserRequest The laser request containing direction and optional range
+     * @return The laser response
+     */
+    @POST
+    @Path("/battle/{battleId}/robot/{robotId}/laser")
+    @RunOnVirtualThread
+    public Response fireLaser(@PathParam("battleId") String battleId,
+                              @PathParam("robotId") String robotId,
+                              LaserRequest laserRequest) {
+        try {
+            if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .build();
+            }
+            LaserResponse laserResponse = battleService.fireLaser(
+                    battleId,
+                    robotId,
+                    laserRequest.direction(),
+                    laserRequest.range());
+            return Response.ok(laserResponse).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
      * Error response record.
      */
     public record ErrorResponse(String message) {
@@ -253,6 +291,15 @@ public class RobotResource {
     public record RadarRequest(int range) {
         public RadarRequest() {
             this(5);
+        }
+    }
+
+    /**
+     * Laser request record.
+     */
+    public record LaserRequest(String direction, int range) {
+        public LaserRequest() {
+            this(null, 10);
         }
     }
 
