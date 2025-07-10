@@ -675,3 +675,5 @@ Follow the guidelines in .junie/guidelines.md. Fix the lining issues in the fron
 In the backend project, quarkus does not recognise this property "quarkus.health.openapi.included". Given that, remove it.
 ## 126th Prompt
 Follow the guidelines in .junie/guidelines.md. Write a unit test for the backend project to confirm that a robot will never spawn at a position that is on or in a wall. Ensure this passes.
+## 127th Prompt
+Following the guidelines in .junie/guidelines.md complete this task : Add the ability to fire a lazer to the backend: Given a battle has stared AND a Robot issues the fire layer api call, AND provides the direction for the lazer to be fired in THEN fire a lazer in the direction indicated from the position of the robot firing, in the direction indicated and for a configurable length of spaces (default 10) AND if any robots are along that line then indicate a hit in the response to the robot API and deduct 20 (configurable) points from the first robot that was hit. The lazer is blocked by walls of any type and any hit on a robot.

@@ -14,6 +14,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import io.quarkus.test.junit.QuarkusTest;
 import za.co.sww.rwars.backend.model.Robot;
+import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.service.BattleService;
 
 import java.util.HashMap;
@@ -182,18 +183,59 @@ public class MovementSteps {
 
     @And("I have initiated a movement in direction {string} for {int} blocks")
     public void iHaveInitiatedAMovementInDirectionForBlocks(String direction, int blocks) {
-        // First, position the robot in the middle of the arena to avoid boundary issues
+        // First, position the robot in a safe location to avoid boundary and wall issues
         // Get the arena dimensions
         Response battleResponse = request.get("/api/robots/battle/" + battleId);
         battleResponse.then().statusCode(200);
         int arenaWidth = battleResponse.jsonPath().getInt("arenaWidth");
         int arenaHeight = battleResponse.jsonPath().getInt("arenaHeight");
 
-        // Position the robot in the middle of the arena using the BattleService directly
+        // Position the robot in a safe location using the BattleService directly
         // This avoids using the public API endpoint that shouldn't be available to users
         Robot robot = battleService.getRobotDetails(battleId, robotId);
-        robot.setPositionX(arenaWidth / 2);
-        robot.setPositionY(arenaHeight / 2);
+        Battle battle = battleService.getBattleStatus(battleId);
+        
+        // Find a safe position that's not on a wall and has enough space to move
+        int safeX = arenaWidth / 2;
+        int safeY = arenaHeight / 2;
+        
+        // Ensure the robot is not positioned on a wall and has space to move in the requested direction
+        for (int attempts = 0; attempts < 100; attempts++) {
+            boolean positionIsSafe = !battle.isPositionOccupiedByWall(safeX, safeY);
+            
+            // Check if there's enough space to move in the requested direction
+            if (positionIsSafe) {
+                boolean hasSpaceToMove = true;
+                for (int i = 1; i <= blocks; i++) {
+                    int checkX = safeX;
+                    int checkY = safeY;
+                    
+                    switch (direction.toUpperCase()) {
+                        case "NORTH": checkY -= i; break;
+                        case "SOUTH": checkY += i; break;
+                        case "EAST": checkX += i; break;
+                        case "WEST": checkX -= i; break;
+                    }
+                    
+                    if (checkX < 0 || checkX >= arenaWidth || checkY < 0 || checkY >= arenaHeight ||
+                        battle.isPositionOccupiedByWall(checkX, checkY)) {
+                        hasSpaceToMove = false;
+                        break;
+                    }
+                }
+                
+                if (hasSpaceToMove) {
+                    break;
+                }
+            }
+            
+            // Try a different position
+            safeX = 10 + (attempts % (arenaWidth - 20));
+            safeY = 10 + ((attempts / (arenaWidth - 20)) % (arenaHeight - 20));
+        }
+        
+        robot.setPositionX(safeX);
+        robot.setPositionY(safeY);
 
         // Get the current position of the robot before moving using BattleService directly
         // This is appropriate for tests as we need to verify internal state
