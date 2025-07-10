@@ -77,9 +77,33 @@ public class WebSocketSteps {
 
     @And("a robot named {string} is registered for the battle")
     public void aRobotNamedIsRegisteredForTheBattle(String robotName) {
-        Robot robot = battleService.registerRobot(robotName);
+        Robot robot = battleService.registerRobotForBattle(robotName, battleId);
         robots.put(robotName, robot);
         LOGGER.info("Registered robot: " + robotName + " with ID: " + robot.getId());
+
+        // Set deterministic positions for reliable testing
+        // Position robots at known locations to avoid flaky tests due to random positioning
+        try {
+            if ("TestBot1".equals(robotName)) {
+                // Position TestBot1 at (15, 15)
+                battleService.setRobotPositionForTesting(battleId, robot.getId(), 15, 15);
+            } else if ("TestBot2".equals(robotName)) {
+                // Position TestBot2 at (35, 35) - far enough from TestBot1 but within arena
+                battleService.setRobotPositionForTesting(battleId, robot.getId(), 35, 35);
+            } else {
+                // For any other robots, use a safe fallback position
+                battleService.setRobotPositionForTesting(battleId, robot.getId(), 25, 25);
+            }
+        } catch (Exception e) {
+            // If positioning fails (e.g., due to walls), try alternative positions
+            if ("TestBot1".equals(robotName)) {
+                battleService.setRobotPositionForTesting(battleId, robot.getId(), 10, 10);
+            } else if ("TestBot2".equals(robotName)) {
+                battleService.setRobotPositionForTesting(battleId, robot.getId(), 40, 40);
+            } else {
+                battleService.setRobotPositionForTesting(battleId, robot.getId(), 30, 30);
+            }
+        }
     }
 
     @When("I connect to the battle state websocket")
