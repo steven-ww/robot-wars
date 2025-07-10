@@ -434,7 +434,9 @@ public class BattleService {
                                 robot.getName(),
                                 robot.getStatus().toString()
                             ))
-                            .collect(Collectors.toList())
+                            .collect(Collectors.toList()),
+                    battle.getWinnerId(),
+                    battle.getWinnerName()
                 ))
                 .collect(Collectors.toList());
     }
@@ -467,7 +469,9 @@ public class BattleService {
             double robotMovementTimeSeconds,
             String state,
             int robotCount,
-            List<RobotSummary> robots
+            List<RobotSummary> robots,
+            String winnerId,
+            String winnerName
     ) {
     }
 
