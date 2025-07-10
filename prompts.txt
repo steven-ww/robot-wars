@@ -664,3 +664,6 @@ Fixed battle management page automatic refresh functionality and corrected corre
 
 ## 122nd Prompt
 The list of battles on the battle management page does not show the winner of a battle. Is this because the winner information is not being provided by the backend or because of a issue on the frontend that doesn't display the winner information in the list of current battles?
+
+## 123th Prompt
+Follow the guidelines. Fix the prettier issues in the frontend project.
