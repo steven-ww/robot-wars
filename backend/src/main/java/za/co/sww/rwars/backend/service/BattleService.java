@@ -434,7 +434,9 @@ public class BattleService {
                                 robot.getName(),
                                 robot.getStatus().toString()
                             ))
-                            .collect(Collectors.toList())
+                            .collect(Collectors.toList()),
+                    battle.getWinnerId(),
+                    battle.getWinnerName()
                 ))
                 .collect(Collectors.toList());
     }
@@ -467,7 +469,9 @@ public class BattleService {
             double robotMovementTimeSeconds,
             String state,
             int robotCount,
-            List<RobotSummary> robots
+            List<RobotSummary> robots,
+            String winnerId,
+            String winnerName
     ) {
     }
 
@@ -747,6 +751,40 @@ public class BattleService {
         }
 
         return radarService.scanArea(battle, robot, range);
+    }
+
+    /**
+     * Deletes a completed battle and all associated data.
+     *
+     * @param battleId The battle ID to delete
+     * @throws IllegalArgumentException if the battle ID is invalid
+     * @throws IllegalStateException if the battle is not completed
+     */
+    public void deleteBattle(String battleId) {
+        Battle battle = battlesById.get(battleId);
+        if (battle == null) {
+            throw new IllegalArgumentException("Battle not found");
+        }
+
+        if (battle.getState() != Battle.BattleState.COMPLETED) {
+            throw new IllegalStateException("Cannot delete battle that is not completed");
+        }
+
+        // Remove all robots associated with this battle
+        List<String> robotIdsToRemove = new ArrayList<>();
+        for (Map.Entry<String, Robot> entry : robotsById.entrySet()) {
+            if (entry.getValue().getBattleId().equals(battleId)) {
+                robotIdsToRemove.add(entry.getKey());
+            }
+        }
+
+        // Remove the robots from the robotsById map
+        for (String robotId : robotIdsToRemove) {
+            robotsById.remove(robotId);
+        }
+
+        // Remove the battle itself
+        battlesById.remove(battleId);
     }
 
     /**
