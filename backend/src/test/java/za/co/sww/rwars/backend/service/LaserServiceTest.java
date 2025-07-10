@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LaserServiceTest {
 
     @Inject
-    BattleService battleService;
+    private BattleService battleService;
 
     private String battleId;
     private String robotId1;

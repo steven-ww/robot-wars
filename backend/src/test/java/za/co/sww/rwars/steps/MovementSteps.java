@@ -194,46 +194,47 @@ public class MovementSteps {
         // This avoids using the public API endpoint that shouldn't be available to users
         Robot robot = battleService.getRobotDetails(battleId, robotId);
         Battle battle = battleService.getBattleStatus(battleId);
-        
+
         // Find a safe position that's not on a wall and has enough space to move
         int safeX = arenaWidth / 2;
         int safeY = arenaHeight / 2;
-        
+
         // Ensure the robot is not positioned on a wall and has space to move in the requested direction
         for (int attempts = 0; attempts < 100; attempts++) {
             boolean positionIsSafe = !battle.isPositionOccupiedByWall(safeX, safeY);
-            
+
             // Check if there's enough space to move in the requested direction
             if (positionIsSafe) {
                 boolean hasSpaceToMove = true;
                 for (int i = 1; i <= blocks; i++) {
                     int checkX = safeX;
                     int checkY = safeY;
-                    
+
                     switch (direction.toUpperCase()) {
                         case "NORTH": checkY -= i; break;
                         case "SOUTH": checkY += i; break;
                         case "EAST": checkX += i; break;
                         case "WEST": checkX -= i; break;
+                        default: throw new IllegalArgumentException("Invalid direction: " + direction);
                     }
-                    
-                    if (checkX < 0 || checkX >= arenaWidth || checkY < 0 || checkY >= arenaHeight ||
-                        battle.isPositionOccupiedByWall(checkX, checkY)) {
+
+                    if (checkX < 0 || checkX >= arenaWidth || checkY < 0 || checkY >= arenaHeight
+                            || battle.isPositionOccupiedByWall(checkX, checkY)) {
                         hasSpaceToMove = false;
                         break;
                     }
                 }
-                
+
                 if (hasSpaceToMove) {
                     break;
                 }
             }
-            
+
             // Try a different position
             safeX = 10 + (attempts % (arenaWidth - 20));
             safeY = 10 + ((attempts / (arenaWidth - 20)) % (arenaHeight - 20));
         }
-        
+
         robot.setPositionX(safeX);
         robot.setPositionY(safeY);
 
