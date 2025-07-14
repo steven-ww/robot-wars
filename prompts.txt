@@ -742,3 +742,6 @@ as the battle proceeds the arena shows "last update" and a time. remove that fro
 
 ## 148th Prompt
 fix the prettier issues
+
+## 149th Prompt
+Update the prompts.txt as per the guidelines while removing "This component displays the battle arena and the robots within it." this text from the arena view.
