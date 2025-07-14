@@ -20,6 +20,9 @@ dependencies {
     implementation 'io.quarkus:quarkus-arc'
     implementation 'io.quarkus:quarkus-rest'
     implementation 'io.quarkus:quarkus-rest-jackson'
+    
+    // Jackson JSR310 module for LocalDateTime support
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     // WebSocket support
     implementation 'io.quarkus:quarkus-websockets'

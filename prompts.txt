@@ -725,3 +725,6 @@ Following the guidelines in the .junie/guidelines.md file. Add a unit test that 
 ## 142nd Prompt
 Following the guidelines in the .junie/guidelines.md file. For the backend project : Add a unit test that validates that when a robot moves North, the y axis value increases, but the x remains constant. Add a unit test that validates when a robot moves south, the y axis decreases and the x remains constant. Add a test that validates that when a robot moved west, the x axis decreases while the y remains constant. Add a unit test that validates that when a robot moves east, the x axis increases while the y axis remains constant.
 
+## 143rd Prompt
+For the frontend project, while the battle is in progress, I see no updates to the arena. Once the battle complete, a see a different area screen showing me the last status of the battle. Are there possibly two arena views? There should only be one and it should show the progress of the battle. follow the guidelines in the .junie/guidelines.md file
+

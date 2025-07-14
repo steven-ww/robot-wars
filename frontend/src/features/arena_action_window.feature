@@ -17,6 +17,14 @@ Feature: Arena Action Window
     And the window should display the name of the robot for each action
     And the window should display the action taken (e.g. radar, move)
 
+  Scenario: Action window shows robot actions during battle progress
+    Given a battle is in progress
+    When I navigate to the arena page for the battle
+    And robots perform actions like moving, radar scanning, and firing lasers
+    Then the action window should show each robot action as it occurs
+    And the action window should update in real-time as robots perform actions
+    And the action window should remain visible throughout the battle
+
   Scenario: Action window scrolls as battle continues
     Given I am viewing the arena with the action window visible
     And the action window is displaying robot actions
