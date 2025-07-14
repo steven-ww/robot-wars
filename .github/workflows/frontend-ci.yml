@@ -59,3 +59,45 @@ jobs:
       with:
         name: build
         path: frontend/build
+
+  deploy:
+    name: Deploy to S3
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: build
+        path: build
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+        aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+    
+    - name: Deploy to S3
+      run: |
+        # Extract bucket name from ARN if provided, otherwise use bucket name directly
+        if [[ "${{ vars.S3_BUCKET_ARN }}" == arn:aws:s3:::* ]]; then
+          BUCKET_NAME=$(echo "${{ vars.S3_BUCKET_ARN }}" | cut -d':' -f6)
+        else
+          BUCKET_NAME="${{ vars.S3_BUCKET_NAME || vars.S3_BUCKET_ARN }}"
+        fi
+        
+        echo "Deploying to S3 bucket: $BUCKET_NAME"
+        aws s3 sync build/ s3://$BUCKET_NAME/ --delete
+        
+    - name: Invalidate CloudFront (optional)
+      if: vars.CLOUDFRONT_DISTRIBUTION_ID
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
+          --paths "/*"
