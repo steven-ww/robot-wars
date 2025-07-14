@@ -22,31 +22,31 @@ public class Battle {
 
     @Schema(description = "Unique identifier of the battle", example = "123e4567-e89b-12d3-a456-556642440000")
     private String id;
-    
+
     @Schema(description = "Name of the battle", example = "Epic Battle")
     private String name;
-    
+
     @Schema(description = "Width of the arena in grid units", example = "50")
     private int arenaWidth;
-    
+
     @Schema(description = "Height of the arena in grid units", example = "50")
     private int arenaHeight;
-    
+
     @Schema(description = "Time allowed for robot movements in seconds", example = "1.0")
     private double robotMovementTimeSeconds;
-    
+
     @Schema(description = "List of robots participating in the battle")
     private List<Robot> robots;
-    
+
     @Schema(description = "Current state of the battle")
     private BattleState state;
-    
+
     @Schema(description = "List of walls in the arena")
     private List<Wall> walls;
-    
+
     @Schema(description = "ID of the winning robot", example = "robot-123")
     private String winnerId;
-    
+
     @Schema(description = "Name of the winning robot", example = "Crusher")
     private String winnerName;
 

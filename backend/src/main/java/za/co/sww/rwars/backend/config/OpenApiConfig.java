@@ -19,7 +19,8 @@ import jakarta.ws.rs.core.Application;
         description = """
             # Robot Wars Game API
 
-            Welcome to the Robot Wars API! This is a multiplayer battle arena game where robots compete against each other in a grid-based arena.
+            Welcome to the Robot Wars API! This is a multiplayer battle arena game where robots compete against
+            each other in a grid-based arena.
 
             ## How to Play
 
