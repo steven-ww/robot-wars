@@ -454,7 +454,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
     <div
       className={`arena-container ${
         battleState?.battleState === 'IN_PROGRESS'
-          ? 'arena-with-action-window responsive-layout fit-to-window'
+          ? 'arena-with-action-window responsive-layout'
           : ''
       }`}
       data-testid="arena-container"
@@ -577,7 +577,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
                 backgroundColor: '#f0f0f0',
                 width: '100%',
                 maxWidth:
-                  battleState.battleState === 'IN_PROGRESS' ? '70vw' : '800px',
+                  battleState.battleState === 'IN_PROGRESS' ? '80vw' : '90vw',
                 margin: '0 auto',
               }}
             >
