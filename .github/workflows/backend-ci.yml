@@ -145,29 +145,36 @@ jobs:
         IMAGE_TAG: ${{ needs.native-build.outputs.image-tag }}
         CONTAINER_NAME: ${{ vars.CONTAINER_NAME || 'robot-wars-backend' }}
         CONTAINER_PORT: ${{ vars.CONTAINER_PORT || '8080' }}
+        AWS_REGION: af-south-1
       run: |
         # Create SSH key file
         echo "$SSH_KEY" > ssh_key
         chmod 600 ssh_key
         
+        # Get ECR login token
+        ECR_TOKEN=$(aws ecr get-login-password --region $AWS_REGION)
+        
         # Deploy to EC2 instance
-        ssh -i ssh_key -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
-          # Login to ECR
-          aws ecr get-login-password --region af-south-1 | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
+        ssh -i ssh_key -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
+          # Set AWS region for the session
+          export AWS_DEFAULT_REGION=$AWS_REGION
+          
+          # Login to ECR using the token from GitHub Actions
+          echo "$ECR_TOKEN" | docker login --username AWS --password-stdin $ECR_REGISTRY
           
           # Pull the latest image
-          docker pull ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
+          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:latest
           
           # Stop and remove existing container if it exists
-          docker stop ${{ env.CONTAINER_NAME }} || true
-          docker rm ${{ env.CONTAINER_NAME }} || true
+          docker stop $CONTAINER_NAME || true
+          docker rm $CONTAINER_NAME || true
           
           # Run new container
           docker run -d \
-            --name ${{ env.CONTAINER_NAME }} \
-            -p ${{ env.CONTAINER_PORT }}:8080 \
+            --name $CONTAINER_NAME \
+            -p $CONTAINER_PORT:8080 \
             --restart unless-stopped \
-            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
+            $ECR_REGISTRY/$ECR_REPOSITORY:latest
           
           # Clean up unused images
           docker image prune -f

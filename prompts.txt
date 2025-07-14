@@ -771,3 +771,12 @@ Fix the checkstyle errors in the backend
 ## 157th Prompt
 For the backend github action, move the deployment steps in the backend-ci action to Ec2 into a seperate job that depends on the native build job. Follow the guidelines in .junie/guidelines.md
 
+## 158th Prompt
+The EC2 deplyment is failing with the following errors. Do I need to add authentication to the EC2 server? Unable to locate credentials. You can configure credentials by running "aws configure".
+Error: Cannot perform an interactive login from a non TTY device
+Error response from daemon: Head "https://319387835935.dkr.ecr.af-south-1.amazonaws.com/v2/robot-wars-backend/manifests/latest": no basic auth credentials
+Error response from daemon: No such container: robot-wars-backend
+Error response from daemon: No such container: robot-wars-backend
+Unable to find image '319387835935.dkr.ecr.af-south-1.amazonaws.com/robot-wars-backend:latest' locally
+docker: Error response from daemon: Head "https://319387835935.dkr.ecr.af-south-1.amazonaws.com/v2/robot-wars-backend/manifests/latest": no basic auth credentials.
+
