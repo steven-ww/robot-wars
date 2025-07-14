@@ -43,17 +43,17 @@ public class RadarResponse {
         this.detections = detections;
     }
 
-   @Schema(description = "Detection details in a radar scan")
-   public static class Detection {
+    @Schema(description = "Detection details in a radar scan")
+    public static class Detection {
         @Schema(description = "X coordinate of the detection", example = "10")
         private int x;
-        
+
         @Schema(description = "Y coordinate of the detection", example = "15")
         private int y;
-        
+
         @Schema(description = "Type of detection", implementation = DetectionType.class)
         private DetectionType type;
-        
+
         @Schema(description = "Additional details about the detection", example = "Wall ahead")
         private String details;
 

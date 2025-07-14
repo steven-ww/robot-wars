@@ -20,7 +20,7 @@ public class Wall {
 
     @Schema(description = "Type of the wall")
     private WallType type;
-    
+
     @Schema(description = "List of positions occupied by this wall")
     private List<Position> positions;
 
@@ -62,7 +62,7 @@ public class Wall {
     public static class Position {
         @Schema(description = "X coordinate of the wall position", example = "20")
         private int x;
-        
+
         @Schema(description = "Y coordinate of the wall position", example = "25")
         private int y;
 

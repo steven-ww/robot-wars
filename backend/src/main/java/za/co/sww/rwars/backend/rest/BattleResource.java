@@ -25,7 +25,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * REST API for battle creation and management.
- * 
+ *
  * This resource provides endpoints for creating, starting, and managing battles in the Robot Wars game.
  * Battles are the core game sessions where robots compete against each other in a grid-based arena.
  */
@@ -41,8 +41,9 @@ public class BattleResource {
     /**
      * Gets all battles with their current state and robots (but not robot positions).
      *
-     * Retrieves a list of all battles with their summary information including the current state and participating robots.
-     * 
+     * Retrieves a list of all battles with their summary information including the current state and participating
+     * robots.
+     *
      * @return A list of battle summaries
      */
     @GET
@@ -52,9 +53,9 @@ public class BattleResource {
         description = "Gets a summary of all battles including the current state and participating robots."
     )
     @APIResponse(responseCode = "200", description = "List of battles retrieved",
-        content = @Content(mediaType = "application/json", 
+        content = @Content(mediaType = "application/json",
         schema = @Schema(type = SchemaType.ARRAY, implementation = Battle.class)))
-    @APIResponse(responseCode = "500", description = "Internal server error", 
+    @APIResponse(responseCode = "500", description = "Internal server error",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class)))
     public Response getAllBattles() {
@@ -72,7 +73,7 @@ public class BattleResource {
      * Creates a new battle with the given name and default arena dimensions.
      *
      * Allows the client to create a new battle with optional arena dimensions and robot movement time.
-     * 
+     *
      * @param request The battle creation request
      * @return The created battle
      */
@@ -80,23 +81,25 @@ public class BattleResource {
     @RunOnVirtualThread
     @Operation(
         summary = "Create a new battle",
-        description = "Creates a new battle arena with a given name and optional dimensions. If dimensions are not provided, default values from server configuration are used."
+        description = "Creates a new battle arena with a given name and optional dimensions. If dimensions are not "
+                + "provided, default values from server configuration are used."
     )
     @APIResponse(responseCode = "200", description = "Battle created successfully",
-        content = @Content(mediaType = "application/json", 
+        content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Battle.class),
         examples = @ExampleObject(name = "BattleCreated", ref = "#/components/examples/BattleResponse")))
-    @APIResponse(responseCode = "400", description = "Invalid input data", 
+    @APIResponse(responseCode = "400", description = "Invalid input data",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
         examples = @ExampleObject(name = "ValidationError", ref = "#/components/examples/ValidationErrorResponse")))
-    @APIResponse(responseCode = "409", description = "Conflict in creating battle", 
+    @APIResponse(responseCode = "409", description = "Conflict in creating battle",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
         examples = @ExampleObject(name = "ConflictError", ref = "#/components/examples/ConflictErrorResponse")))
     public Response createBattle(
-        @Parameter(description = "Battle creation details", 
-        content = @Content(examples = @ExampleObject(name = "CreateBattleRequest", ref = "#/components/examples/CreateBattleRequest")))
+        @Parameter(description = "Battle creation details",
+        content = @Content(examples = @ExampleObject(name = "CreateBattleRequest",
+                ref = "#/components/examples/CreateBattleRequest")))
         CreateBattleRequest request) {
         try {
             Battle battle;
@@ -127,7 +130,7 @@ public class BattleResource {
      * Starts the battle.
      *
      * Initiates the specified battle, transitioning it from READY to IN_PROGRESS status.
-     * 
+     *
      * @param battleId The battle ID
      * @return The current battle status
      */
@@ -139,15 +142,16 @@ public class BattleResource {
         description = "Begins a battle with the given battle ID."
     )
     @APIResponse(responseCode = "200", description = "Battle started successfully",
-        content = @Content(mediaType = "application/json", 
+        content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Battle.class)))
-    @APIResponse(responseCode = "400", description = "Invalid battle ID", 
+    @APIResponse(responseCode = "400", description = "Invalid battle ID",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "409", description = "Battle cannot be started", 
+    @APIResponse(responseCode = "409", description = "Battle cannot be started",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class)))
-    public Response startBattle(@Parameter(description = "ID of the battle to start") @PathParam("battleId") String battleId) {
+    public Response startBattle(
+            @Parameter(description = "ID of the battle to start") @PathParam("battleId") String battleId) {
         try {
             Battle battle = battleService.startBattle(battleId);
             return Response.ok(battle).build();
@@ -166,7 +170,7 @@ public class BattleResource {
      * Deletes a completed battle and all associated data.
      *
      * Removes a battle and its data once it has been completed, identified by the provided battle ID.
-     * 
+     *
      * @param battleId The battle ID to delete
      * @return Empty response with status 204 if successful
      */
@@ -178,13 +182,14 @@ public class BattleResource {
         description = "Deletes a battle identified by battle ID if it has been completed."
     )
     @APIResponse(responseCode = "204", description = "Battle deleted successfully")
-    @APIResponse(responseCode = "404", description = "Battle not found", 
+    @APIResponse(responseCode = "404", description = "Battle not found",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "400", description = "Bad request", 
+    @APIResponse(responseCode = "400", description = "Bad request",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class)))
-    public Response deleteBattle(@Parameter(description = "ID of the battle to delete") @PathParam("battleId") String battleId) {
+    public Response deleteBattle(
+            @Parameter(description = "ID of the battle to delete") @PathParam("battleId") String battleId) {
         try {
             battleService.deleteBattle(battleId);
             return Response.noContent().build();
@@ -206,14 +211,15 @@ public class BattleResource {
     public record CreateBattleRequest(
         @Schema(description = "Name of the battle", example = "Epic Robot Battle", required = true)
         String name,
-        
+
         @Schema(description = "Width of the arena in grid units", example = "50", minimum = "10", maximum = "100")
         Integer width,
-        
+
         @Schema(description = "Height of the arena in grid units", example = "50", minimum = "10", maximum = "100")
         Integer height,
-        
-        @Schema(description = "Time allowed for robot movement in seconds", example = "1.0", minimum = "0.1", maximum = "10.0")
+
+        @Schema(description = "Time allowed for robot movement in seconds", example = "1.0", minimum = "0.1",
+                maximum = "10.0")
         Double robotMovementTimeSeconds
     ) {
         public CreateBattleRequest() {
