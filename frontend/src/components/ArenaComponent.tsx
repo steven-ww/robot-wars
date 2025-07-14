@@ -63,8 +63,6 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
   const [connectionAttempted, setConnectionAttempted] =
     useState<boolean>(false);
   const [webSocketError, setWebSocketError] = useState<string | null>(null);
-  const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
-  const [updateCount, setUpdateCount] = useState<number>(0);
   const [activeLaser, setActiveLaser] = useState<LaserEvent | null>(null);
   const [laserEffects, setLaserEffects] = useState<LaserEvent[]>([]);
 
@@ -145,8 +143,6 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
             // Only update battle state with actual battle state data
             setBattleState(data);
           }
-          setLastUpdateTime(new Date());
-          setUpdateCount(prev => prev + 1);
         } catch (err) {
           console.error('Error parsing WebSocket message:', err);
           setWebSocketError('Error parsing WebSocket message');
@@ -321,7 +317,6 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
     );
   };
 
-
   // Render battle results when battle is completed
   const renderBattleResults = () => {
     if (battleState?.battleState !== 'COMPLETED') {
@@ -404,10 +399,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
   };
 
   return (
-    <div
-      className="arena-container"
-      data-testid="arena-container"
-    >
+    <div className="arena-container" data-testid="arena-container">
       <h2>Battle Arena</h2>
       <p className="description">
         This component displays the battle arena and the robots within it.
@@ -459,53 +451,49 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
       {battleState && (
         <div className="battle-info">
           <h3>{battleState.battleName}</h3>
-          <p>
-            Battle State:
-            <span
-              className={`battle-state-badge state-${battleState.battleState.toLowerCase()}`}
-            >
-              {battleState.battleState}
+          <div className="battle-info-compact">
+            <span className="info-item">
+              <strong>State:</strong>
+              <span
+                className={`battle-state-badge state-${battleState.battleState.toLowerCase()}`}
+              >
+                {battleState.battleState}
+              </span>
             </span>
-          </p>
-          <p>
-            Arena Size: {battleState.arenaWidth}x{battleState.arenaHeight}
-          </p>
-          <p>Robots: {battleState.robots.length}</p>
-          <p>
-            Connection Status:{' '}
-            {isConnected ? (
-              <span style={{ color: 'green' }}>🟢 Live Updates</span>
-            ) : (
-              <span style={{ color: 'orange' }}>🟡 Cached Data</span>
-            )}
-          </p>
-          {/* Show update tracking info */}
-          {isConnected && (
-            <div
-              style={{ fontSize: '0.9em', color: '#666', marginTop: '10px' }}
-            >
-              <p>Updates received: {updateCount}</p>
-              {lastUpdateTime && (
-                <p>Last update: {lastUpdateTime.toLocaleTimeString()}</p>
+            <span className="info-item">
+              <strong>Arena:</strong> {battleState.arenaWidth}x
+              {battleState.arenaHeight}
+            </span>
+            <span className="info-item">
+              <strong>Robots:</strong> {battleState.robots.length}
+            </span>
+            <span className="info-item">
+              <strong>Connection:</strong>{' '}
+              {isConnected ? (
+                <span style={{ color: 'green' }}>🟢 Live</span>
+              ) : (
+                <span style={{ color: 'orange' }}>🟡 Cached</span>
               )}
-            </div>
-          )}
-          {/* Only show refresh button if WebSocket is not connected */}
-          {!isConnected && (
-            <button
-              onClick={requestUpdate}
-              style={{
-                padding: '5px 10px',
-                backgroundColor: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '3px',
-                cursor: 'pointer',
-              }}
-            >
-              Refresh Data
-            </button>
-          )}
+            </span>
+            {/* Only show refresh button if WebSocket is not connected */}
+            {!isConnected && (
+              <button
+                onClick={requestUpdate}
+                style={{
+                  padding: '3px 8px',
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '3px',
+                  cursor: 'pointer',
+                  fontSize: '0.9em',
+                  marginLeft: '10px',
+                }}
+              >
+                Refresh
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -532,9 +520,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
           {/* Render active laser */}
           {activeLaser && renderLaser(activeLaser, 0)}
           {/* Render laser effects */}
-          {laserEffects.map((laser, index) =>
-            renderLaser(laser, index + 1)
-          )}
+          {laserEffects.map((laser, index) => renderLaser(laser, index + 1))}
         </div>
       )}
 

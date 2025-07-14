@@ -490,7 +490,7 @@ defineFeature(feature, test => {
 
         // Verify that battle state shows IN_PROGRESS (updated from READY)
         await waitFor(() => {
-          expect(screen.getByText('Battle State:')).toBeInTheDocument();
+          expect(screen.getByText('State:')).toBeInTheDocument();
         });
         await waitFor(() => {
           expect(screen.getByText('IN_PROGRESS')).toBeInTheDocument();
@@ -548,7 +548,7 @@ defineFeature(feature, test => {
 
     and('the connection status should show "Live Updates"', async () => {
       await waitFor(() => {
-        expect(screen.getByText('🟢 Live Updates')).toBeInTheDocument();
+        expect(screen.getByText('🟢 Live')).toBeInTheDocument();
       });
     });
 

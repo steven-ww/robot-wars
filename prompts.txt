@@ -737,3 +737,8 @@ fix the checkstyle issues and update the prompts.txt
 ## 146th Prompt
 fix the prettier issues on the frontend
 
+## 147th Prompt
+as the battle proceeds the arena shows "last update" and a time. remove that from the display and layout the rest of the information in that block (robots, arena size, battle state, connection status) in a way that takes up less space.
+
+## 148th Prompt
+fix the prettier issues
