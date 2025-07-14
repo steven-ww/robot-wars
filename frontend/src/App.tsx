@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import './App.css';
 import GreetingComponent from './components/GreetingComponent';
-import ChatComponent from './components/ChatComponent';
 import ArenaTabComponent from './components/ArenaTabComponent';
 import BattleManagement from './components/BattleManagement';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<
-    'rest' | 'websocket' | 'arena' | 'battles'
-  >('battles');
+  const [activeTab, setActiveTab] = useState<'rest' | 'arena' | 'battles'>(
+    'battles'
+  );
 
   return (
     <div className="App">
@@ -28,12 +27,6 @@ function App() {
             API Documentation
           </button>
           <button
-            className={activeTab === 'websocket' ? 'active' : ''}
-            onClick={() => setActiveTab('websocket')}
-          >
-            WebSocket Demo
-          </button>
-          <button
             className={activeTab === 'arena' ? 'active' : ''}
             onClick={() => setActiveTab('arena')}
           >
@@ -46,8 +39,6 @@ function App() {
           <BattleManagement />
         ) : activeTab === 'rest' ? (
           <GreetingComponent />
-        ) : activeTab === 'websocket' ? (
-          <ChatComponent />
         ) : (
           <ArenaTabComponent />
         )}
