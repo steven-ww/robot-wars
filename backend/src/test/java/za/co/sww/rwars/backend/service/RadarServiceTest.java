@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for RadarService.
@@ -260,5 +261,110 @@ class RadarServiceTest {
             .toList();
 
         assertEquals(0, robotDetections.size(), "Robot should not detect itself");
+    }
+
+    @Test
+    void testCoordinateSystemConsistencyWithMovement() {
+        // Test that radar coordinates are consistent with movement directions
+        // Based on BattleService.moveRobotOneBlock:
+        // - NORTH increases Y coordinate
+        // - SOUTH decreases Y coordinate
+        // - EAST increases X coordinate
+        // - WEST decreases X coordinate
+        // Place robots in cardinal directions from scanning robot at (5,5)
+        Robot northRobot = new Robot();
+        northRobot.setName("NorthRobot");
+        northRobot.setPositionX(5);
+        northRobot.setPositionY(6); // North = higher Y
+        battle.getRobots().add(northRobot);
+        Robot southRobot = new Robot();
+        southRobot.setName("SouthRobot");
+        southRobot.setPositionX(5);
+        southRobot.setPositionY(4); // South = lower Y
+        battle.getRobots().add(southRobot);
+        Robot eastRobot = new Robot();
+        eastRobot.setName("EastRobot");
+        eastRobot.setPositionX(6); // East = higher X
+        eastRobot.setPositionY(5);
+        battle.getRobots().add(eastRobot);
+        Robot westRobot = new Robot();
+        westRobot.setName("WestRobot");
+        westRobot.setPositionX(4); // West = lower X
+        westRobot.setPositionY(5);
+        battle.getRobots().add(westRobot);
+        RadarResponse response = radarService.scanArea(battle, scanningRobot, 3);
+        List<RadarResponse.Detection> robotDetections = response.getDetections().stream()
+            .filter(d -> d.getType() == RadarResponse.DetectionType.ROBOT)
+            .toList();
+        assertEquals(4, robotDetections.size(), "Should detect all 4 directional robots");
+        // Verify radar coordinates match movement coordinate system
+        for (RadarResponse.Detection detection : robotDetections) {
+            if (detection.getDetails().contains("NorthRobot")) {
+                assertEquals(0, detection.getX(), "North robot should have X=0");
+                assertEquals(1, detection.getY(),
+                        "North robot should have positive Y (consistent with NORTH movement)");
+            } else if (detection.getDetails().contains("SouthRobot")) {
+                assertEquals(0, detection.getX(), "South robot should have X=0");
+                assertEquals(-1, detection.getY(),
+                        "South robot should have negative Y (consistent with SOUTH movement)");
+            } else if (detection.getDetails().contains("EastRobot")) {
+                assertEquals(1, detection.getX(), "East robot should have positive X (consistent with EAST movement)");
+                assertEquals(0, detection.getY(), "East robot should have Y=0");
+            } else if (detection.getDetails().contains("WestRobot")) {
+                assertEquals(-1, detection.getX(), "West robot should have negative X (consistent with WEST movement)");
+                assertEquals(0, detection.getY(), "West robot should have Y=0");
+            } else {
+                fail("Unexpected robot detected: " + detection.getDetails());
+            }
+        }
+    }
+
+    @Test
+    void testDiagonalCoordinateConsistency() {
+        // Test diagonal positions to ensure coordinate system is consistent
+        // in all quadrants relative to scanning robot at (5,5)
+        Robot northEastRobot = new Robot();
+        northEastRobot.setName("NorthEastRobot");
+        northEastRobot.setPositionX(7); // East = higher X
+        northEastRobot.setPositionY(7); // North = higher Y
+        battle.getRobots().add(northEastRobot);
+        Robot southWestRobot = new Robot();
+        southWestRobot.setName("SouthWestRobot");
+        southWestRobot.setPositionX(3); // West = lower X
+        southWestRobot.setPositionY(3); // South = lower Y
+        battle.getRobots().add(southWestRobot);
+        Robot northWestRobot = new Robot();
+        northWestRobot.setName("NorthWestRobot");
+        northWestRobot.setPositionX(3); // West = lower X
+        northWestRobot.setPositionY(7); // North = higher Y
+        battle.getRobots().add(northWestRobot);
+        Robot southEastRobot = new Robot();
+        southEastRobot.setName("SouthEastRobot");
+        southEastRobot.setPositionX(7); // East = higher X
+        southEastRobot.setPositionY(3); // South = lower Y
+        battle.getRobots().add(southEastRobot);
+        RadarResponse response = radarService.scanArea(battle, scanningRobot, 5);
+        List<RadarResponse.Detection> robotDetections = response.getDetections().stream()
+            .filter(d -> d.getType() == RadarResponse.DetectionType.ROBOT)
+            .toList();
+        assertEquals(4, robotDetections.size(), "Should detect all 4 diagonal robots");
+        // Verify diagonal coordinates match movement coordinate system
+        for (RadarResponse.Detection detection : robotDetections) {
+            if (detection.getDetails().contains("NorthEastRobot")) {
+                assertEquals(2, detection.getX(), "NorthEast robot should have positive X");
+                assertEquals(2, detection.getY(), "NorthEast robot should have positive Y");
+            } else if (detection.getDetails().contains("SouthWestRobot")) {
+                assertEquals(-2, detection.getX(), "SouthWest robot should have negative X");
+                assertEquals(-2, detection.getY(), "SouthWest robot should have negative Y");
+            } else if (detection.getDetails().contains("NorthWestRobot")) {
+                assertEquals(-2, detection.getX(), "NorthWest robot should have negative X");
+                assertEquals(2, detection.getY(), "NorthWest robot should have positive Y");
+            } else if (detection.getDetails().contains("SouthEastRobot")) {
+                assertEquals(2, detection.getX(), "SouthEast robot should have positive X");
+                assertEquals(-2, detection.getY(), "SouthEast robot should have negative Y");
+            } else {
+                fail("Unexpected robot detected: " + detection.getDetails());
+            }
+        }
     }
 }
