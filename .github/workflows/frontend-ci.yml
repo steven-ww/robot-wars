@@ -80,8 +80,9 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-        aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: af-south-1
+        web-identity-token-file: ${{ env.ACTIONS_ID_TOKEN_REQUEST_TOKEN }}
     
     - name: Deploy to S3
       run: |

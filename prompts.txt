@@ -784,3 +784,6 @@ docker: Error response from daemon: Head "https://319387835935.dkr.ecr.af-south-
 Follow the guidelines in the .junie/guidelines.md file for this task. I'm still getting random errors for some movement tests. Change the tests so that, the robots are in a known position, that all generated walls in the arena are in a known position and the movement tests all work relative to those known positions and walls. Example of failing test BattleServiceTest > testRobotMovementNorth() FAILED
     org.opentest4j.AssertionFailedError at BattleServiceTest.java:281
 
+## 160th Prompt
+Follow the guidelines file at .junie/guidelines.md for this task. The authentication for S3 deployements in the frontend-ci isn't working. The authentication in the backend-ci does work. Can you align the frontend deployment with the backend deployment authentication.
+
