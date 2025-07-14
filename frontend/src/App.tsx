@@ -25,7 +25,7 @@ function App() {
             className={activeTab === 'rest' ? 'active' : ''}
             onClick={() => setActiveTab('rest')}
           >
-            REST API Demo
+            API Documentation
           </button>
           <button
             className={activeTab === 'websocket' ? 'active' : ''}
