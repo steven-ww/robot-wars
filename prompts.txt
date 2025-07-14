@@ -768,3 +768,6 @@ The BE tests are stil failing during CI/CD. Seems to still be an intermittent pr
 ## 156th Prompt
 Fix the checkstyle errors in the backend
 
+## 157th Prompt
+For the backend github action, move the deployment steps in the backend-ci action to Ec2 into a seperate job that depends on the native build job. Follow the guidelines in .junie/guidelines.md
+
