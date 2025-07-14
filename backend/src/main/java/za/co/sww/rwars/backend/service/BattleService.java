@@ -549,6 +549,9 @@ public class BattleService {
         robot.setTargetBlocks(blocks);
         robot.setBlocksRemaining(blocks);
 
+        // Record the robot action
+        battle.addRobotAction(robotId, robot.getName(), "move");
+
         // Broadcast the state change to WebSocket clients
         broadcastBattleStateUpdate(battleId);
 
@@ -798,7 +801,15 @@ public class BattleService {
             throw new IllegalStateException("Robot is not active");
         }
 
-        return radarService.scanArea(battle, robot, range);
+        // Record the robot action
+        battle.addRobotAction(robotId, robot.getName(), "radar");
+
+        RadarResponse response = radarService.scanArea(battle, robot, range);
+        
+        // Broadcast the state change to include the new action
+        broadcastBattleStateUpdate(battleId);
+        
+        return response;
     }
 
     /**
@@ -871,6 +882,12 @@ public class BattleService {
 
         // Use default range if not specified or invalid
         int effectiveRange = (range > 0 && range <= maxLaserRange) ? range : defaultLaserRange;
+
+        // Record the robot action
+        battle.addRobotAction(robotId, firingRobot.getName(), "fire laser");
+
+        // Broadcast the state change to include the new action
+        broadcastBattleStateUpdate(battleId);
 
         // Calculate laser path and check for hits
         List<LaserResponse.Position> laserPath = new ArrayList<>();

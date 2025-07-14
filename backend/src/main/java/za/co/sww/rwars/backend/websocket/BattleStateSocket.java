@@ -33,6 +33,9 @@ public class BattleStateSocket {
     @Inject
     private BattleService battleService;
 
+    @Inject
+    private ObjectMapper objectMapper;
+
     // Store active sessions by battle ID
     private final Map<String, Map<String, Session>> sessionsByBattleId = new ConcurrentHashMap<>();
 
@@ -137,11 +140,11 @@ public class BattleStateSocket {
                 response.setWalls(battle.getWalls());
                 response.setWinnerId(battle.getWinnerId());
                 response.setWinnerName(battle.getWinnerName());
+                response.setRobotActions(battle.getRobotActions());
 
                 // Convert to JSON and send
-                ObjectMapper mapper = new ObjectMapper();
                 try {
-                    String jsonResponse = mapper.writeValueAsString(response);
+                    String jsonResponse = objectMapper.writeValueAsString(response);
                     session.getAsyncRemote().sendText(jsonResponse);
                 } catch (JsonProcessingException e) {
                     LOGGER.severe("Error serializing battle state to JSON: " + e.getMessage());
@@ -149,9 +152,8 @@ public class BattleStateSocket {
             } else {
                 // Send an error message if the battle ID is invalid
                 ErrorResponse error = new ErrorResponse("Invalid battle ID: " + battleId);
-                ObjectMapper mapper = new ObjectMapper();
                 try {
-                    String jsonError = mapper.writeValueAsString(error);
+                    String jsonError = objectMapper.writeValueAsString(error);
                     session.getAsyncRemote().sendText(jsonError);
                 } catch (JsonProcessingException e) {
                     LOGGER.severe("Error serializing error response to JSON: " + e.getMessage());
@@ -162,9 +164,8 @@ public class BattleStateSocket {
 
             // Send an error message
             ErrorResponse error = new ErrorResponse("Error retrieving battle state: " + e.getMessage());
-            ObjectMapper mapper = new ObjectMapper();
             try {
-                String jsonError = mapper.writeValueAsString(error);
+                String jsonError = objectMapper.writeValueAsString(error);
                 session.getAsyncRemote().sendText(jsonError);
             } catch (JsonProcessingException jsonException) {
                 LOGGER.severe("Error sending error message: " + jsonException.getMessage());
@@ -198,8 +199,7 @@ public class BattleStateSocket {
         if (battleSessions != null && !battleSessions.isEmpty()) {
             for (Session session : battleSessions.values()) {
                 try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    String jsonResponse = mapper.writeValueAsString(response);
+                    String jsonResponse = objectMapper.writeValueAsString(response);
                     session.getAsyncRemote().sendText(jsonResponse);
                 } catch (JsonProcessingException e) {
                     LOGGER.severe("Error serializing laser event to JSON: " + e.getMessage());
@@ -222,6 +222,7 @@ public class BattleStateSocket {
         private java.util.List<Wall> walls;
         private String winnerId;
         private String winnerName;
+        private java.util.List<za.co.sww.rwars.backend.model.RobotAction> robotActions;
 
         public BattleStateResponse() {
         }
@@ -304,6 +305,14 @@ public class BattleStateSocket {
 
         public void setWinnerName(String winnerName) {
             this.winnerName = winnerName;
+        }
+
+        public java.util.List<za.co.sww.rwars.backend.model.RobotAction> getRobotActions() {
+            return robotActions;
+        }
+
+        public void setRobotActions(java.util.List<za.co.sww.rwars.backend.model.RobotAction> robotActions) {
+            this.robotActions = robotActions;
         }
     }
 
