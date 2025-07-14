@@ -731,3 +731,6 @@ For the frontend project, while the battle is in progress, I see no updates to t
 ## 144th Prompt
 That worked in that I can now see the entire arena. This problem is that I have to scroll around the sceen in order to see all parts of it. I want the arena to render completely in the browser without any portions off of the screen that need to be scrolled to. Follow the guidelines in the .junie/guidelines.md file while completing this task.
 
+## 145th Prompt
+fix the checkstyle issues and update the prompts.txt
+
