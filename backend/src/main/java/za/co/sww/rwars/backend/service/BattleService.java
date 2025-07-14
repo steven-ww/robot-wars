@@ -937,7 +937,7 @@ public class BattleService {
             // Check if laser goes out of bounds
             if (nextX < 0 || nextX >= battle.getArenaWidth()
                 || nextY < 0 || nextY >= battle.getArenaHeight()) {
-                laserPath.add(new LaserResponse.Position(nextX, nextY));
+                // Don't add the out-of-bounds position to the path
                 LaserResponse response = new LaserResponse(effectiveRange, direction, laserPath, "BOUNDARY");
                 // Broadcast laser event to WebSocket clients
                 broadcastLaserEvent(battleId, response);
