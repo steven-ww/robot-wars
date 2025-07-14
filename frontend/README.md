@@ -104,12 +104,53 @@ npm run build
 This creates a production-ready build in the `build` directory.
 
 
+## Configuration
+
+### Build-time Configuration
+
+The frontend uses build-time configuration to set the backend URL. This approach works well for static deployments (like S3) where environment variables are not available at runtime.
+
+#### Local Development
+
+For local development, you can set the backend URL via environment variables:
+
+```bash
+# Development with custom backend URL
+REACT_APP_BACKEND_URL=http://localhost:9080 npm start
+
+# Or create a .env.local file
+echo "REACT_APP_BACKEND_URL=http://localhost:8080" > .env.local
+```
+
+#### Production Deployment
+
+For production deployments, the backend URL is configured via GitHub repository variables:
+
+1. In your GitHub repository, go to Settings → Secrets and variables → Actions
+2. Under "Repository variables", add:
+   - **Name**: `BACKEND_URL`
+   - **Value**: `https://your-backend-domain.com` (or your backend URL)
+
+#### How it works
+
+1. During the build process, `scripts/generate-config.js` reads the `REACT_APP_BACKEND_URL` environment variable
+2. It generates a `public/config.js` file with the configuration
+3. The `config.js` file is loaded before the React app starts
+4. The frontend reads the configuration from `window.AppConfig`
+
+#### Configuration Files
+
+- `scripts/generate-config.js`: Generates the configuration file during build
+- `public/config.js`: Auto-generated configuration file (not committed to git)
+- `.env.example`: Example environment variables
+
 ## Connecting to the Backend
 
-The frontend is configured to connect to the backend at the same host where it's running, using:
+The frontend is configured to connect to the backend using:
 
 - REST API endpoints at `/api/*`
 - WebSocket endpoint at `ws://{host}/chat/{username}`
+- Swagger UI documentation at `/swagger-ui`
 
 In development mode, the proxy in `package.json` forwards requests to the backend at http://localhost:8080.
 
