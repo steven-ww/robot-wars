@@ -41,7 +41,7 @@ import jakarta.ws.rs.core.Application;
 
             ## WebSocket Support
 
-            The API also provides WebSocket endpoints for real-time battle updates and chat functionality.
+            The API also provides WebSocket endpoints for real-time battle updates.
 
             ## Getting Started
 

@@ -707,3 +707,6 @@ The link in the documentation to the swagger page assumes the swagger is loaded 
 
 ## 136th Prompt
 Given the Front-end will be deployed in production via S3, environment variable configuration will not work. Rather have the configuration values driven from the github properties. That way, a change to github will reflect during the CI/CD and configure the deployed artifacts.
+
+## 137th Prompt
+Follow the guidelines in the .junie/guidelines.md file to complete this task. Remove the "WebSocket Demo" button in the frontend and all related code in the frontend and backend project. This is not a required feature.
