@@ -380,14 +380,14 @@ private suspend fun moveRobotContinuously(
  */
 private fun calculateDestination(currentX: Int, currentY: Int, direction: String, blocks: Int): Pair<Int, Int> {
     val (deltaX, deltaY) = when (direction) {
-        "NORTH" -> Pair(0, -blocks)
-        "SOUTH" -> Pair(0, blocks)
+        "NORTH" -> Pair(0, blocks)
+        "SOUTH" -> Pair(0, -blocks)
         "EAST" -> Pair(blocks, 0)
         "WEST" -> Pair(-blocks, 0)
-        "NE" -> Pair(blocks, -blocks)
-        "NW" -> Pair(-blocks, -blocks)
-        "SE" -> Pair(blocks, blocks)
-        "SW" -> Pair(-blocks, blocks)
+        "NE" -> Pair(blocks, blocks)
+        "NW" -> Pair(-blocks, blocks)
+        "SE" -> Pair(blocks, -blocks)
+        "SW" -> Pair(-blocks, -blocks)
         else -> Pair(0, 0)
     }
     return Pair(currentX + deltaX, currentY + deltaY)
@@ -471,14 +471,14 @@ private fun isDirectionSafe(
 ): Boolean {
     // Calculate the direction vector
     val (deltaX, deltaY) = when (direction) {
-        "NORTH" -> Pair(0, -1)
-        "SOUTH" -> Pair(0, 1)
+        "NORTH" -> Pair(0, 1)
+        "SOUTH" -> Pair(0, -1)
         "EAST" -> Pair(1, 0)
         "WEST" -> Pair(-1, 0)
-        "NE" -> Pair(1, -1)
-        "NW" -> Pair(-1, -1)
-        "SE" -> Pair(1, 1)
-        "SW" -> Pair(-1, 1)
+        "NE" -> Pair(1, 1)
+        "NW" -> Pair(-1, 1)
+        "SE" -> Pair(1, -1)
+        "SW" -> Pair(-1, -1)
         else -> Pair(0, 0)
     }
 
@@ -522,14 +522,14 @@ private fun isDirectionSafeRadarOnly(
 ): Boolean {
     // Calculate the direction vector
     val (deltaX, deltaY) = when (direction) {
-        "NORTH" -> Pair(0, -1)
-        "SOUTH" -> Pair(0, 1)
+        "NORTH" -> Pair(0, 1)
+        "SOUTH" -> Pair(0, -1)
         "EAST" -> Pair(1, 0)
         "WEST" -> Pair(-1, 0)
-        "NE" -> Pair(1, -1)
-        "NW" -> Pair(-1, -1)
-        "SE" -> Pair(1, 1)
-        "SW" -> Pair(-1, 1)
+        "NE" -> Pair(1, 1)
+        "NW" -> Pair(-1, 1)
+        "SE" -> Pair(1, -1)
+        "SW" -> Pair(-1, -1)
         else -> Pair(0, 0)
     }
 
@@ -540,20 +540,41 @@ private fun isDirectionSafeRadarOnly(
             val relativeX = detection.x
             val relativeY = detection.y
 
-            // Check if the wall is in the same direction as our intended movement
-            // If we're moving in a direction and there's a wall in that direction within 2 blocks, it's unsafe
-            if (deltaX != 0 && (relativeX * deltaX > 0) && Math.abs(relativeX) <= 2) {
-                if (deltaY == 0 || (relativeY * deltaY >= 0 && Math.abs(relativeY) <= 2)) {
-                    logger.debug("   ❌ $direction unsafe: Wall at relative position ($relativeX, $relativeY) blocks path")
-                    return false
+            // Check if the wall is directly in the path of movement
+            // For diagonal movements, both X and Y must be in the same direction
+            // For cardinal movements, only the relevant axis matters
+                val wallBlocksMovement = when {
+                    // Cardinal directions - check only the relevant axis
+                    deltaX == 0 && deltaY != 0 -> {
+                        // Moving purely north/south - wall blocks if it's directly in line and within 1 block
+                        relativeX == 0 && (relativeY * deltaY > 0) && Math.abs(relativeY) <= 1
+                    }
+                    deltaY == 0 && deltaX != 0 -> {
+                        // Moving purely east/west - wall blocks if it's directly in line and within 1 block
+                        relativeY == 0 && (relativeX * deltaX > 0) && Math.abs(relativeX) <= 1
+                    }
+                    // Diagonal directions - check if wall blocks the diagonal path
+                    deltaX != 0 && deltaY != 0 -> {
+                        val withinRange = Math.abs(relativeX) <= 1 && Math.abs(relativeY) <= 1
+                        if (!withinRange) false
+                        else {
+                            // Wall blocks diagonal movement if:
+                            // 1. It's directly on the diagonal path (both components same direction)
+                            // 2. It's on one of the cardinal axes that the diagonal crosses
+                            val onDiagonalPath = (relativeX * deltaX > 0) && (relativeY * deltaY > 0)
+                            val onCardinalInPath = (
+                                (relativeX == 0 && relativeY * deltaY > 0) || // On Y axis in direction of movement
+                                (relativeY == 0 && relativeX * deltaX > 0)    // On X axis in direction of movement
+                            )
+                            onDiagonalPath || onCardinalInPath
+                        }
+                    }
+                    else -> false
                 }
-            }
 
-            if (deltaY != 0 && (relativeY * deltaY > 0) && Math.abs(relativeY) <= 2) {
-                if (deltaX == 0 || (relativeX * deltaX >= 0 && Math.abs(relativeX) <= 2)) {
-                    logger.debug("   ❌ $direction unsafe: Wall at relative position ($relativeX, $relativeY) blocks path")
-                    return false
-                }
+            if (wallBlocksMovement) {
+                logger.debug("   ❌ $direction unsafe: Wall at relative position ($relativeX, $relativeY) blocks path")
+                return false
             }
         }
     }

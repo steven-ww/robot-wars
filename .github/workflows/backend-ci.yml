@@ -117,3 +117,45 @@ jobs:
         docker tag quarkus/robot-wars-backend-native $ECR_REGISTRY/$ECR_REPOSITORY:latest
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+    - name: Deploy to EC2
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      env:
+        EC2_USER: ${{ vars.EC2_USER || 'ec2-user' }}
+        EC2_HOST: ${{ vars.EC2_HOST }}
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: robot-wars-backend
+        IMAGE_TAG: ${{ github.sha }}
+        CONTAINER_NAME: ${{ vars.CONTAINER_NAME || 'robot-wars-backend' }}
+        CONTAINER_PORT: ${{ vars.CONTAINER_PORT || '8080' }}
+      run: |
+        # Create SSH key file
+        echo "$SSH_KEY" > ssh_key
+        chmod 600 ssh_key
+        
+        # Deploy to EC2 instance
+        ssh -i ssh_key -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+          # Login to ECR
+          aws ecr get-login-password --region af-south-1 | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
+          
+          # Pull the latest image
+          docker pull ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
+          
+          # Stop and remove existing container if it exists
+          docker stop ${{ env.CONTAINER_NAME }} || true
+          docker rm ${{ env.CONTAINER_NAME }} || true
+          
+          # Run new container
+          docker run -d \
+            --name ${{ env.CONTAINER_NAME }} \
+            -p ${{ env.CONTAINER_PORT }}:8080 \
+            --restart unless-stopped \
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
+          
+          # Clean up unused images
+          docker image prune -f
+        EOF
+        
+        # Clean up SSH key
+        rm ssh_key

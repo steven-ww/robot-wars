@@ -710,3 +710,12 @@ Given the Front-end will be deployed in production via S3, environment variable 
 
 ## 137th Prompt
 Follow the guidelines in the .junie/guidelines.md file to complete this task. Remove the "WebSocket Demo" button in the frontend and all related code in the frontend and backend project. This is not a required feature.
+
+## 138th Prompt
+Follow the guidelines in .junie/guidelines.md implement (using BDD) the features defined in the frontend/featuresPrompt.txt file.
+
+## 139th Prompt
+Implement the features in the frontend/featuresPrompt.txt file using BDD. Follow the guidelines in .junie/guidelines.md file
+
+## 140th Prompt
+The demo project continues to fail with the robots running into walls. Fix this such that the robots correcly use the radar to determine how to move. Validate that the mocks return data in the same way that the actual server does. That x and y are correctly represented as movements north and south and that the logic in the robot correctly validates the direction. Write unit tests to validate this at a fine grained level.
