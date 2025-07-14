@@ -79,11 +79,11 @@ public class RobotAction {
 
     @Override
     public String toString() {
-        return "RobotAction{" +
-                "robotId='" + robotId + '\'' +
-                ", robotName='" + robotName + '\'' +
-                ", action='" + action + '\'' +
-                ", timestamp=" + timestamp +
-                '}';
+        return "RobotAction{"
+                + "robotId='" + robotId + '\''
+                + ", robotName='" + robotName + '\''
+                + ", action='" + action + '\''
+                + ", timestamp=" + timestamp
+                + '}';
     }
 }

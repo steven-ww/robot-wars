@@ -16,7 +16,6 @@ public class JacksonConfig implements ObjectMapperCustomizer {
     public void customize(ObjectMapper objectMapper) {
         // Register the JavaTimeModule to handle Java 8 time types
         objectMapper.registerModule(new JavaTimeModule());
-        
         // Configure to write dates as timestamps (strings) instead of arrays
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }

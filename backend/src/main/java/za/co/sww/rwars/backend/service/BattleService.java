@@ -805,10 +805,9 @@ public class BattleService {
         battle.addRobotAction(robotId, robot.getName(), "radar");
 
         RadarResponse response = radarService.scanArea(battle, robot, range);
-        
+
         // Broadcast the state change to include the new action
         broadcastBattleStateUpdate(battleId);
-        
         return response;
     }
 
