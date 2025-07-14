@@ -577,7 +577,8 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
                 backgroundColor: '#f0f0f0',
                 width: '100%',
                 maxWidth:
-                  battleState.battleState === 'IN_PROGRESS' ? '80vw' : '90vw',
+                  battleState.battleState === 'IN_PROGRESS' ? '60vw' : '75vw',
+                maxHeight: 'calc(100vh - 250px)',
                 margin: '0 auto',
               }}
             >

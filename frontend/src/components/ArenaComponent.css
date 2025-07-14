@@ -1,10 +1,12 @@
 .arena-container {
-  padding: 20px;
+  padding: 10px;
   background-color: #f8f9fa;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
   margin: 0 auto;
+  max-height: 100vh;
+  overflow-y: auto;
 }
 
 .arena-container h2 {
