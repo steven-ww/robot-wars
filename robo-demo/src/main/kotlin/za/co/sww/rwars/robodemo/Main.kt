@@ -543,34 +543,35 @@ private fun isDirectionSafeRadarOnly(
             // Check if the wall is directly in the path of movement
             // For diagonal movements, both X and Y must be in the same direction
             // For cardinal movements, only the relevant axis matters
-                val wallBlocksMovement = when {
-                    // Cardinal directions - check only the relevant axis
-                    deltaX == 0 && deltaY != 0 -> {
-                        // Moving purely north/south - wall blocks if it's directly in line and within 1 block
-                        relativeX == 0 && (relativeY * deltaY > 0) && Math.abs(relativeY) <= 1
-                    }
-                    deltaY == 0 && deltaX != 0 -> {
-                        // Moving purely east/west - wall blocks if it's directly in line and within 1 block
-                        relativeY == 0 && (relativeX * deltaX > 0) && Math.abs(relativeX) <= 1
-                    }
-                    // Diagonal directions - check if wall blocks the diagonal path
-                    deltaX != 0 && deltaY != 0 -> {
-                        val withinRange = Math.abs(relativeX) <= 1 && Math.abs(relativeY) <= 1
-                        if (!withinRange) false
-                        else {
-                            // Wall blocks diagonal movement if:
-                            // 1. It's directly on the diagonal path (both components same direction)
-                            // 2. It's on one of the cardinal axes that the diagonal crosses
-                            val onDiagonalPath = (relativeX * deltaX > 0) && (relativeY * deltaY > 0)
-                            val onCardinalInPath = (
-                                (relativeX == 0 && relativeY * deltaY > 0) || // On Y axis in direction of movement
-                                (relativeY == 0 && relativeX * deltaX > 0)    // On X axis in direction of movement
-                            )
-                            onDiagonalPath || onCardinalInPath
-                        }
-                    }
-                    else -> false
+            val wallBlocksMovement = when {
+                // Cardinal directions - check only the relevant axis
+                deltaX == 0 && deltaY != 0 -> {
+                    // Moving purely north/south - wall blocks if it's directly in line and within 1 block
+                    relativeX == 0 && (relativeY * deltaY > 0) && Math.abs(relativeY) <= 1
                 }
+                deltaY == 0 && deltaX != 0 -> {
+                    // Moving purely east/west - wall blocks if it's directly in line and within 1 block
+                    relativeY == 0 && (relativeX * deltaX > 0) && Math.abs(relativeX) <= 1
+                }
+                // Diagonal directions - check if wall blocks the diagonal path
+                deltaX != 0 && deltaY != 0 -> {
+                    val withinRange = Math.abs(relativeX) <= 1 && Math.abs(relativeY) <= 1
+                    if (!withinRange) {
+                        false
+                    } else {
+                        // Wall blocks diagonal movement if:
+                        // 1. It's directly on the diagonal path (both components same direction)
+                        // 2. It's on one of the cardinal axes that the diagonal crosses
+                        val onDiagonalPath = (relativeX * deltaX > 0) && (relativeY * deltaY > 0)
+                        val onCardinalInPath = (
+                            (relativeX == 0 && relativeY * deltaY > 0) || // On Y axis in direction of movement
+                                (relativeY == 0 && relativeX * deltaX > 0) // On X axis in direction of movement
+                            )
+                        onDiagonalPath || onCardinalInPath
+                    }
+                }
+                else -> false
+            }
 
             if (wallBlocksMovement) {
                 logger.debug("   ❌ $direction unsafe: Wall at relative position ($relativeX, $relativeY) blocks path")

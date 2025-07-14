@@ -1,7 +1,9 @@
 package za.co.sww.rwars.robodemo.logic
 
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 import za.co.sww.rwars.robodemo.model.RadarResponse
 import za.co.sww.rwars.robodemo.model.RadarResponse.DetectionType
 
@@ -20,7 +22,7 @@ class RadarLogicTest {
         assertEquals(Pair(0, -1), getDirectionVector("SOUTH"))
         assertEquals(Pair(1, 0), getDirectionVector("EAST"))
         assertEquals(Pair(-1, 0), getDirectionVector("WEST"))
-        
+
         // Test diagonal directions
         assertEquals(Pair(1, 1), getDirectionVector("NE"))
         assertEquals(Pair(-1, 1), getDirectionVector("NW"))
@@ -35,39 +37,39 @@ class RadarLogicTest {
     fun testWallDirectlyInFront() {
         // Wall directly north of robot (at relative position 0, 1)
         val wallNorth = listOf(
-            RadarResponse.Detection(0, 1, DetectionType.WALL, "Arena boundary wall")
+            RadarResponse.Detection(0, 1, DetectionType.WALL, "Arena boundary wall"),
         )
-        
+
         assertFalse(isDirectionSafeRadarOnly("NORTH", wallNorth))
         assertTrue(isDirectionSafeRadarOnly("SOUTH", wallNorth))
         assertTrue(isDirectionSafeRadarOnly("EAST", wallNorth))
         assertTrue(isDirectionSafeRadarOnly("WEST", wallNorth))
-        
+
         // Wall directly south of robot (at relative position 0, -1)
         val wallSouth = listOf(
-            RadarResponse.Detection(0, -1, DetectionType.WALL, "Arena boundary wall")
+            RadarResponse.Detection(0, -1, DetectionType.WALL, "Arena boundary wall"),
         )
-        
+
         assertTrue(isDirectionSafeRadarOnly("NORTH", wallSouth))
         assertFalse(isDirectionSafeRadarOnly("SOUTH", wallSouth))
         assertTrue(isDirectionSafeRadarOnly("EAST", wallSouth))
         assertTrue(isDirectionSafeRadarOnly("WEST", wallSouth))
-        
+
         // Wall directly east of robot (at relative position 1, 0)
         val wallEast = listOf(
-            RadarResponse.Detection(1, 0, DetectionType.WALL, "Arena boundary wall")
+            RadarResponse.Detection(1, 0, DetectionType.WALL, "Arena boundary wall"),
         )
-        
+
         assertTrue(isDirectionSafeRadarOnly("NORTH", wallEast))
         assertTrue(isDirectionSafeRadarOnly("SOUTH", wallEast))
         assertFalse(isDirectionSafeRadarOnly("EAST", wallEast))
         assertTrue(isDirectionSafeRadarOnly("WEST", wallEast))
-        
+
         // Wall directly west of robot (at relative position -1, 0)
         val wallWest = listOf(
-            RadarResponse.Detection(-1, 0, DetectionType.WALL, "Arena boundary wall")
+            RadarResponse.Detection(-1, 0, DetectionType.WALL, "Arena boundary wall"),
         )
-        
+
         assertTrue(isDirectionSafeRadarOnly("NORTH", wallWest))
         assertTrue(isDirectionSafeRadarOnly("SOUTH", wallWest))
         assertTrue(isDirectionSafeRadarOnly("EAST", wallWest))
@@ -81,9 +83,9 @@ class RadarLogicTest {
     fun testDiagonalWallDetection() {
         // Wall at NE diagonal (relative position 1, 1)
         val wallNE = listOf(
-            RadarResponse.Detection(1, 1, DetectionType.WALL, "Arena boundary wall")
+            RadarResponse.Detection(1, 1, DetectionType.WALL, "Arena boundary wall"),
         )
-        
+
         assertTrue(isDirectionSafeRadarOnly("NORTH", wallNE))
         assertTrue(isDirectionSafeRadarOnly("SOUTH", wallNE))
         assertTrue(isDirectionSafeRadarOnly("EAST", wallNE))
@@ -101,17 +103,17 @@ class RadarLogicTest {
     fun testWallsWithinRange() {
         // Wall at position (2, 0) - 2 blocks east
         val wallFarEast = listOf(
-            RadarResponse.Detection(2, 0, DetectionType.WALL, "Arena boundary wall")
+            RadarResponse.Detection(2, 0, DetectionType.WALL, "Arena boundary wall"),
         )
-        
+
         // Should be safe to move east even though there's a wall 2 blocks away
         assertTrue(isDirectionSafeRadarOnly("EAST", wallFarEast))
-        
+
         // Wall at position (1, -1) - SE diagonal but close
         val wallSEClose = listOf(
-            RadarResponse.Detection(1, -1, DetectionType.WALL, "Arena boundary wall")
+            RadarResponse.Detection(1, -1, DetectionType.WALL, "Arena boundary wall"),
         )
-        
+
         // Should block SE movement but not other directions
         assertFalse(isDirectionSafeRadarOnly("SE", wallSEClose))
         assertTrue(isDirectionSafeRadarOnly("NORTH", wallSEClose))
@@ -127,9 +129,9 @@ class RadarLogicTest {
     fun testRobotDetection() {
         // Robot directly north of our robot
         val robotNorth = listOf(
-            RadarResponse.Detection(0, 1, DetectionType.ROBOT, "Robot: TestBot")
+            RadarResponse.Detection(0, 1, DetectionType.ROBOT, "Robot: TestBot"),
         )
-        
+
         // Robots should not block movement (they can move away)
         assertTrue(isDirectionSafeRadarOnly("NORTH", robotNorth))
         assertTrue(isDirectionSafeRadarOnly("SOUTH", robotNorth))
@@ -145,14 +147,14 @@ class RadarLogicTest {
         // Walls on north and east sides
         val multipleWalls = listOf(
             RadarResponse.Detection(0, 1, DetectionType.WALL, "Arena boundary wall"),
-            RadarResponse.Detection(1, 0, DetectionType.WALL, "Arena boundary wall")
+            RadarResponse.Detection(1, 0, DetectionType.WALL, "Arena boundary wall"),
         )
-        
+
         assertFalse(isDirectionSafeRadarOnly("NORTH", multipleWalls))
         assertTrue(isDirectionSafeRadarOnly("SOUTH", multipleWalls))
         assertFalse(isDirectionSafeRadarOnly("EAST", multipleWalls))
         assertTrue(isDirectionSafeRadarOnly("WEST", multipleWalls))
-        
+
         // NE should also be blocked as it combines north and east
         assertFalse(isDirectionSafeRadarOnly("NE", multipleWalls))
     }
@@ -163,7 +165,7 @@ class RadarLogicTest {
     @Test
     fun testEmptyRadarResponse() {
         val emptyDetections = emptyList<RadarResponse.Detection>()
-        
+
         // All directions should be safe with no detections
         assertTrue(isDirectionSafeRadarOnly("NORTH", emptyDetections))
         assertTrue(isDirectionSafeRadarOnly("SOUTH", emptyDetections))
@@ -182,9 +184,9 @@ class RadarLogicTest {
     fun testArenaBoundaryScenarios() {
         // Robot near north boundary - should detect wall at (0, 1)
         val nearNorthBoundary = listOf(
-            RadarResponse.Detection(0, 1, DetectionType.WALL, "Arena boundary wall")
+            RadarResponse.Detection(0, 1, DetectionType.WALL, "Arena boundary wall"),
         )
-        
+
         assertFalse(isDirectionSafeRadarOnly("NORTH", nearNorthBoundary))
         assertFalse(isDirectionSafeRadarOnly("NE", nearNorthBoundary))
         assertFalse(isDirectionSafeRadarOnly("NW", nearNorthBoundary))
@@ -193,13 +195,13 @@ class RadarLogicTest {
         assertTrue(isDirectionSafeRadarOnly("WEST", nearNorthBoundary))
         assertTrue(isDirectionSafeRadarOnly("SE", nearNorthBoundary))
         assertTrue(isDirectionSafeRadarOnly("SW", nearNorthBoundary))
-        
+
         // Robot near corner - should detect walls on two sides
         val nearCorner = listOf(
             RadarResponse.Detection(0, 1, DetectionType.WALL, "Arena boundary wall"),
-            RadarResponse.Detection(-1, 0, DetectionType.WALL, "Arena boundary wall")
+            RadarResponse.Detection(-1, 0, DetectionType.WALL, "Arena boundary wall"),
         )
-        
+
         assertFalse(isDirectionSafeRadarOnly("NORTH", nearCorner))
         assertFalse(isDirectionSafeRadarOnly("WEST", nearCorner))
         assertFalse(isDirectionSafeRadarOnly("NW", nearCorner))
@@ -230,16 +232,16 @@ class RadarLogicTest {
      */
     private fun isDirectionSafeRadarOnly(
         direction: String,
-        detections: List<RadarResponse.Detection>
+        detections: List<RadarResponse.Detection>,
     ): Boolean {
         val (deltaX, deltaY) = getDirectionVector(direction)
-        
+
         // Check if any detected walls are in the path of this direction
         for (detection in detections) {
             if (detection.type == DetectionType.WALL) {
                 val relativeX = detection.x
                 val relativeY = detection.y
-                
+
                 // Check if the wall is directly in the path of movement
                 // For diagonal movements, both X and Y must be in the same direction
                 // For cardinal movements, only the relevant axis matters
@@ -256,28 +258,76 @@ class RadarLogicTest {
                     // Diagonal directions - check if wall blocks the diagonal path
                     deltaX != 0 && deltaY != 0 -> {
                         val withinRange = Math.abs(relativeX) <= 1 && Math.abs(relativeY) <= 1
-                        if (!withinRange) false
-                        else {
+                        if (!withinRange) {
+                            false
+                        } else {
                             // Wall blocks diagonal movement if:
                             // 1. It's directly on the diagonal path (both components same direction)
                             // 2. It's on one of the cardinal axes that the diagonal crosses
                             val onDiagonalPath = (relativeX * deltaX > 0) && (relativeY * deltaY > 0)
                             val onCardinalInPath = (
                                 (relativeX == 0 && relativeY * deltaY > 0) || // On Y axis in direction of movement
-                                (relativeY == 0 && relativeX * deltaX > 0)    // On X axis in direction of movement
-                            )
+                                    (relativeY == 0 && relativeX * deltaX > 0) // On X axis in direction of movement
+                                )
                             onDiagonalPath || onCardinalInPath
                         }
                     }
                     else -> false
                 }
-                
+
                 if (wallBlocksMovement) {
                     return false
                 }
             }
         }
-        
+
         return true
+    }
+
+    /**
+     * Test robot movements in each cardinal direction.
+     */
+    @Test
+    fun testRobotMovements() {
+        val startX = 0
+        val startY = 0
+
+        // Test moving North - y should increase, x should remain constant
+        val northResult = calculateDestination(startX, startY, "NORTH", 1)
+        assertEquals(0, northResult.first) // x remains constant
+        assertEquals(1, northResult.second) // y increases
+
+        // Test moving South - y should decrease, x should remain constant
+        val southResult = calculateDestination(startX, startY, "SOUTH", 1)
+        assertEquals(0, southResult.first) // x remains constant
+        assertEquals(-1, southResult.second) // y decreases
+
+        // Test moving East - x should increase, y should remain constant
+        val eastResult = calculateDestination(startX, startY, "EAST", 1)
+        assertEquals(1, eastResult.first) // x increases
+        assertEquals(0, eastResult.second) // y remains constant
+
+        // Test moving West - x should decrease, y should remain constant
+        val westResult = calculateDestination(startX, startY, "WEST", 1)
+        assertEquals(-1, westResult.first) // x decreases
+        assertEquals(0, westResult.second) // y remains constant
+    }
+
+    /**
+     * Helper function to calculate destination (copied from Main.kt for testing)
+     */
+    private fun calculateDestination(currentX: Int, currentY: Int, direction: String, blocks: Int): Pair<Int, Int> {
+        val (deltaX, deltaY) = when (direction) {
+            "NORTH" -> Pair(0, blocks)
+            "SOUTH" -> Pair(0, -blocks)
+            "EAST" -> Pair(blocks, 0)
+            "WEST" -> Pair(-blocks, 0)
+            "NE" -> Pair(blocks, blocks)
+            "NW" -> Pair(-blocks, blocks)
+            "SE" -> Pair(blocks, -blocks)
+            "SW" -> Pair(-blocks, -blocks)
+            else -> Pair(0, 0)
+        }
+        return Pair(currentX + deltaX, currentY + deltaY)
     }
 }
