@@ -892,6 +892,9 @@ public class BattleService {
         List<LaserResponse.Position> laserPath = new ArrayList<>();
         int currentX = firingRobot.getPositionX();
         int currentY = firingRobot.getPositionY();
+        
+        // Always add the robot's starting position as the first point in the path
+        laserPath.add(new LaserResponse.Position(currentX, currentY));
 
         // Direction deltas - consistent with movement system
         int deltaX = 0;
@@ -938,7 +941,9 @@ public class BattleService {
             if (nextX < 0 || nextX >= battle.getArenaWidth()
                 || nextY < 0 || nextY >= battle.getArenaHeight()) {
                 // Don't add the out-of-bounds position to the path
-                LaserResponse response = new LaserResponse(effectiveRange, direction, laserPath, "BOUNDARY");
+                // Set the actual range to the distance traveled so far
+                int actualRange = i - 1;
+                LaserResponse response = new LaserResponse(actualRange, direction, laserPath, "BOUNDARY");
                 // Broadcast laser event to WebSocket clients
                 broadcastLaserEvent(battleId, response);
                 return response;

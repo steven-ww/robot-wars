@@ -79,15 +79,15 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
     // Add to laser effects history
     setLaserEffects(prev => [...prev, data]);
 
-    // Clear the active laser after animation duration
+    // Clear the active laser after animation duration - reduced to 300ms for quicker fade
     setTimeout(() => {
       setActiveLaser(null);
-    }, 700); // 700ms animation
+    }, 300); // 300ms animation for quicker fade
 
-    // Clear from effects history after a longer duration
+    // Clear from effects history after a shorter duration
     setTimeout(() => {
       setLaserEffects(prev => prev.filter(effect => effect !== data));
-    }, 5000); // 5 seconds total display
+    }, 1000); // 1 second total display
   };
 
   // Function to connect to the WebSocket
@@ -263,7 +263,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
 
   // Render laser effects on the arena
   const renderLaser = (laser: LaserEvent, index: number) => {
-    if (!battleState || !laser.laserPath || laser.laserPath.length === 0)
+    if (!battleState || !laser.laserPath || laser.laserPath.length < 2)
       return null;
 
     const startPosition = laser.laserPath[0];
@@ -285,8 +285,9 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
       transform: `rotate(${angle}deg)`,
       transformOrigin: '0 50%',
       zIndex: 10,
-      opacity: laser === activeLaser ? 1 : 0.5,
+      opacity: laser === activeLaser ? 1 : 0.3,
       boxShadow: `0 0 8px ${laser.hit ? '#ff0000' : '#00ff00'}`,
+      transition: 'opacity 0.3s ease-out',
     };
 
     const hitEffect =
