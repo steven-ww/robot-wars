@@ -401,9 +401,6 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
   return (
     <div className="arena-container" data-testid="arena-container">
       <h2>Battle Arena</h2>
-      <p className="description">
-        This component displays the battle arena and the robots within it.
-      </p>
 
       {/* Only show WebSocket error if connection was attempted and failed, and we don't have battle data */}
       {webSocketError && !battleState && connectionAttempted && (
