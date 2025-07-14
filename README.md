@@ -228,7 +228,48 @@ docker build -f src/main/docker/Dockerfile.native -t quarkus/robot-wars-backend-
 This project includes GitHub Actions workflows for continuous integration and deployment:
 
 - **Backend CI**: Builds, tests, and creates a Docker image for the backend
-- **Frontend CI**: Builds, tests, and lints the frontend code
+- **Frontend CI**: Builds, tests, lints the frontend code, and deploys to S3 on main branch
+
+### GitHub Variables Configuration
+
+To enable the frontend deployment to S3, configure the following GitHub repository variables:
+
+#### Required Variables
+- `AWS_ROLE_ARN`: The ARN of the AWS IAM role to assume for deployment
+- `S3_BUCKET_ARN`: The ARN of the S3 bucket for deployment (e.g., `arn:aws:s3:::my-bucket-name`)
+  - Alternatively, you can use `S3_BUCKET_NAME` with just the bucket name
+
+#### Optional Variables
+- `AWS_REGION`: AWS region for deployment (default: `us-east-1`)
+- `BACKEND_URL`: Backend URL for the production build (default: `http://localhost:8080`)
+- `CLOUDFRONT_DISTRIBUTION_ID`: CloudFront distribution ID for cache invalidation (optional)
+
+#### Setting Up GitHub Variables
+
+1. Go to your GitHub repository
+2. Click on **Settings** > **Secrets and variables** > **Actions**
+3. Click on the **Variables** tab
+4. Add the required variables listed above
+
+#### AWS IAM Role Configuration
+
+The `AWS_ROLE_ARN` should have the following permissions:
+- `s3:PutObject`
+- `s3:PutObjectAcl`
+- `s3:GetObject`
+- `s3:DeleteObject`
+- `s3:ListBucket`
+- `cloudfront:CreateInvalidation` (if using CloudFront)
+
+The role should also have a trust policy that allows GitHub Actions to assume it using OpenID Connect.
+
+#### Sample AWS Policies
+
+Sample IAM policy and trust policy files are provided in the `.github/` directory:
+- `.github/aws-iam-policy.json`: Sample IAM policy for S3 deployment permissions
+- `.github/aws-trust-policy.json`: Sample trust policy for GitHub Actions OIDC
+
+Replace the placeholders (YOUR-BUCKET-NAME, YOUR-ACCOUNT-ID, YOUR-GITHUB-USERNAME, YOUR-DISTRIBUTION-ID) with your actual values.
 
 ## License
 
