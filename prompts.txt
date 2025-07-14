@@ -751,3 +751,6 @@ Following the guidelines in .junie/guidelines.md implement the following task. I
 
 ## 151st Prompt
 Follow the guidelines in .junie/guidelines.md. Update the prompt.txt file in the root project folder. The robo-demo project doesn't seem to be firing the laser for each robot? I don't see the fire being rendered on the FE and I don't see any fire status in the robo-demo output. Is the robo-demo actually calling the fire laser?
+
+## 152nd Prompt
+Follow the guidelines in .junie/guidelines.md while implementing this task. When firing a lazer, reduce the time the animation stays visible to 700ms AND ensure that if the laser reaches any wall, that it stops and does no render through the wall. This includes the edges of the arena.

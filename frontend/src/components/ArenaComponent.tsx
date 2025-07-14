@@ -82,7 +82,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
     // Clear the active laser after animation duration
     setTimeout(() => {
       setActiveLaser(null);
-    }, 3000); // 3 seconds animation
+    }, 700); // 700ms animation
 
     // Clear from effects history after a longer duration
     setTimeout(() => {
