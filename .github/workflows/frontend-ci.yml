@@ -48,6 +48,8 @@ jobs:
         npm test -- --watchAll=false --passWithNoTests
 
     - name: Build
+      env:
+        REACT_APP_BACKEND_URL: ${{ vars.BACKEND_URL || 'http://localhost:8080' }}
       run: |
         cd frontend
         npm run build
