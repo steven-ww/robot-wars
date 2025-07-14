@@ -754,3 +754,7 @@ Follow the guidelines in .junie/guidelines.md. Update the prompt.txt file in the
 
 ## 152nd Prompt
 Follow the guidelines in .junie/guidelines.md while implementing this task. When firing a lazer, reduce the time the animation stays visible to 700ms AND ensure that if the laser reaches any wall, that it stops and does no render through the wall. This includes the edges of the arena.
+
+## 153rd Prompt
+Follow the guidelines in the .junie/guidelines.md file for this task. In the backend project, some of the unit tests fail intermittently. This seems to be related to the randomoness of positioning walls or robots. For any test that does not specifically test for randomness, change the test so that it's working with absolute positioning of everything it needs, e.g. robots and walls. Build specific test methods to cater for this if required (but don't expose those via the api)
+
