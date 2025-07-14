@@ -1,19 +1,39 @@
 package za.co.sww.rwars.backend.model;
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 /**
  * Represents a robot's status information without revealing its absolute position.
  * This is what robots should know about themselves - their identity and state,
  * but not their absolute coordinates in the arena.
  */
+@Schema(description = "Robot status information without revealing absolute position")
 public class RobotStatus {
+    @Schema(description = "Unique identifier of the robot", example = "robot-123")
     private String id;
+    
+    @Schema(description = "Name of the robot", example = "DestroyerBot")
     private String name;
+    
+    @Schema(description = "ID of the battle this robot is participating in", example = "battle-456")
     private String battleId;
+    
+    @Schema(description = "Current direction the robot is facing")
     private Robot.Direction direction;
+    
+    @Schema(description = "Current status of the robot")
     private Robot.RobotStatus status;
+    
+    @Schema(description = "Target number of blocks to move", example = "5")
     private int targetBlocks;
+    
+    @Schema(description = "Number of blocks remaining to move", example = "2")
     private int blocksRemaining;
+    
+    @Schema(description = "Current hit points of the robot", example = "85")
     private int hitPoints;
+    
+    @Schema(description = "Maximum hit points the robot can have", example = "100")
     private int maxHitPoints;
 
     public RobotStatus() {

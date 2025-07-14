@@ -2,19 +2,39 @@ package za.co.sww.rwars.backend.model;
 
 import java.util.List;
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 /**
  * Response object for laser firing operations.
  */
+@Schema(description = "Response from a laser firing operation, detailing results")
 public class LaserResponse {
+    @Schema(description = "Indicates if the laser hit a target")
     private boolean hit;
+    
+    @Schema(description = "ID of the robot that was hit", example = "robot-789")
     private String hitRobotId;
+    
+    @Schema(description = "Name of the robot that was hit", example = "TargetBot")
     private String hitRobotName;
+    
+    @Schema(description = "Amount of damage dealt by the laser", example = "20")
     private int damageDealt;
+    
+    @Schema(description = "Range of the laser fire", example = "10")
     private int range;
+    
+    @Schema(description = "Direction the laser was fired", example = "NORTH")
     private String direction;
+    
+    @Schema(description = "Path coordinates that the laser traveled")
     private List<Position> laserPath;
+    
+    @Schema(description = "Position where the laser hit")
     private Position hitPosition;
-    private String blockedBy; // "WALL", "ROBOT", or "BOUNDARY"
+    
+    @Schema(description = "Reason the laser was blocked (WALL, ROBOT, BOUNDARY)", example = "WALL")
+    private String blockedBy;
 
     /**
      * Default constructor.
@@ -137,8 +157,12 @@ public class LaserResponse {
     /**
      * Represents a position in the arena.
      */
+    @Schema(description = "Position coordinates")
     public static class Position {
+        @Schema(description = "X coordinate of the position", example = "5")
         private int x;
+        
+        @Schema(description = "Y coordinate of the position", example = "10")
         private int y;
 
         public Position() {
