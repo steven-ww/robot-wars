@@ -3,7 +3,7 @@
   background-color: #f8f9fa;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 900px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -46,9 +46,10 @@
   border: 2px solid #333;
   position: relative;
   width: 100%;
-  max-width: 800px;
+  max-width: none;
   margin: 0 auto;
   min-height: 400px;
+  overflow: visible;
 }
 
 .robot {
@@ -419,6 +420,7 @@ button:disabled {
   justify-content: center;
   width: 100%;
   margin: 20px 0;
+  overflow: visible;
 }
 
 .arena-section {
@@ -426,6 +428,8 @@ button:disabled {
   display: flex;
   justify-content: center;
   min-width: 0;
+  overflow: visible;
+  padding: 0 10px;
 }
 
 .action-section {
@@ -531,10 +535,6 @@ button:disabled {
   width: 100%;
 }
 
-.fit-to-window {
-  height: 100vh;
-  overflow: hidden;
-}
 
 /* Responsive design for different screen sizes */
 @media (max-width: 1200px) {
