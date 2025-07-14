@@ -11,6 +11,7 @@ import za.co.sww.rwars.backend.model.Wall;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -236,5 +237,73 @@ class BattleServiceTest {
             }
         }
         return wallPositions;
+    }
+
+    @Test
+    void testRobotMovementNorth() throws InterruptedException {
+        Robot robot = battleService.registerRobotForBattle("NorthTestRobot", battleId);
+        battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+        battleService.startBattle(battleId);
+
+        int initialX = robot.getPositionX();
+        int initialY = robot.getPositionY();
+        battleService.moveRobot(battleId, robot.getId(), "NORTH", 1);
+
+        // Wait for robot to complete movement
+        Thread.sleep(1500);
+
+        assertTrue(robot.getPositionY() > initialY, "Y position should increase when moving NORTH");
+        assertEquals(initialX, robot.getPositionX(), "X position should remain constant when moving NORTH");
+    }
+
+    @Test
+    void testRobotMovementSouth() throws InterruptedException {
+        Robot robot = battleService.registerRobotForBattle("SouthTestRobot", battleId);
+        battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+        battleService.startBattle(battleId);
+
+        int initialX = robot.getPositionX();
+        int initialY = robot.getPositionY();
+        battleService.moveRobot(battleId, robot.getId(), "SOUTH", 1);
+
+        // Wait for robot to complete movement
+        Thread.sleep(1500);
+
+        assertTrue(robot.getPositionY() < initialY, "Y position should decrease when moving SOUTH");
+        assertEquals(initialX, robot.getPositionX(), "X position should remain constant when moving SOUTH");
+    }
+
+    @Test
+    void testRobotMovementEast() throws InterruptedException {
+        Robot robot = battleService.registerRobotForBattle("EastTestRobot", battleId);
+        battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+        battleService.startBattle(battleId);
+
+        int initialX = robot.getPositionX();
+        int initialY = robot.getPositionY();
+        battleService.moveRobot(battleId, robot.getId(), "EAST", 1);
+
+        // Wait for robot to complete movement
+        Thread.sleep(1500);
+
+        assertTrue(robot.getPositionX() > initialX, "X position should increase when moving EAST");
+        assertEquals(initialY, robot.getPositionY(), "Y position should remain constant when moving EAST");
+    }
+
+    @Test
+    void testRobotMovementWest() throws InterruptedException {
+        Robot robot = battleService.registerRobotForBattle("WestTestRobot", battleId);
+        battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+        battleService.startBattle(battleId);
+
+        int initialX = robot.getPositionX();
+        int initialY = robot.getPositionY();
+        battleService.moveRobot(battleId, robot.getId(), "WEST", 1);
+
+        // Wait for robot to complete movement
+        Thread.sleep(1500);
+
+        assertTrue(robot.getPositionX() < initialX, "X position should decrease when moving WEST");
+        assertEquals(initialY, robot.getPositionY(), "Y position should remain constant when moving WEST");
     }
 }
