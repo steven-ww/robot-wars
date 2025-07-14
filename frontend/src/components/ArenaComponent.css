@@ -40,7 +40,26 @@
 
 .battle-info h3 {
   margin-top: 0;
+  margin-bottom: 10px;
   color: #0056b3;
+}
+
+.battle-info-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  font-size: 0.9em;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.info-item strong {
+  color: #495057;
 }
 
 .arena-grid {
@@ -413,4 +432,3 @@ button:disabled {
 .wall-u_shape {
   background-color: #cd853f;
 }
-
