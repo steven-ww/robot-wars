@@ -728,3 +728,6 @@ Following the guidelines in the .junie/guidelines.md file. For the backend proje
 ## 143rd Prompt
 For the frontend project, while the battle is in progress, I see no updates to the arena. Once the battle complete, a see a different area screen showing me the last status of the battle. Are there possibly two arena views? There should only be one and it should show the progress of the battle. follow the guidelines in the .junie/guidelines.md file
 
+## 144th Prompt
+That worked in that I can now see the entire arena. This problem is that I have to scroll around the sceen in order to see all parts of it. I want the arena to render completely in the browser without any portions off of the screen that need to be scrolled to. Follow the guidelines in the .junie/guidelines.md file while completing this task.
+
