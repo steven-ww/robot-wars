@@ -173,7 +173,7 @@ The automated deployment process:
 
 ### WebSocket Endpoints
 
-- `/chat/{username}`: WebSocket endpoint for chat functionality
+- `/battle-state/{battleId}`: WebSocket endpoint for real-time battle state updates
 
 ## Configuration
 
