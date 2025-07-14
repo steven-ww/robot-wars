@@ -734,3 +734,6 @@ That worked in that I can now see the entire arena. This problem is that I have 
 ## 145th Prompt
 fix the checkstyle issues and update the prompts.txt
 
+## 146th Prompt
+fix the prettier issues on the frontend
+
