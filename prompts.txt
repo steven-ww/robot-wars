@@ -745,3 +745,9 @@ fix the prettier issues
 
 ## 149th Prompt
 Update the prompts.txt as per the guidelines while removing "This component displays the battle arena and the robots within it." this text from the arena view.
+
+## 150th Prompt
+Following the guidelines in .junie/guidelines.md implement the following task. In the robo-demo project a feature that requires a robot to fire a lazer once before each movement.
+
+## 151st Prompt
+Follow the guidelines in .junie/guidelines.md. Update the prompt.txt file in the root project folder. The robo-demo project doesn't seem to be firing the laser for each robot? I don't see the fire being rendered on the FE and I don't see any fire status in the robo-demo output. Is the robo-demo actually calling the fire laser?

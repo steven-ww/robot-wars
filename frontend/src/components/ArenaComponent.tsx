@@ -82,12 +82,12 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
     // Clear the active laser after animation duration
     setTimeout(() => {
       setActiveLaser(null);
-    }, 1000); // 1 second animation
+    }, 3000); // 3 seconds animation
 
     // Clear from effects history after a longer duration
     setTimeout(() => {
       setLaserEffects(prev => prev.filter(effect => effect !== data));
-    }, 3000); // 3 seconds total display
+    }, 5000); // 5 seconds total display
   };
 
   // Function to connect to the WebSocket

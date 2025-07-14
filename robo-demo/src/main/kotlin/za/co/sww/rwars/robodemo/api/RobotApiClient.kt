@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import za.co.sww.rwars.robodemo.model.Battle
+import za.co.sww.rwars.robodemo.model.LaserResponse
 import za.co.sww.rwars.robodemo.model.RadarResponse
 import za.co.sww.rwars.robodemo.model.Robot
 import za.co.sww.rwars.robodemo.model.RobotStatus
@@ -203,6 +204,40 @@ class RobotApiClient(private val baseUrl: String) {
 
         val request = Request.Builder()
             .url("$baseUrl/api/robots/battle/$battleId/robot/$robotId/radar")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw IOException("Unexpected response code: ${response.code}")
+            }
+
+            val responseBody = response.body?.string() ?: throw IOException("Empty response body")
+            return mapper.readValue(responseBody)
+        }
+    }
+
+    /**
+     * Fires a laser for a robot in the specified direction.
+     *
+     * @param battleId The battle ID
+     * @param robotId The robot ID
+     * @param direction The direction to fire the laser (NORTH, SOUTH, EAST, WEST, NE, SE, SW, NW)
+     * @param range The laser range (default: 10)
+     * @return The laser response containing hit information
+     * @throws IOException if the API call fails
+     */
+    @Throws(IOException::class)
+    suspend fun fireLaser(battleId: String, robotId: String, direction: String, range: Int = 10): LaserResponse {
+        val requestBody = mapper.writeValueAsString(
+            mapOf(
+                "direction" to direction,
+                "range" to range,
+            ),
+        ).toRequestBody(jsonMediaType)
+
+        val request = Request.Builder()
+            .url("$baseUrl/api/robots/battle/$battleId/robot/$robotId/laser")
             .post(requestBody)
             .build()
 
