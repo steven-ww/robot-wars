@@ -234,22 +234,31 @@ This project includes GitHub Actions workflows for continuous integration and de
 
 To enable the frontend deployment to S3, configure the following GitHub repository variables:
 
-#### Required Variables
+#### Required Secrets
 - `AWS_ROLE_ARN`: The ARN of the AWS IAM role to assume for deployment
+
+#### Required Variables
 - `S3_BUCKET_ARN`: The ARN of the S3 bucket for deployment (e.g., `arn:aws:s3:::my-bucket-name`)
   - Alternatively, you can use `S3_BUCKET_NAME` with just the bucket name
 
 #### Optional Variables
-- `AWS_REGION`: AWS region for deployment (default: `us-east-1`)
 - `BACKEND_URL`: Backend URL for the production build (default: `http://localhost:8080`)
 - `CLOUDFRONT_DISTRIBUTION_ID`: CloudFront distribution ID for cache invalidation (optional)
 
-#### Setting Up GitHub Variables
+**Note**: The deployment uses `af-south-1` as the AWS region to match the backend deployment.
+
+#### Setting Up GitHub Secrets and Variables
 
 1. Go to your GitHub repository
 2. Click on **Settings** > **Secrets and variables** > **Actions**
-3. Click on the **Variables** tab
-4. Add the required variables listed above
+3. For secrets (like `AWS_ROLE_ARN`):
+   - Click on the **Secrets** tab
+   - Click **New repository secret**
+   - Add the required secrets listed above
+4. For variables (like `S3_BUCKET_ARN`):
+   - Click on the **Variables** tab
+   - Click **New repository variable**
+   - Add the required variables listed above
 
 #### AWS IAM Role Configuration
 
