@@ -761,3 +761,7 @@ Follow the guidelines in the .junie/guidelines.md file for this task. In the bac
 ## 154th Prompt
 The fire lazer still occasionally seems to fire out of bounds of the arena. Also, the lazer is rendered for longer than 700ms and seems to fade slowly. The lazer should go away more quickly.
 
+## 155th Prompt
+The BE tests are stil failing during CI/CD. Seems to still be an intermittent problem. testLaserFireDefaultRange() FAILED
+    org.opentest4j.AssertionFailedError at LaserServiceTest.java:138
+
