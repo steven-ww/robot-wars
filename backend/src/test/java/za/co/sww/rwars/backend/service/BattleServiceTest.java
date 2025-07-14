@@ -243,10 +243,36 @@ class BattleServiceTest {
     void testRobotMovementNorth() throws InterruptedException {
         Robot robot = battleService.registerRobotForBattle("NorthTestRobot", battleId);
         battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+
+        // Set deterministic positions to avoid random failures
+        // Try multiple positions until one works (avoiding walls)
+        int[][] positions = {{10, 10}, {5, 5}, {15, 15}, {8, 8}, {12, 12}};
+        boolean positioned = false;
+        int finalX = -1;
+        int finalY = -1;
+
+        for (int[] pos : positions) {
+            try {
+                battleService.setRobotPositionForTesting(battleId, robot.getId(), pos[0], pos[1]);
+                finalX = pos[0];
+                finalY = pos[1];
+                positioned = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Try next position
+            }
+        }
+
+        assertTrue(positioned, "Failed to position robot in a wall-free location");
         battleService.startBattle(battleId);
 
         int initialX = robot.getPositionX();
         int initialY = robot.getPositionY();
+
+        // Verify the position is set correctly
+        assertEquals(finalX, initialX, "Robot should be positioned at X=" + finalX);
+        assertEquals(finalY, initialY, "Robot should be positioned at Y=" + finalY);
+
         battleService.moveRobot(battleId, robot.getId(), "NORTH", 1);
 
         // Wait for robot to complete movement
@@ -254,16 +280,44 @@ class BattleServiceTest {
 
         assertTrue(robot.getPositionY() > initialY, "Y position should increase when moving NORTH");
         assertEquals(initialX, robot.getPositionX(), "X position should remain constant when moving NORTH");
+        assertEquals(finalY + 1, robot.getPositionY(), "Robot should be at Y=" + (finalY + 1) + " after moving NORTH");
     }
 
     @Test
     void testRobotMovementSouth() throws InterruptedException {
         Robot robot = battleService.registerRobotForBattle("SouthTestRobot", battleId);
         battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+
+        // Set deterministic positions to avoid random failures
+        // Try multiple positions until one works (avoiding walls)
+        int[][] positions = {{10, 10}, {5, 5}, {15, 15}, {8, 8}, {12, 12}};
+        boolean positioned = false;
+        int finalX = -1;
+        int finalY = -1;
+
+        for (int[] pos : positions) {
+            try {
+                battleService.setRobotPositionForTesting(battleId, robot.getId(), pos[0], pos[1]);
+                finalX = pos[0];
+                finalY = pos[1];
+                positioned = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Try next position
+            }
+        }
+
+        assertTrue(positioned, "Failed to position robot in a wall-free location");
+
         battleService.startBattle(battleId);
 
         int initialX = robot.getPositionX();
         int initialY = robot.getPositionY();
+
+        // Verify the position is set correctly
+        assertEquals(finalX, initialX, "Robot should be positioned at X=" + finalX);
+        assertEquals(finalY, initialY, "Robot should be positioned at Y=" + finalY);
+
         battleService.moveRobot(battleId, robot.getId(), "SOUTH", 1);
 
         // Wait for robot to complete movement
@@ -271,16 +325,44 @@ class BattleServiceTest {
 
         assertTrue(robot.getPositionY() < initialY, "Y position should decrease when moving SOUTH");
         assertEquals(initialX, robot.getPositionX(), "X position should remain constant when moving SOUTH");
+        assertEquals(finalY - 1, robot.getPositionY(), "Robot should be at Y=" + (finalY - 1) + " after moving SOUTH");
     }
 
     @Test
     void testRobotMovementEast() throws InterruptedException {
         Robot robot = battleService.registerRobotForBattle("EastTestRobot", battleId);
         battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+
+        // Set deterministic positions to avoid random failures
+        // Try multiple positions until one works (avoiding walls)
+        int[][] positions = {{10, 10}, {5, 5}, {15, 15}, {8, 8}, {12, 12}};
+        boolean positioned = false;
+        int finalX = -1;
+        int finalY = -1;
+
+        for (int[] pos : positions) {
+            try {
+                battleService.setRobotPositionForTesting(battleId, robot.getId(), pos[0], pos[1]);
+                finalX = pos[0];
+                finalY = pos[1];
+                positioned = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Try next position
+            }
+        }
+
+        assertTrue(positioned, "Failed to position robot in a wall-free location");
+
         battleService.startBattle(battleId);
 
         int initialX = robot.getPositionX();
         int initialY = robot.getPositionY();
+
+        // Verify the position is set correctly
+        assertEquals(finalX, initialX, "Robot should be positioned at X=" + finalX);
+        assertEquals(finalY, initialY, "Robot should be positioned at Y=" + finalY);
+
         battleService.moveRobot(battleId, robot.getId(), "EAST", 1);
 
         // Wait for robot to complete movement
@@ -288,16 +370,44 @@ class BattleServiceTest {
 
         assertTrue(robot.getPositionX() > initialX, "X position should increase when moving EAST");
         assertEquals(initialY, robot.getPositionY(), "Y position should remain constant when moving EAST");
+        assertEquals(finalX + 1, robot.getPositionX(), "Robot should be at X=" + (finalX + 1) + " after moving EAST");
     }
 
     @Test
     void testRobotMovementWest() throws InterruptedException {
         Robot robot = battleService.registerRobotForBattle("WestTestRobot", battleId);
         battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+
+        // Set deterministic positions to avoid random failures
+        // Try multiple positions until one works (avoiding walls)
+        int[][] positions = {{10, 10}, {5, 5}, {15, 15}, {8, 8}, {12, 12}};
+        boolean positioned = false;
+        int finalX = -1;
+        int finalY = -1;
+
+        for (int[] pos : positions) {
+            try {
+                battleService.setRobotPositionForTesting(battleId, robot.getId(), pos[0], pos[1]);
+                finalX = pos[0];
+                finalY = pos[1];
+                positioned = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Try next position
+            }
+        }
+
+        assertTrue(positioned, "Failed to position robot in a wall-free location");
+
         battleService.startBattle(battleId);
 
         int initialX = robot.getPositionX();
         int initialY = robot.getPositionY();
+
+        // Verify the position is set correctly
+        assertEquals(finalX, initialX, "Robot should be positioned at X=" + finalX);
+        assertEquals(finalY, initialY, "Robot should be positioned at Y=" + finalY);
+
         battleService.moveRobot(battleId, robot.getId(), "WEST", 1);
 
         // Wait for robot to complete movement
@@ -305,5 +415,6 @@ class BattleServiceTest {
 
         assertTrue(robot.getPositionX() < initialX, "X position should decrease when moving WEST");
         assertEquals(initialY, robot.getPositionY(), "Y position should remain constant when moving WEST");
+        assertEquals(finalX - 1, robot.getPositionX(), "Robot should be at X=" + (finalX - 1) + " after moving WEST");
     }
 }
