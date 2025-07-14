@@ -239,182 +239,168 @@ class BattleServiceTest {
         return wallPositions;
     }
 
+    /**
+     * Creates a deterministic battle with no walls for movement testing.
+     * This ensures consistent test results by eliminating randomness.
+     */
+    private String createDeterministicBattle(String battleName) {
+        // Create a battle with "Empty" in the name to avoid random wall generation
+        Battle battle = battleService.createBattle(battleName + "Empty", 30, 30);
+
+        // Add deterministic walls in known positions to test wall avoidance
+        addDeterministicWalls(battle);
+
+        return battle.getId();
+    }
+
+    /**
+     * Adds deterministic walls to the battle in known positions.
+     * This creates a predictable layout for testing.
+     */
+    private void addDeterministicWalls(Battle battle) {
+        // Add walls in corners and edges, leaving the center area (5,5) to (25,25) mostly clear
+        // Top-left corner wall
+        addSquareWall(battle, 0, 0);
+
+        // Top-right corner wall
+        addSquareWall(battle, 25, 0);
+
+        // Bottom-left corner wall
+        addSquareWall(battle, 0, 25);
+
+        // Bottom-right corner wall
+        addSquareWall(battle, 25, 25);
+
+        // Add some predictable walls that don't interfere with test positions
+        addLongWall(battle, 20, 15, true); // horizontal wall at (20,15)
+        addLongWall(battle, 5, 20, false); // vertical wall at (5,20)
+    }
+
     @Test
     void testRobotMovementNorth() throws InterruptedException {
-        Robot robot = battleService.registerRobotForBattle("NorthTestRobot", battleId);
-        battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+        // Create battle with deterministic setup
+        String deterministicBattleId = createDeterministicBattle("NorthMovementTest");
 
-        // Set deterministic positions to avoid random failures
-        // Try multiple positions until one works (avoiding walls)
-        int[][] positions = {{10, 10}, {5, 5}, {15, 15}, {8, 8}, {12, 12}};
-        boolean positioned = false;
-        int finalX = -1;
-        int finalY = -1;
+        Robot robot = battleService.registerRobotForBattle("NorthTestRobot", deterministicBattleId);
+        battleService.registerRobotForBattle("DummyRobot", deterministicBattleId); // Need 2 robots to start battle
 
-        for (int[] pos : positions) {
-            try {
-                battleService.setRobotPositionForTesting(battleId, robot.getId(), pos[0], pos[1]);
-                finalX = pos[0];
-                finalY = pos[1];
-                positioned = true;
-                break;
-            } catch (IllegalArgumentException e) {
-                // Try next position
-            }
-        }
+        // Set deterministic position in known wall-free area
+        int testX = 10;
+        int testY = 10;
+        battleService.setRobotPositionForTesting(deterministicBattleId, robot.getId(), testX, testY);
 
-        assertTrue(positioned, "Failed to position robot in a wall-free location");
-        battleService.startBattle(battleId);
+        battleService.startBattle(deterministicBattleId);
 
         int initialX = robot.getPositionX();
         int initialY = robot.getPositionY();
 
         // Verify the position is set correctly
-        assertEquals(finalX, initialX, "Robot should be positioned at X=" + finalX);
-        assertEquals(finalY, initialY, "Robot should be positioned at Y=" + finalY);
+        assertEquals(testX, initialX, "Robot should be positioned at X=" + testX);
+        assertEquals(testY, initialY, "Robot should be positioned at Y=" + testY);
 
-        battleService.moveRobot(battleId, robot.getId(), "NORTH", 1);
+        battleService.moveRobot(deterministicBattleId, robot.getId(), "NORTH", 1);
 
         // Wait for robot to complete movement
         Thread.sleep(1500);
 
         assertTrue(robot.getPositionY() > initialY, "Y position should increase when moving NORTH");
         assertEquals(initialX, robot.getPositionX(), "X position should remain constant when moving NORTH");
-        assertEquals(finalY + 1, robot.getPositionY(), "Robot should be at Y=" + (finalY + 1) + " after moving NORTH");
+        assertEquals(testY + 1, robot.getPositionY(), "Robot should be at Y=" + (testY + 1) + " after moving NORTH");
     }
 
     @Test
     void testRobotMovementSouth() throws InterruptedException {
-        Robot robot = battleService.registerRobotForBattle("SouthTestRobot", battleId);
-        battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+        // Create battle with deterministic setup
+        String deterministicBattleId = createDeterministicBattle("SouthMovementTest");
 
-        // Set deterministic positions to avoid random failures
-        // Try multiple positions until one works (avoiding walls)
-        int[][] positions = {{10, 10}, {5, 15}, {15, 15}, {8, 18}, {12, 13}};
-        boolean positioned = false;
-        int finalX = -1;
-        int finalY = -1;
+        Robot robot = battleService.registerRobotForBattle("SouthTestRobot", deterministicBattleId);
+        battleService.registerRobotForBattle("DummyRobot", deterministicBattleId); // Need 2 robots to start battle
 
-        for (int[] pos : positions) {
-            try {
-                battleService.setRobotPositionForTesting(battleId, robot.getId(), pos[0], pos[1]);
-                finalX = pos[0];
-                finalY = pos[1];
-                positioned = true;
-                break;
-            } catch (IllegalArgumentException e) {
-                // Try next position
-            }
-        }
+        // Set deterministic position in known wall-free area
+        int testX = 10;
+        int testY = 15; // Start at a higher Y to move south
+        battleService.setRobotPositionForTesting(deterministicBattleId, robot.getId(), testX, testY);
 
-        assertTrue(positioned, "Failed to position robot in a wall-free location");
-
-        battleService.startBattle(battleId);
+        battleService.startBattle(deterministicBattleId);
 
         int initialX = robot.getPositionX();
         int initialY = robot.getPositionY();
 
         // Verify the position is set correctly
-        assertEquals(finalX, initialX, "Robot should be positioned at X=" + finalX);
-        assertEquals(finalY, initialY, "Robot should be positioned at Y=" + finalY);
+        assertEquals(testX, initialX, "Robot should be positioned at X=" + testX);
+        assertEquals(testY, initialY, "Robot should be positioned at Y=" + testY);
 
-        battleService.moveRobot(battleId, robot.getId(), "SOUTH", 1);
+        battleService.moveRobot(deterministicBattleId, robot.getId(), "SOUTH", 1);
 
         // Wait for robot to complete movement
-        Thread.sleep(2000);
+        Thread.sleep(1500);
 
         assertTrue(robot.getPositionY() < initialY, "Y position should decrease when moving SOUTH");
         assertEquals(initialX, robot.getPositionX(), "X position should remain constant when moving SOUTH");
-        assertEquals(finalY - 1, robot.getPositionY(), "Robot should be at Y=" + (finalY - 1) + " after moving SOUTH");
+        assertEquals(testY - 1, robot.getPositionY(), "Robot should be at Y=" + (testY - 1) + " after moving SOUTH");
     }
 
     @Test
     void testRobotMovementEast() throws InterruptedException {
-        Robot robot = battleService.registerRobotForBattle("EastTestRobot", battleId);
-        battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+        // Create battle with deterministic setup
+        String deterministicBattleId = createDeterministicBattle("EastMovementTest");
 
-        // Set deterministic positions to avoid random failures
-        // Try multiple positions until one works (avoiding walls)
-        int[][] positions = {{10, 10}, {5, 5}, {15, 15}, {8, 8}, {12, 12}};
-        boolean positioned = false;
-        int finalX = -1;
-        int finalY = -1;
+        Robot robot = battleService.registerRobotForBattle("EastTestRobot", deterministicBattleId);
+        battleService.registerRobotForBattle("DummyRobot", deterministicBattleId); // Need 2 robots to start battle
 
-        for (int[] pos : positions) {
-            try {
-                battleService.setRobotPositionForTesting(battleId, robot.getId(), pos[0], pos[1]);
-                finalX = pos[0];
-                finalY = pos[1];
-                positioned = true;
-                break;
-            } catch (IllegalArgumentException e) {
-                // Try next position
-            }
-        }
+        // Set deterministic position in known wall-free area
+        int testX = 10;
+        int testY = 10;
+        battleService.setRobotPositionForTesting(deterministicBattleId, robot.getId(), testX, testY);
 
-        assertTrue(positioned, "Failed to position robot in a wall-free location");
-
-        battleService.startBattle(battleId);
+        battleService.startBattle(deterministicBattleId);
 
         int initialX = robot.getPositionX();
         int initialY = robot.getPositionY();
 
         // Verify the position is set correctly
-        assertEquals(finalX, initialX, "Robot should be positioned at X=" + finalX);
-        assertEquals(finalY, initialY, "Robot should be positioned at Y=" + finalY);
+        assertEquals(testX, initialX, "Robot should be positioned at X=" + testX);
+        assertEquals(testY, initialY, "Robot should be positioned at Y=" + testY);
 
-        battleService.moveRobot(battleId, robot.getId(), "EAST", 1);
+        battleService.moveRobot(deterministicBattleId, robot.getId(), "EAST", 1);
 
         // Wait for robot to complete movement
         Thread.sleep(1500);
 
         assertTrue(robot.getPositionX() > initialX, "X position should increase when moving EAST");
         assertEquals(initialY, robot.getPositionY(), "Y position should remain constant when moving EAST");
-        assertEquals(finalX + 1, robot.getPositionX(), "Robot should be at X=" + (finalX + 1) + " after moving EAST");
+        assertEquals(testX + 1, robot.getPositionX(), "Robot should be at X=" + (testX + 1) + " after moving EAST");
     }
 
     @Test
     void testRobotMovementWest() throws InterruptedException {
-        Robot robot = battleService.registerRobotForBattle("WestTestRobot", battleId);
-        battleService.registerRobotForBattle("DummyRobot", battleId); // Need 2 robots to start battle
+        // Create battle with deterministic setup
+        String deterministicBattleId = createDeterministicBattle("WestMovementTest");
 
-        // Set deterministic positions to avoid random failures
-        // Try multiple positions until one works (avoiding walls)
-        int[][] positions = {{10, 10}, {5, 5}, {15, 15}, {8, 8}, {12, 12}};
-        boolean positioned = false;
-        int finalX = -1;
-        int finalY = -1;
+        Robot robot = battleService.registerRobotForBattle("WestTestRobot", deterministicBattleId);
+        battleService.registerRobotForBattle("DummyRobot", deterministicBattleId); // Need 2 robots to start battle
 
-        for (int[] pos : positions) {
-            try {
-                battleService.setRobotPositionForTesting(battleId, robot.getId(), pos[0], pos[1]);
-                finalX = pos[0];
-                finalY = pos[1];
-                positioned = true;
-                break;
-            } catch (IllegalArgumentException e) {
-                // Try next position
-            }
-        }
+        // Set deterministic position in known wall-free area
+        int testX = 15;
+        int testY = 10; // Start at a higher X to move west
+        battleService.setRobotPositionForTesting(deterministicBattleId, robot.getId(), testX, testY);
 
-        assertTrue(positioned, "Failed to position robot in a wall-free location");
-
-        battleService.startBattle(battleId);
+        battleService.startBattle(deterministicBattleId);
 
         int initialX = robot.getPositionX();
         int initialY = robot.getPositionY();
 
         // Verify the position is set correctly
-        assertEquals(finalX, initialX, "Robot should be positioned at X=" + finalX);
-        assertEquals(finalY, initialY, "Robot should be positioned at Y=" + finalY);
+        assertEquals(testX, initialX, "Robot should be positioned at X=" + testX);
+        assertEquals(testY, initialY, "Robot should be positioned at Y=" + testY);
 
-        battleService.moveRobot(battleId, robot.getId(), "WEST", 1);
+        battleService.moveRobot(deterministicBattleId, robot.getId(), "WEST", 1);
 
         // Wait for robot to complete movement
         Thread.sleep(1500);
 
         assertTrue(robot.getPositionX() < initialX, "X position should decrease when moving WEST");
         assertEquals(initialY, robot.getPositionY(), "Y position should remain constant when moving WEST");
-        assertEquals(finalX - 1, robot.getPositionX(), "Robot should be at X=" + (finalX - 1) + " after moving WEST");
+        assertEquals(testX - 1, robot.getPositionX(), "Robot should be at X=" + (testX - 1) + " after moving WEST");
     }
 }
