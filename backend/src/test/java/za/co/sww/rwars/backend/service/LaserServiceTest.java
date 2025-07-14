@@ -131,6 +131,23 @@ class LaserServiceTest {
 
     @Test
     void testLaserFireDefaultRange() {
+        // Position robot in center of arena to ensure it won't hit boundaries
+        // Try multiple positions until one works (avoiding walls)
+        int[][] positions = {{10, 15}, {5, 15}, {15, 15}, {8, 15}, {12, 15}};
+        boolean positioned = false;
+        
+        for (int[] pos : positions) {
+            try {
+                battleService.setRobotPositionForTesting(battleId, robotId1, pos[0], pos[1]);
+                positioned = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Try next position
+            }
+        }
+        
+        assertTrue(positioned, "Failed to position robot in a wall-free location");
+        
         // Fire laser without specifying range (should use default)
         LaserResponse response = battleService.fireLaser(battleId, robotId1, "SOUTH", 0);
 

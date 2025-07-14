@@ -941,9 +941,8 @@ public class BattleService {
             if (nextX < 0 || nextX >= battle.getArenaWidth()
                 || nextY < 0 || nextY >= battle.getArenaHeight()) {
                 // Don't add the out-of-bounds position to the path
-                // Set the actual range to the distance traveled so far
-                int actualRange = i - 1;
-                LaserResponse response = new LaserResponse(actualRange, direction, laserPath, "BOUNDARY");
+                // Return the requested range, not the actual distance traveled
+                LaserResponse response = new LaserResponse(effectiveRange, direction, laserPath, "BOUNDARY");
                 // Broadcast laser event to WebSocket clients
                 broadcastLaserEvent(battleId, response);
                 return response;
