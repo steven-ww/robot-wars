@@ -758,3 +758,6 @@ Follow the guidelines in .junie/guidelines.md while implementing this task. When
 ## 153rd Prompt
 Follow the guidelines in the .junie/guidelines.md file for this task. In the backend project, some of the unit tests fail intermittently. This seems to be related to the randomoness of positioning walls or robots. For any test that does not specifically test for randomness, change the test so that it's working with absolute positioning of everything it needs, e.g. robots and walls. Build specific test methods to cater for this if required (but don't expose those via the api)
 
+## 154th Prompt
+The fire lazer still occasionally seems to fire out of bounds of the arena. Also, the lazer is rendered for longer than 700ms and seems to fade slowly. The lazer should go away more quickly.
+

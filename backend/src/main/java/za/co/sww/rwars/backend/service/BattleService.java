@@ -892,7 +892,7 @@ public class BattleService {
         List<LaserResponse.Position> laserPath = new ArrayList<>();
         int currentX = firingRobot.getPositionX();
         int currentY = firingRobot.getPositionY();
-        
+
         // Always add the robot's starting position as the first point in the path
         laserPath.add(new LaserResponse.Position(currentX, currentY));
 
