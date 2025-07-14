@@ -326,6 +326,23 @@ private suspend fun moveRobotContinuously(
                 }
             }
 
+            // Fire laser before movement
+            val fireDirection = directions.random()
+            try {
+                val laserResponse = robotApiClient.fireLaser(battleId, robot.id, fireDirection)
+                logger.info("🔥 ${robot.name} fired laser $fireDirection - Hit: ${laserResponse.hit}, Range: ${laserResponse.range}")
+                if (laserResponse.hit && laserResponse.hitRobotId != null) {
+                    logger.info("💥 ${robot.name}'s laser hit robot ${laserResponse.hitRobotId}!")
+                }
+            } catch (e: IOException) {
+                if (e.message?.contains("409") == true) {
+                    logger.info("🏁 Battle has ended, stopping movement for ${robot.name}")
+                    break
+                } else {
+                    logger.warn("⚠️  ${robot.name} failed to fire laser: ${e.message}")
+                }
+            }
+
             // Use radar to scan for nearby walls and choose a safe direction
             val safeDirection = chooseSafeDirection(robotApiClient, battleId, robot, directions)
             val blocks = (1..2).random() // Reduced range to be more cautious

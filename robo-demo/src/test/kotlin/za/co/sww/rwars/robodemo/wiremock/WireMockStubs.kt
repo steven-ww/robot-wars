@@ -11,6 +11,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import org.slf4j.LoggerFactory
 import za.co.sww.rwars.robodemo.model.Battle
+import za.co.sww.rwars.robodemo.model.LaserResponse
 import za.co.sww.rwars.robodemo.model.RadarResponse
 import za.co.sww.rwars.robodemo.model.Robot
 import java.util.UUID
@@ -330,5 +331,66 @@ class WireMockStubs {
 
         logger.info("Stubbed radar scan endpoint for robot: $robotName with range: $range, detections: ${detections.size}")
         return radarResponse
+    }
+
+    /**
+     * Sets up a stub for firing a laser.
+     *
+     * @param robotName The name of the robot
+     * @param direction The direction to fire the laser
+     * @param range The laser range
+     * @param hit Whether the laser hit a target
+     * @param hitRobotName The name of the robot that was hit (if any)
+     * @return The laser response
+     */
+    fun stubFireLaser(
+        robotName: String,
+        direction: String,
+        range: Int = 10,
+        hit: Boolean = false,
+        hitRobotName: String? = null,
+    ): LaserResponse {
+        val robotId = robotIds[robotName] ?: throw IllegalArgumentException("Robot not found: $robotName")
+
+        val laserResponse = LaserResponse(
+            hit = hit,
+            hitRobotId = if (hit && hitRobotName != null) robotIds[hitRobotName] else null,
+            hitRobotName = hitRobotName,
+            damageDealt = if (hit) 20 else 0,
+            range = range,
+            direction = direction,
+            laserPath = listOf(
+                LaserResponse.Position(0, 0),
+                LaserResponse.Position(1, 0),
+                LaserResponse.Position(2, 0),
+            ),
+            hitPosition = if (hit) LaserResponse.Position(2, 0) else null,
+            blockedBy = if (hit) "ROBOT" else "WALL",
+        )
+
+        WireMock.stubFor(
+            post(urlPathMatching("/api/robots/battle/$battleId/robot/$robotId/laser"))
+                .withRequestBody(
+                    equalToJson(
+                        mapper.writeValueAsString(
+                            mapOf(
+                                "direction" to direction,
+                                "range" to range,
+                            ),
+                        ),
+                        true,
+                        false,
+                    ),
+                )
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(mapper.writeValueAsString(laserResponse)),
+                ),
+        )
+
+        logger.info("Stubbed fire laser endpoint for robot: $robotName, direction: $direction, range: $range, hit: $hit")
+        return laserResponse
     }
 }

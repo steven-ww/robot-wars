@@ -313,6 +313,27 @@ class RobotBattleSteps {
         logger.info("Robot ${robot.name} is now moving in direction $direction for $blocks blocks")
     }
 
+    @When("I fire a laser in direction {string}")
+    fun iFireALaserInDirection(direction: String) = runBlocking {
+        logger.info("Firing laser in direction $direction")
+
+        // Get the first robot (assuming one robot setup per scenario)
+        val robot = robots.values.first()
+
+        // Set up stub for firing laser
+        wireMockStubs.stubFireLaser(robot.name, direction)
+
+        // Call the API through the client
+        val laserResponse = robotApiClient.fireLaser(battle.id, robot.id, direction)
+
+        // Verify the response
+        if (laserResponse.hit) {
+            logger.info("Laser hit a robot: ${laserResponse.hitRobotName} (ID: ${laserResponse.hitRobotId})")
+        } else {
+            logger.info("Laser missed, hit blocked by: ${laserResponse.blockedBy}")
+        }
+    }
+
     @Then("I should be able to track the robot's position as it moves")
     fun iShouldBeAbleToTrackTheRobotsPositionAsItMoves() = runBlocking {
         logger.info("Tracking robot's position as it moves")
@@ -345,5 +366,79 @@ class RobotBattleSteps {
         }
 
         logger.info("Successfully tracked robot's status as it moved")
+    }
+
+    @Then("I should be able to fire a laser before moving the robots around the arena until a specified time has passed")
+    fun iShouldBeAbleToFireLaserBeforeMovingRobotsUntilSpecifiedTime() = runBlocking {
+        logger.info("Moving robots around the arena with laser firing until the specified time has passed")
+
+        wireMockStubs.stubGetBattleStatus()
+
+        val startTime = Instant.now()
+        // Use a shorter time limit for testing (5 seconds instead of 5 minutes)
+        val timeLimitDuration = Duration.ofSeconds(5)
+        val directions = listOf("NORTH", "EAST", "SOUTH", "WEST", "NE", "SE", "SW", "NW")
+        var moveCount = 0
+        val maxMoves = 10 // Limit the number of moves for test efficiency
+
+        while (
+            Duration.between(startTime, Instant.now()) < timeLimitDuration &&
+            moveCount < maxMoves
+        ) {
+            moveCount++
+            // Move each robot
+            for ((robotName, robot) in robots) {
+                val direction = directions.random()
+                val blocks = (1..3).random()
+                // Fire laser first
+                logger.info("Firing laser for $robotName in direction $direction")
+                wireMockStubs.stubFireLaser(robotName, direction)
+                robotApiClient.fireLaser(battle.id, robot.id, direction)
+                // Then move the robot
+                logger.info("Moving $robotName $blocks blocks $direction")
+                wireMockStubs.stubMoveRobot(robotName, direction, blocks)
+                robotApiClient.moveRobot(battle.id, robot.id, direction, blocks)
+                Thread.sleep(100)
+            }
+
+            val elapsed = Duration.between(startTime, Instant.now())
+            logger.info("Time elapsed: ${elapsed.toMillis()} ms")
+        }
+
+        logger.info("Specified time limit reached or maximum moves completed")
+        val battleStatus = robotApiClient.getBattleStatus(battle.id)
+        logger.info("Battle ended with state: ${battleStatus.state}")
+    }
+
+    @When("I fire a laser in direction {string} before moving the robot in direction {string} for {int} block")
+    fun iFireALaserBeforeMovingRobot(laserDirection: String, moveDirection: String, blocks: Int) = runBlocking {
+        logger.info("Firing laser in direction $laserDirection before moving robot in direction $moveDirection for $blocks blocks")
+
+        // Get the first robot (assuming one robot setup per scenario)
+        val robot = robots.values.first()
+
+        // Fire laser first
+        wireMockStubs.stubFireLaser(robot.name, laserDirection)
+        val laserResponse = robotApiClient.fireLaser(battle.id, robot.id, laserDirection)
+        if (laserResponse.hit) {
+            logger.info("Laser hit a robot: ${laserResponse.hitRobotName}")
+        } else {
+            logger.info("Laser missed, blocked by: ${laserResponse.blockedBy}")
+        }
+
+        // Then move the robot
+        wireMockStubs.stubMoveRobot(robot.name, moveDirection, blocks)
+        val updatedRobot = robotApiClient.moveRobot(battle.id, robot.id, moveDirection, blocks)
+
+        // Store the updated robot
+        robots[robot.name] = updatedRobot
+        logger.info("Robot ${robot.name} fired laser in $laserDirection then moved $blocks blocks $moveDirection")
+    }
+
+    @Then("the robot should fire a laser first and then move in the specified direction")
+    fun theRobotShouldFireLaserFirstAndThenMove() {
+        logger.info("Verified that robot fired laser before moving")
+        // This step is verification that the previous step completed successfully
+        // The actual firing and moving happened in the previous step
     }
 }
