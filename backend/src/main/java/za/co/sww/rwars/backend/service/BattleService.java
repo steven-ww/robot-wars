@@ -549,6 +549,9 @@ public class BattleService {
         robot.setTargetBlocks(blocks);
         robot.setBlocksRemaining(blocks);
 
+        // Record the robot action
+        battle.addRobotAction(robotId, robot.getName(), "move");
+
         // Broadcast the state change to WebSocket clients
         broadcastBattleStateUpdate(battleId);
 
@@ -798,7 +801,14 @@ public class BattleService {
             throw new IllegalStateException("Robot is not active");
         }
 
-        return radarService.scanArea(battle, robot, range);
+        // Record the robot action
+        battle.addRobotAction(robotId, robot.getName(), "radar");
+
+        RadarResponse response = radarService.scanArea(battle, robot, range);
+
+        // Broadcast the state change to include the new action
+        broadcastBattleStateUpdate(battleId);
+        return response;
     }
 
     /**
@@ -872,10 +882,19 @@ public class BattleService {
         // Use default range if not specified or invalid
         int effectiveRange = (range > 0 && range <= maxLaserRange) ? range : defaultLaserRange;
 
+        // Record the robot action
+        battle.addRobotAction(robotId, firingRobot.getName(), "fire laser");
+
+        // Broadcast the state change to include the new action
+        broadcastBattleStateUpdate(battleId);
+
         // Calculate laser path and check for hits
         List<LaserResponse.Position> laserPath = new ArrayList<>();
         int currentX = firingRobot.getPositionX();
         int currentY = firingRobot.getPositionY();
+
+        // Always add the robot's starting position as the first point in the path
+        laserPath.add(new LaserResponse.Position(currentX, currentY));
 
         // Direction deltas - consistent with movement system
         int deltaX = 0;
@@ -921,8 +940,12 @@ public class BattleService {
             // Check if laser goes out of bounds
             if (nextX < 0 || nextX >= battle.getArenaWidth()
                 || nextY < 0 || nextY >= battle.getArenaHeight()) {
-                laserPath.add(new LaserResponse.Position(nextX, nextY));
-                return new LaserResponse(effectiveRange, direction, laserPath, "BOUNDARY");
+                // Don't add the out-of-bounds position to the path
+                // Return the requested range, not the actual distance traveled
+                LaserResponse response = new LaserResponse(effectiveRange, direction, laserPath, "BOUNDARY");
+                // Broadcast laser event to WebSocket clients
+                broadcastLaserEvent(battleId, response);
+                return response;
             }
 
             laserPath.add(new LaserResponse.Position(nextX, nextY));
@@ -936,7 +959,10 @@ public class BattleService {
                 }
             }
             if (hitWall) {
-                return new LaserResponse(effectiveRange, direction, laserPath, "WALL");
+                LaserResponse response = new LaserResponse(effectiveRange, direction, laserPath, "WALL");
+                // Broadcast laser event to WebSocket clients
+                broadcastLaserEvent(battleId, response);
+                return response;
             }
 
             // Check if laser hits a robot
@@ -950,7 +976,7 @@ public class BattleService {
                     // Broadcast battle state update due to robot damage
                     broadcastBattleStateUpdate(battleId);
 
-                    return new LaserResponse(
+                    LaserResponse response = new LaserResponse(
                         robot.getId(),
                         robot.getName(),
                         laserDamage,
@@ -959,12 +985,18 @@ public class BattleService {
                         laserPath,
                         new LaserResponse.Position(nextX, nextY)
                     );
+                    // Broadcast laser event to WebSocket clients
+                    broadcastLaserEvent(battleId, response);
+                    return response;
                 }
             }
         }
 
         // Laser reached maximum range without hitting anything
-        return new LaserResponse(effectiveRange, direction, laserPath, null);
+        LaserResponse response = new LaserResponse(effectiveRange, direction, laserPath, null);
+        // Broadcast laser event to WebSocket clients
+        broadcastLaserEvent(battleId, response);
+        return response;
     }
 
     /**
@@ -980,6 +1012,25 @@ public class BattleService {
             } catch (Exception e) {
                 // Log the error but don't fail the operation
                 System.err.println("Error broadcasting battle state update for battle " + battleId + ": "
+                        + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Broadcasts laser events to all connected WebSocket clients.
+     * This method is called whenever a laser is fired to provide real-time laser visualization.
+     *
+     * @param battleId The battle ID to broadcast laser events for
+     * @param response The laser response containing path and hit information
+     */
+    private void broadcastLaserEvent(String battleId, LaserResponse response) {
+        if (battleStateSocket != null && battleId != null) {
+            try {
+                battleStateSocket.broadcastLaserEvent(battleId, response);
+            } catch (Exception e) {
+                // Log the error but don't fail the operation
+                System.err.println("Error broadcasting laser event for battle " + battleId + ": "
                         + e.getMessage());
             }
         }

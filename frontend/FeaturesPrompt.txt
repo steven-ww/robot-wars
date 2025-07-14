@@ -1,0 +1,9 @@
+Given the user navigates to the arena page for a battle
+    AND a battle is in progress,
+    THEN show a window on the right of the arena that shows, for each action taken, the name of the robot and the action taken (eg radar, move)
+    AND allow this text to scroll up and out of the box as the battle continues.
+
+Given the user navigates to the arena page for a battle,
+    when the page is rendered, have it fit into the browser widow (desktop only) such that the user can see the entire arena without scrolling
+    AND the text window of actions taken by the robots is visible on the right of the window
+    AND this works across 20*20, 50*50 and 100*100 arena sizes

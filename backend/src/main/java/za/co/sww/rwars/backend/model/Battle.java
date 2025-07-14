@@ -50,10 +50,14 @@ public class Battle {
     @Schema(description = "Name of the winning robot", example = "Crusher")
     private String winnerName;
 
+    @Schema(description = "List of robot actions that have occurred during the battle")
+    private List<RobotAction> robotActions;
+
     public Battle() {
         this.id = UUID.randomUUID().toString();
         this.robots = new ArrayList<>();
         this.walls = new ArrayList<>();
+        this.robotActions = new ArrayList<>();
         this.state = BattleState.WAITING_ON_ROBOTS;
         this.robotMovementTimeSeconds = 1.0; // Default value
     }
@@ -65,6 +69,7 @@ public class Battle {
         this.arenaHeight = arenaHeight;
         this.robots = new ArrayList<>();
         this.walls = new ArrayList<>();
+        this.robotActions = new ArrayList<>();
         this.state = BattleState.WAITING_ON_ROBOTS;
         this.robotMovementTimeSeconds = 1.0; // Default value
     }
@@ -76,6 +81,7 @@ public class Battle {
         this.arenaHeight = arenaHeight;
         this.robots = new ArrayList<>();
         this.walls = new ArrayList<>();
+        this.robotActions = new ArrayList<>();
         this.state = BattleState.WAITING_ON_ROBOTS;
         this.robotMovementTimeSeconds = robotMovementTimeSeconds;
     }
@@ -201,5 +207,21 @@ public class Battle {
 
     public Robot getActiveRobot() {
         return robots.stream().filter(Robot::isActive).findFirst().orElse(null);
+    }
+
+    public List<RobotAction> getRobotActions() {
+        return robotActions;
+    }
+
+    public void setRobotActions(List<RobotAction> robotActions) {
+        this.robotActions = robotActions;
+    }
+
+    public void addRobotAction(RobotAction robotAction) {
+        this.robotActions.add(robotAction);
+    }
+
+    public void addRobotAction(String robotId, String robotName, String action) {
+        this.robotActions.add(new RobotAction(robotId, robotName, action));
     }
 }

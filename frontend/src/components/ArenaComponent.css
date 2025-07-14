@@ -1,10 +1,12 @@
 .arena-container {
-  padding: 20px;
+  padding: 10px;
   background-color: #f8f9fa;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 900px;
+  width: 100%;
   margin: 0 auto;
+  max-height: 100vh;
+  overflow-y: auto;
 }
 
 .arena-container h2 {
@@ -38,7 +40,26 @@
 
 .battle-info h3 {
   margin-top: 0;
+  margin-bottom: 10px;
   color: #0056b3;
+}
+
+.battle-info-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  font-size: 0.9em;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.info-item strong {
+  color: #495057;
 }
 
 .arena-grid {
@@ -46,9 +67,10 @@
   border: 2px solid #333;
   position: relative;
   width: 100%;
-  max-width: 800px;
+  max-width: none;
   margin: 0 auto;
   min-height: 400px;
+  overflow: visible;
 }
 
 .robot {
