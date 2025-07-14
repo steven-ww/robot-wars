@@ -23,13 +23,6 @@ interface Wall {
   positions: WallPosition[];
 }
 
-interface RobotAction {
-  robotId: string;
-  robotName: string;
-  action: string;
-  timestamp: string;
-}
-
 interface BattleState {
   battleId: string;
   battleName: string;
@@ -41,7 +34,6 @@ interface BattleState {
   walls: Wall[];
   winnerId?: string;
   winnerName?: string;
-  robotActions?: RobotAction[];
 }
 
 interface LaserPosition {
@@ -329,45 +321,6 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
     );
   };
 
-  // Render the action window showing robot actions
-  const renderActionWindow = () => {
-    if (!battleState || battleState.battleState !== 'IN_PROGRESS') {
-      return null;
-    }
-
-    const actions = battleState.robotActions || [];
-
-    return (
-      <div
-        className="action-window responsive-width"
-        data-testid="action-window"
-      >
-        <div className="action-window-header">
-          <h4>Robot Actions</h4>
-        </div>
-        <div className="action-list scrollable" data-testid="action-list">
-          {actions.map((action, index) => (
-            <div
-              key={`${action.robotId}-${action.timestamp}-${index}`}
-              className="action-item"
-              data-testid={`action-item-${index}`}
-            >
-              <span className="robot-name">{action.robotName}</span>
-              <span className="action-type">{action.action}</span>
-              <span className="action-timestamp">
-                {new Date(action.timestamp).toLocaleTimeString()}
-              </span>
-            </div>
-          ))}
-          {actions.length === 0 && (
-            <div className="no-actions">
-              <p>No actions yet...</p>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
 
   // Render battle results when battle is completed
   const renderBattleResults = () => {
@@ -452,11 +405,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
 
   return (
     <div
-      className={`arena-container ${
-        battleState?.battleState === 'IN_PROGRESS'
-          ? 'arena-with-action-window responsive-layout'
-          : ''
-      }`}
+      className="arena-container"
       data-testid="arena-container"
     >
       <h2>Battle Arena</h2>
@@ -560,42 +509,31 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
         </div>
       )}
 
-      {/* Main layout wrapper for arena and action window */}
+      {/* Arena grid */}
       {battleState && (
-        <div className="arena-main-layout">
-          {/* Arena section */}
-          <div className="arena-section">
-            <div
-              className="arena-grid"
-              data-testid="arena-grid"
-              data-width={battleState.arenaWidth}
-              data-height={battleState.arenaHeight}
-              style={{
-                aspectRatio: `${battleState.arenaWidth} / ${battleState.arenaHeight}`,
-                position: 'relative',
-                border: '1px solid #333',
-                backgroundColor: '#f0f0f0',
-                width: '100%',
-                maxWidth:
-                  battleState.battleState === 'IN_PROGRESS' ? '60vw' : '75vw',
-                maxHeight: 'calc(100vh - 250px)',
-                margin: '0 auto',
-              }}
-            >
-              {renderWalls()}
-              {battleState.robots.map(renderRobot)}
-              {/* Render active laser */}
-              {activeLaser && renderLaser(activeLaser, 0)}
-              {/* Render laser effects */}
-              {laserEffects.map((laser, index) =>
-                renderLaser(laser, index + 1)
-              )}
-            </div>
-          </div>
-
-          {/* Action window section */}
-          {battleState.battleState === 'IN_PROGRESS' && (
-            <div className="action-section">{renderActionWindow()}</div>
+        <div
+          className="arena-grid"
+          data-testid="arena-grid"
+          data-width={battleState.arenaWidth}
+          data-height={battleState.arenaHeight}
+          style={{
+            aspectRatio: `${battleState.arenaWidth} / ${battleState.arenaHeight}`,
+            position: 'relative',
+            border: '1px solid #333',
+            backgroundColor: '#f0f0f0',
+            width: '100%',
+            maxWidth: '75vw',
+            maxHeight: 'calc(100vh - 250px)',
+            margin: '0 auto',
+          }}
+        >
+          {renderWalls()}
+          {battleState.robots.map(renderRobot)}
+          {/* Render active laser */}
+          {activeLaser && renderLaser(activeLaser, 0)}
+          {/* Render laser effects */}
+          {laserEffects.map((laser, index) =>
+            renderLaser(laser, index + 1)
           )}
         </div>
       )}
