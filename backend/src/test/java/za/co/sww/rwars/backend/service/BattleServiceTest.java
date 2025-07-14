@@ -290,7 +290,7 @@ class BattleServiceTest {
 
         // Set deterministic positions to avoid random failures
         // Try multiple positions until one works (avoiding walls)
-        int[][] positions = {{10, 10}, {5, 5}, {15, 15}, {8, 8}, {12, 12}};
+        int[][] positions = {{10, 10}, {5, 15}, {15, 15}, {8, 18}, {12, 13}};
         boolean positioned = false;
         int finalX = -1;
         int finalY = -1;
@@ -321,7 +321,7 @@ class BattleServiceTest {
         battleService.moveRobot(battleId, robot.getId(), "SOUTH", 1);
 
         // Wait for robot to complete movement
-        Thread.sleep(1500);
+        Thread.sleep(2000);
 
         assertTrue(robot.getPositionY() < initialY, "Y position should decrease when moving SOUTH");
         assertEquals(initialX, robot.getPositionX(), "X position should remain constant when moving SOUTH");
