@@ -877,15 +877,15 @@ public class BattleService {
         int currentX = firingRobot.getPositionX();
         int currentY = firingRobot.getPositionY();
 
-        // Direction deltas
+        // Direction deltas - consistent with movement system
         int deltaX = 0;
         int deltaY = 0;
         switch (laserDirection) {
             case NORTH:
-                deltaY = -1;
+                deltaY = 1;
                 break;
             case SOUTH:
-                deltaY = 1;
+                deltaY = -1;
                 break;
             case EAST:
                 deltaX = 1;
@@ -895,19 +895,19 @@ public class BattleService {
                 break;
             case NE:
                 deltaX = 1;
-                deltaY = -1;
+                deltaY = 1;
                 break;
             case NW:
                 deltaX = -1;
-                deltaY = -1;
+                deltaY = 1;
                 break;
             case SE:
                 deltaX = 1;
-                deltaY = 1;
+                deltaY = -1;
                 break;
             case SW:
                 deltaX = -1;
-                deltaY = 1;
+                deltaY = -1;
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported direction: " + laserDirection);

@@ -3,18 +3,25 @@ package za.co.sww.rwars.backend.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 /**
  * Represents a wall in the battle arena.
  */
+@Schema(description = "Wall obstacle in the battle arena")
 public class Wall {
 
+    @Schema(description = "Type of wall configuration")
     public enum WallType {
         SQUARE,     // 4x4 square
         LONG,       // 1x10 line
         U_SHAPE     // 4x10x4 U-shape
     }
 
+    @Schema(description = "Type of the wall")
     private WallType type;
+    
+    @Schema(description = "List of positions occupied by this wall")
     private List<Position> positions;
 
     public Wall(WallType type) {
@@ -51,8 +58,12 @@ public class Wall {
         return positions.stream().anyMatch(pos -> pos.getX() == x && pos.getY() == y);
     }
 
+    @Schema(description = "Position coordinates of a wall segment")
     public static class Position {
+        @Schema(description = "X coordinate of the wall position", example = "20")
         private int x;
+        
+        @Schema(description = "Y coordinate of the wall position", example = "25")
         private int y;
 
         public Position(int x, int y) {

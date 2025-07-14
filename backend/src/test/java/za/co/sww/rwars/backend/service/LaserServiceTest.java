@@ -59,15 +59,18 @@ class LaserServiceTest {
 
     @Test
     void testLaserFireHit() {
-        // Get robot positions
-        Robot robot1 = battleService.getRobotDetails(battleId, robotId1);
-        Robot robot2 = battleService.getRobotDetails(battleId, robotId2);
+        // Position robots at known locations to ensure a guaranteed hit
+        // Robot1 at (10, 10) and Robot2 at (10, 13) - 3 blocks north (Y increases)
+        try {
+            battleService.setRobotPositionForTesting(battleId, robotId1, 10, 10);
+            battleService.setRobotPositionForTesting(battleId, robotId2, 10, 13);
+        } catch (Exception e) {
+            // If positioning fails due to walls, try alternative positions
+            battleService.setRobotPositionForTesting(battleId, robotId1, 5, 10);
+            battleService.setRobotPositionForTesting(battleId, robotId2, 5, 13);
+        }
 
-        // Position robot2 directly north of robot1 for a guaranteed hit
-        robot2.setPositionX(robot1.getPositionX());
-        robot2.setPositionY(robot1.getPositionY() - 3); // 3 blocks north
-
-        // Fire laser north
+        // Fire laser north from robot1 towards robot2
         LaserResponse response = battleService.fireLaser(battleId, robotId1, "NORTH", 10);
 
         assertNotNull(response);
@@ -109,10 +112,13 @@ class LaserServiceTest {
 
     @Test
     void testLaserFireBoundaryBlock() {
-        // Position robot near edge
-        Robot robot = battleService.getRobotDetails(battleId, robotId1);
-        robot.setPositionX(19); // Near right edge of 20x20 arena
-        robot.setPositionY(10);
+        // Position robot near edge using proper testing method
+        try {
+            battleService.setRobotPositionForTesting(battleId, robotId1, 19, 10);
+        } catch (Exception e) {
+            // If positioning fails due to walls, try alternative edge position
+            battleService.setRobotPositionForTesting(battleId, robotId1, 18, 10);
+        }
 
         // Fire laser east (should hit boundary)
         LaserResponse response = battleService.fireLaser(battleId, robotId1, "EAST", 5);
