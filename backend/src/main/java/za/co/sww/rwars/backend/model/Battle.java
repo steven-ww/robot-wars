@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Represents a battle with its state, arena dimensions, and participating robots.
  */
 @Schema(description = "Entity representing a battle arena")
+@RegisterForReflection
 public class Battle {
 
     @Schema(description = "Represents the current state of the battle")

@@ -3,11 +3,13 @@ package za.co.sww.rwars.backend.model;
 import java.util.List;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Response object for laser firing operations.
  */
 @Schema(description = "Response from a laser firing operation, detailing results")
+@RegisterForReflection
 public class LaserResponse {
     @Schema(description = "Indicates if the laser hit a target")
     private boolean hit;
@@ -158,6 +160,7 @@ public class LaserResponse {
      * Represents a position in the arena.
      */
     @Schema(description = "Position coordinates")
+    @RegisterForReflection
     public static class Position {
         @Schema(description = "X coordinate of the position", example = "5")
         private int x;
