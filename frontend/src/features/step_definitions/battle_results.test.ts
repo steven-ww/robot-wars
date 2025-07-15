@@ -10,7 +10,7 @@ defineFeature(feature, test => {
   let server: WS;
 
   beforeEach(() => {
-    server = new WS('ws://localhost/battle-state/test-battle-id');
+    server = new WS('ws://localhost:8080/battle-state/test-battle-id');
   });
 
   afterEach(() => {

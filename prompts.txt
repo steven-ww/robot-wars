@@ -787,3 +787,14 @@ Follow the guidelines in the .junie/guidelines.md file for this task. I'm still 
 ## 160th Prompt
 Follow the guidelines file at .junie/guidelines.md for this task. The authentication for S3 deployements in the frontend-ci isn't working. The authentication in the backend-ci does work. Can you align the frontend deployment with the backend deployment authentication.
 
+## 161st Prompt
+Following the guidelines in .junie/guidelines.md for this task. When running in production the URL for the backend api/rest calls is refering to the url of the UI, not the unique url for the API. The md files and the code don't seem to align on what the variable name is that holds this value. Confirm what the variable name should be defined as in github
+
+## 162nd Prompt
+Make that change for me, but also consider what variable to use for the backend url for the websocket. That is, can the BACKEND_URL variable be reused as the url is the same even though it appears that the websocket url should not include "https://"
+
+## 163rd Prompt
+Fix the test errors in the fe project. Remember to follow the guidelines and update the prompts.txt file.
+
+## 164th Prompt
+Following the guidelines in the .junie/guidelines.md file, validate that the url used for the swagger documentation link for the FE, uses the correct backend url when in production
