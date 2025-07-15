@@ -18,6 +18,89 @@ cleanup() {
 # Register the cleanup function to be called on exit
 trap cleanup EXIT
 
+# Function to check if server is running and accessible
+check_server_accessibility() {
+  local url="$1"
+  echo "Checking if server is accessible at: $url"
+  
+  # Try to connect to the server with a timeout
+  if curl -s --connect-timeout 5 --max-time 10 "$url/q/health" > /dev/null 2>&1; then
+    echo "✓ Server is accessible and running at $url"
+    return 0
+  else
+    echo "✗ Server is not accessible at $url"
+    return 1
+  fi
+}
+
+# Function to check if URL is localhost
+is_localhost_url() {
+  local url="$1"
+  if [[ "$url" == *"localhost"* ]] || [[ "$url" == *"127.0.0.1"* ]] || [[ "$url" == *"::1"* ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Function to extract port from URL
+extract_port_from_url() {
+  local url="$1"
+  # Extract port using regex - handles http://localhost:8080 format
+  if [[ "$url" =~ :([0-9]+) ]]; then
+    echo "${BASH_REMATCH[1]}"
+  else
+    # Default HTTP port
+    echo "80"
+  fi
+}
+
+# Function to start local server if needed
+start_local_server_if_needed() {
+  local url="$1"
+  
+  # Only start local server if URL is localhost and server is not running
+  if is_localhost_url "$url"; then
+    local port=$(extract_port_from_url "$url")
+    echo "URL points to localhost (port: $port)"
+    
+    # Check if port is already in use
+    if lsof -Pi :$port -sTCP:LISTEN -t > /dev/null 2>&1; then
+      echo "Port $port is already in use"
+      if check_server_accessibility "$url"; then
+        echo "Server is already running and accessible"
+        return 0
+      else
+        echo "Port is in use but server is not accessible. This might be a different service."
+        return 1
+      fi
+    else
+      echo "Port $port is not in use. Starting local server..."
+      cd backend
+      ../gradlew quarkusDev &
+      BACKEND_PID=$!
+      cd ..
+      
+      echo "Waiting for backend service to start..."
+      # Wait up to 30 seconds for server to start
+      for i in {1..30}; do
+        if check_server_accessibility "$url"; then
+          echo "✓ Local server started successfully"
+          return 0
+        fi
+        echo "Waiting for server to start... ($i/30)"
+        sleep 1
+      done
+      
+      echo "✗ Failed to start local server within 30 seconds"
+      return 1
+    fi
+  else
+    echo "URL is not localhost. Will not start local server."
+    return 0
+  fi
+}
+
 # Set default values
 BASE_URL="http://localhost:8080"
 TIME_LIMIT="5m" # 5 minutes by default
@@ -43,6 +126,7 @@ while [[ $# -gt 0 ]]; do
       echo "  -h, --help              Show this help message"
       echo ""
       echo "The demo will run until one robot wins or the time limit is reached."
+      echo "Note: Local server will only be started if URL points to localhost and server is not running."
       exit 0
       ;;
     -*|--*)
@@ -59,22 +143,35 @@ done
 # Set the working directory to the project root
 cd "$(dirname "$0")/.."
 
-echo "Starting backend service in dev mode..."
-# Check if backend service is already running
-if lsof -Pi :8080 -sTCP:LISTEN -t > /dev/null ; then
-  echo "Backend service is already running."
-else
-  echo "Starting backend service in dev mode..."
-  # Start the backend service in dev mode in the background
-  cd backend
-  ../gradlew quarkusDev &
-  BACKEND_PID=$!
-  cd ..
+echo "=== Robot Wars Demo Server Setup ==="
+echo "Target URL: $BASE_URL"
+echo "Time limit: $TIME_LIMIT"
+echo ""
 
-  # Wait for the backend service to start
-  echo "Waiting for backend service to start..."
-  sleep 10
+# First, check if the server is already accessible
+if check_server_accessibility "$BASE_URL"; then
+  echo "Server is already running and accessible. No need to start local server."
+else
+  echo "Server is not accessible. Checking if we should start a local server..."
+  
+  if ! start_local_server_if_needed "$BASE_URL"; then
+    echo "Failed to start local server or server is not accessible."
+    echo "Please ensure:"
+    echo "1. The server is running at $BASE_URL"
+    echo "2. The server is accessible from this machine"
+    echo "3. If using a remote server, check network connectivity"
+    exit 1
+  fi
 fi
+
+# Final validation that server is accessible
+if ! check_server_accessibility "$BASE_URL"; then
+  echo "❌ Server is still not accessible at $BASE_URL"
+  echo "Cannot proceed with demo. Please check server status."
+  exit 1
+fi
+
+echo "✅ Server validation complete. Server is accessible at $BASE_URL"
 
 # Build the arguments for the robo-demo application
 ROBO_ARGS="--url $BASE_URL --time $TIME_LIMIT"

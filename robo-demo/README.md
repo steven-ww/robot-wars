@@ -51,21 +51,49 @@ cd robo-demo
 - `-t, --time TIME`: Time limit for the battle (e.g., `5m`, `30s`) (default: `5m`)
 - `-h, --help`: Show help message
 
+#### Script Behavior:
+
+The script intelligently handles server startup based on the provided URL:
+
+1. **Server Validation**: First checks if the server is accessible at the specified URL
+2. **Local Server Management**: Only starts a local server if:
+   - The URL points to localhost (localhost, 127.0.0.1, or ::1)
+   - The server is not already running
+   - The port is not in use by another service
+3. **Remote Server Support**: When using a remote URL, validates connectivity without starting local services
+4. **Health Check**: Uses the Quarkus health endpoint (`/q/health`) to verify server status
+5. **Timeout Protection**: Waits up to 30 seconds for local server startup
+
 #### Examples:
 
 ```bash
 # Run with default settings (5 minutes time limit)
+# - Will start local server if not running
 ./start-battle.sh
 
 # Run for 2 minutes
+# - Will start local server if not running
 ./start-battle.sh --time 2m
 
-# Run against a different API server
+# Run against a remote server
+# - Will NOT start local server, only validates connectivity
 ./start-battle.sh --url http://remote-server:8080
+
+# Run against localhost on different port
+# - Will start local server on port 8080 if not running
+./start-battle.sh --url http://localhost:9000
 
 # Combine multiple options
 ./start-battle.sh --url http://localhost:8080 --time 30s
 ```
+
+#### Error Handling:
+
+The script will exit with an error if:
+- The server is not accessible at the specified URL
+- A local server fails to start within 30 seconds
+- A port is in use by a different service
+- Network connectivity issues prevent server access
 
 The demo will run until:
 - One robot wins (when the other robot crashes and only one remains active)
