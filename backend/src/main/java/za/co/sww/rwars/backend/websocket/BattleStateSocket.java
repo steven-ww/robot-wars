@@ -2,6 +2,7 @@ package za.co.sww.rwars.backend.websocket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.websocket.OnClose;
@@ -211,6 +212,7 @@ public class BattleStateSocket {
     /**
      * Response class for battle state information.
      */
+    @RegisterForReflection
     public static class BattleStateResponse {
         private String battleId;
         private String battleName;
@@ -319,6 +321,7 @@ public class BattleStateSocket {
     /**
      * Error response class.
      */
+    @RegisterForReflection
     public static class ErrorResponse {
         private String error;
 
