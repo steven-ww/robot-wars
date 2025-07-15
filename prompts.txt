@@ -807,3 +807,6 @@ Follow the guidelines in .junie/guidelines for this task. Modify the existing BD
 
 ## 167th Prompt
 Follow the guidelines in the .junie/guidelines.md file for this task. Update the robo-demo start script to correctly validate that the server is running using the supplied url parameter, if it's supplied and only start a local server if the server is local and is not running.
+
+## 168th Prompt
+Follow the guidelines in .junie/guidelines.md. Seems we've missed more serialization issues for the backend on a native build. see this error : Error serializing battle state to JSON: No serializer found for class za.co.sww.rwars.backend.websocket.BattleStateSocket$BattleStateResponse and no properties discovered to create BeanSerializer (to avoid exception, disable SerializationFeature.FAIL_ON_EMPTY_BEANS). This appears to be a native image, in which case you may need to configure reflection for the class that is to be serialized
