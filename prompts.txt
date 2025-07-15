@@ -798,3 +798,6 @@ Fix the test errors in the fe project. Remember to follow the guidelines and upd
 
 ## 164th Prompt
 Following the guidelines in the .junie/guidelines.md file, validate that the url used for the swagger documentation link for the FE, uses the correct backend url when in production
+
+## 165th Prompt
+The FE is still making requests to the ui url for rest calls. For example, it's the api/battles rest call. Find and fix this issue while following the guidelines
