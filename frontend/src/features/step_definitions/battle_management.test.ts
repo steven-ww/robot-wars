@@ -267,6 +267,15 @@ defineFeature(feature, test => {
         ).toBeInTheDocument();
       });
     });
+
+    and('the battle ID should be visible to the user', async () => {
+      await waitFor(() => {
+        expect(screen.getByText('Battle ID:')).toBeInTheDocument();
+      });
+
+      // Verify that the battle ID from the mock response is displayed
+      expect(screen.getByText('battle-3')).toBeInTheDocument();
+    });
   });
 
   test('Create a new battle with custom arena dimensions', ({
