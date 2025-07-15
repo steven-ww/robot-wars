@@ -40,6 +40,7 @@ const mockBattleState = {
       blocksRemaining: 0,
     },
   ],
+  walls: [],
 };
 
 // WebSocket server mock
@@ -56,7 +57,7 @@ defineFeature(feature, test => {
     });
 
     // Create a mock WebSocket server
-    server = new WS('ws://localhost/battle-state/test-battle-id');
+    server = new WS('ws://localhost:8080/battle-state/test-battle-id');
   });
 
   afterEach(() => {
@@ -318,7 +319,7 @@ defineFeature(feature, test => {
 
     given('the battle state websocket is available', () => {
       // Use a unique URL for this test to avoid conflicts
-      server = new WS('ws://localhost/battle-state/auto-refresh-test');
+      server = new WS('ws://localhost:8080/battle-state/auto-refresh-test');
     });
 
     and(/^a battle with ID "(.*)" exists on the server$/, battleId => {
@@ -382,6 +383,7 @@ defineFeature(feature, test => {
               blocksRemaining: 0,
             },
           ],
+          walls: [],
         })
       );
 
@@ -430,6 +432,7 @@ defineFeature(feature, test => {
               blocksRemaining: 0,
             },
           ],
+          walls: [],
         })
       );
 
