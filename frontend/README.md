@@ -150,10 +150,13 @@ For production deployments, the backend URL is configured via GitHub repository 
 The frontend is configured to connect to the backend using:
 
 - REST API endpoints at `/api/*`
-- WebSocket endpoint at `ws://{host}/battle-state/{battleId}`
+- WebSocket endpoint at `ws://{host}/battle-state/{battleId}` (automatically converted from HTTP to WebSocket protocol)
 - Swagger UI documentation at `/swagger-ui`
 
-In development mode, the proxy in `package.json` forwards requests to the backend at http://localhost:8080.
+Both REST API and WebSocket connections use the same backend URL configuration:
+- **Development**: Uses `http://localhost:8080` by default (proxy in `package.json` forwards REST requests)
+- **Production**: Uses the configured `BACKEND_URL` from GitHub repository variables
+- **WebSocket Protocol**: Automatically converts `http://` to `ws://` and `https://` to `wss://`
 
 ## Component Documentation
 
