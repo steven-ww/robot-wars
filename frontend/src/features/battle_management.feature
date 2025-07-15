@@ -28,6 +28,7 @@ Feature: Battle Management
     Then a new battle should be created with default settings
     And the battle should appear in the battle list
     And I should see a success message
+    And the battle ID should be visible to the user
 
   Scenario: Create a new battle with custom arena dimensions
     Given I am on the battle management page

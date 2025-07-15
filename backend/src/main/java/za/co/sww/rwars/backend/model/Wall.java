@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Represents a wall in the battle arena.
  */
 @Schema(description = "Wall obstacle in the battle arena")
+@RegisterForReflection
 public class Wall {
 
     @Schema(description = "Type of wall configuration")
@@ -59,6 +61,7 @@ public class Wall {
     }
 
     @Schema(description = "Position coordinates of a wall segment")
+    @RegisterForReflection
     public static class Position {
         @Schema(description = "X coordinate of the wall position", example = "20")
         private int x;
