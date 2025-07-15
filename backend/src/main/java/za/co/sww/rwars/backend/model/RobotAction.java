@@ -1,11 +1,13 @@
 package za.co.sww.rwars.backend.model;
 
 import java.time.LocalDateTime;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Represents a robot action that occurred during a battle.
  * Used to track what robots are doing for display in the frontend.
  */
+@RegisterForReflection
 public class RobotAction {
     private String robotId;
     private String robotName;

@@ -223,6 +223,9 @@ const BattleManagement: React.FC = () => {
               >
                 <h4>{battle.name}</h4>
                 <p>
+                  <strong>Battle ID:</strong> {battle.id}
+                </p>
+                <p>
                   <strong>Status:</strong> {battle.state}
                 </p>
                 {battle.state === 'COMPLETED' && battle.winnerName && (

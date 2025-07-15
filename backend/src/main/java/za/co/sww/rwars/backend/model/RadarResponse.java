@@ -3,11 +3,13 @@ package za.co.sww.rwars.backend.model;
 import java.util.List;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Represents the response from a radar scan.
  */
 @Schema(description = "Response from a radar scan, detailing detections")
+@RegisterForReflection
 public class RadarResponse {
 
     @Schema(description = "Type of detection in a radar scan response")
@@ -44,6 +46,7 @@ public class RadarResponse {
     }
 
     @Schema(description = "Detection details in a radar scan")
+    @RegisterForReflection
     public static class Detection {
         @Schema(description = "X coordinate of the detection", example = "10")
         private int x;
