@@ -1,26 +1,6 @@
 import React from 'react';
 import './GreetingComponent.css';
-
-// Declare global configuration type
-declare global {
-  interface Window {
-    AppConfig?: {
-      backendUrl: string;
-      environment: string;
-    };
-  }
-}
-
-// Function to get the backend URL
-const getBackendUrl = (): string => {
-  // Check if there's a global configuration (set during build)
-  if (window.AppConfig?.backendUrl) {
-    return window.AppConfig.backendUrl;
-  }
-
-  // Fallback to development default
-  return 'http://localhost:8080';
-};
+import { getBackendUrl } from '../utils/apiConfig';
 
 const GreetingComponent: React.FC = () => {
   const openSwaggerUI = () => {
