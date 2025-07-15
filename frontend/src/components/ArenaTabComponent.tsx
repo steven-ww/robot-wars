@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ArenaComponent from './ArenaComponent';
+import { buildApiUrl } from '../utils/apiConfig';
 
 // Define interfaces for battles and robots
 interface Robot {
@@ -33,7 +34,7 @@ const ArenaTabComponent: React.FC = () => {
     const fetchBattles = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/api/battles');
+        const response = await fetch(buildApiUrl('/api/battles'));
         const data = await response.json();
         setBattles(data);
 

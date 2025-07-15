@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ArenaComponent from './ArenaComponent';
+import { buildApiUrl } from '../utils/apiConfig';
 
 // Define interfaces for battles and robots
 interface Robot {
@@ -38,7 +39,7 @@ const BattleManagement: React.FC = () => {
   // Fetch battles from the backend API
   const fetchBattles = async () => {
     try {
-      const response = await fetch('/api/battles');
+      const response = await fetch(buildApiUrl('/api/battles'));
       const data = await response.json();
       setBattles(data);
       setError(null);
@@ -84,7 +85,7 @@ const BattleManagement: React.FC = () => {
         requestBody.robotMovementTimeSeconds = parseFloat(robotMovementTime);
       }
 
-      const response = await fetch('/api/battles', {
+      const response = await fetch(buildApiUrl('/api/battles'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,9 +138,12 @@ const BattleManagement: React.FC = () => {
     if (!battleToDelete) return;
 
     try {
-      const response = await fetch(`/api/battles/${battleToDelete.id}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        buildApiUrl(`/api/battles/${battleToDelete.id}`),
+        {
+          method: 'DELETE',
+        }
+      );
 
       if (response.ok) {
         // Remove the battle from the list

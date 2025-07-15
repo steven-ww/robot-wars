@@ -239,15 +239,18 @@ defineFeature(feature, test => {
 
     then('a new battle should be created with default settings', async () => {
       await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith('/api/battles', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: 'Test Battle',
-          }),
-        });
+        expect(mockFetch).toHaveBeenCalledWith(
+          'http://localhost:8080/api/battles',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: 'Test Battle',
+            }),
+          }
+        );
       });
     });
 
@@ -333,17 +336,20 @@ defineFeature(feature, test => {
 
     then('a new battle should be created with custom dimensions', async () => {
       await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith('/api/battles', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: 'Custom Battle',
-            width: 50,
-            height: 50,
-          }),
-        });
+        expect(mockFetch).toHaveBeenCalledWith(
+          'http://localhost:8080/api/battles',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: 'Custom Battle',
+              width: 50,
+              height: 50,
+            }),
+          }
+        );
       });
     });
 
@@ -427,16 +433,19 @@ defineFeature(feature, test => {
       'a new battle should be created with custom movement time',
       async () => {
         await waitFor(() => {
-          expect(mockFetch).toHaveBeenCalledWith('/api/battles', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              name: 'Speed Battle',
-              robotMovementTimeSeconds: 0.5,
-            }),
-          });
+          expect(mockFetch).toHaveBeenCalledWith(
+            'http://localhost:8080/api/battles',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                name: 'Speed Battle',
+                robotMovementTimeSeconds: 0.5,
+              }),
+            }
+          );
         });
       }
     );
@@ -528,18 +537,21 @@ defineFeature(feature, test => {
       'a new battle should be created with all custom parameters',
       async () => {
         await waitFor(() => {
-          expect(mockFetch).toHaveBeenCalledWith('/api/battles', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              name: 'Full Custom Battle',
-              width: 30,
-              height: 40,
-              robotMovementTimeSeconds: 2.0,
-            }),
-          });
+          expect(mockFetch).toHaveBeenCalledWith(
+            'http://localhost:8080/api/battles',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                name: 'Full Custom Battle',
+                width: 30,
+                height: 40,
+                robotMovementTimeSeconds: 2.0,
+              }),
+            }
+          );
         });
       }
     );
