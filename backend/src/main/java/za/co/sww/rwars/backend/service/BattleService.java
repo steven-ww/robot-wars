@@ -472,30 +472,30 @@ public class BattleService {
     /**
      * Battle summary record for listing battles without sensitive robot position data.
      */
-@RegisterForReflection
-public record BattleSummary(
-        String id,
-        String name,
-        int arenaWidth,
-        int arenaHeight,
-        double robotMovementTimeSeconds,
-        String state,
-        int robotCount,
-        List<RobotSummary> robots,
-        String winnerId,
-        String winnerName
-) {
+    @RegisterForReflection
+    public record BattleSummary(
+            String id,
+            String name,
+            int arenaWidth,
+            int arenaHeight,
+            double robotMovementTimeSeconds,
+            String state,
+            int robotCount,
+            List<RobotSummary> robots,
+            String winnerId,
+            String winnerName
+    ) {
     }
 
     /**
      * Robot summary record for listing robots without position data.
      */
-@RegisterForReflection
-public record RobotSummary(
-        String id,
-        String name,
-        String status
-) {
+    @RegisterForReflection
+    public record RobotSummary(
+            String id,
+            String name,
+            String status
+    ) {
     }
 
     /**

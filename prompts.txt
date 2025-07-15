@@ -801,3 +801,6 @@ Following the guidelines in the .junie/guidelines.md file, validate that the url
 
 ## 165th Prompt
 The FE is still making requests to the ui url for rest calls. For example, it's the api/battles rest call. Find and fix this issue while following the guidelines
+
+## 166th Prompt
+Follow the guidelines in .junie/guidelines for this task. Modify the existing BDD scenario for creating a battle using the FE. Ensure that the new scenario reflects that the battle id of the new battle is visible to the user on the FE after the battle is created. Implement any tests to validate this scenario. Run all the linting and a complete build. If all passes, commit the changes.
