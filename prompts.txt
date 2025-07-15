@@ -804,3 +804,6 @@ The FE is still making requests to the ui url for rest calls. For example, it's 
 
 ## 166th Prompt
 Follow the guidelines in .junie/guidelines for this task. Modify the existing BDD scenario for creating a battle using the FE. Ensure that the new scenario reflects that the battle id of the new battle is visible to the user on the FE after the battle is created. Implement any tests to validate this scenario. Run all the linting and a complete build. If all passes, commit the changes.
+
+## 167th Prompt
+Follow the guidelines in the .junie/guidelines.md file for this task. Update the robo-demo start script to correctly validate that the server is running using the supplied url parameter, if it's supplied and only start a local server if the server is local and is not running.
