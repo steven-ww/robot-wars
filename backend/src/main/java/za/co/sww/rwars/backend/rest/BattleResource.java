@@ -22,6 +22,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * REST API for battle creation and management.
@@ -208,6 +209,7 @@ public class BattleResource {
      * Battle creation request record.
      */
     @Schema(description = "Request for creating a new battle")
+    @RegisterForReflection
     public record CreateBattleRequest(
         @Schema(description = "Name of the battle", example = "Epic Robot Battle", required = true)
         String name,
@@ -231,6 +233,7 @@ public class BattleResource {
      * Error response record.
      */
     @Schema(description = "Error response containing error message")
+    @RegisterForReflection
     public record ErrorResponse(
         @Schema(description = "Error message describing what went wrong", example = "Battle not found")
         String message

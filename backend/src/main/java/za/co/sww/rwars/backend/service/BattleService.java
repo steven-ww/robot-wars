@@ -11,6 +11,7 @@ import za.co.sww.rwars.backend.model.Wall;
 import za.co.sww.rwars.backend.model.RadarResponse;
 import za.co.sww.rwars.backend.model.LaserResponse;
 import za.co.sww.rwars.backend.websocket.BattleStateSocket;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -471,28 +472,30 @@ public class BattleService {
     /**
      * Battle summary record for listing battles without sensitive robot position data.
      */
-    public record BattleSummary(
-            String id,
-            String name,
-            int arenaWidth,
-            int arenaHeight,
-            double robotMovementTimeSeconds,
-            String state,
-            int robotCount,
-            List<RobotSummary> robots,
-            String winnerId,
-            String winnerName
-    ) {
+@RegisterForReflection
+public record BattleSummary(
+        String id,
+        String name,
+        int arenaWidth,
+        int arenaHeight,
+        double robotMovementTimeSeconds,
+        String state,
+        int robotCount,
+        List<RobotSummary> robots,
+        String winnerId,
+        String winnerName
+) {
     }
 
     /**
      * Robot summary record for listing robots without position data.
      */
-    public record RobotSummary(
-            String id,
-            String name,
-            String status
-    ) {
+@RegisterForReflection
+public record RobotSummary(
+        String id,
+        String name,
+        String status
+) {
     }
 
     /**

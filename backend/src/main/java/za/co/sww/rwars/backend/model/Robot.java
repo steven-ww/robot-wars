@@ -3,11 +3,13 @@ package za.co.sww.rwars.backend.model;
 import java.util.UUID;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * Represents a robot in the battle.
  */
 @Schema(description = "Entity representing a robot participant in the battle")
+@RegisterForReflection
 public class Robot {
     /**
      * Enum for robot status.
