@@ -97,7 +97,7 @@ class LaserServiceTest {
             {{8, 8}, {8, 11}},    // Alternative: Robot1 at (8, 8) and Robot2 at (8, 11)
             {{12, 8}, {12, 11}}   // Alternative: Robot1 at (12, 8) and Robot2 at (12, 11)
         };
-        
+
         boolean positioned = false;
         for (int[][] pair : positionPairs) {
             try {
