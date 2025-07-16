@@ -828,3 +828,6 @@ Fix only this one failing BDD test "Accept laser fire with valid parameters". Fo
 
 ## 174th Prompt
 Follow the guidelines in .junie/guidelines.md fix this failing BDD test "Accept battle deletion with valid battle ID".
+
+## 175th Prompt
+Follow the guidelines in .junie/guidelines.md. The current swagger page fails when opening the POST api/battles documentation. It fails with "Could not resolve reference: JSON Pointer evaluation failed while evaluating token "examples" against an ObjectElement". Lets fix that.
