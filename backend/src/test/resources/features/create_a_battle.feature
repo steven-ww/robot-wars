@@ -48,3 +48,9 @@ Feature: Battle Creation
     Given I have created a battle with name "Existing Battle"
     When I attempt to create another battle with name "Existing Battle"
     Then I should receive an error indicating the battle name already exists
+
+  # Battle Name Validation Scenarios
+  Scenario: Accept battle creation with valid special characters
+    When I create a new battle with name "Valid-Battle_Name 123"
+    Then a battle with the name "Valid-Battle_Name 123" should be created
+    And I should receive the battle details including id, name, and arena dimensions

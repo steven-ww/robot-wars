@@ -205,14 +205,107 @@ public class RobotSteps {
 
     @And("the battle administrator has started the battle")
     public void theBattleAdministratorHasStartedTheBattle() {
+        // Get the battle ID from test context, fallback to local battleId if not found
+        String currentBattleId = testContext.getCurrentBattleId();
+        if (currentBattleId == null) {
+            currentBattleId = battleId;
+        }
         // Store the response to ensure it's available for subsequent steps
-        response = request.post("/api/battles/" + battleId + "/start");
+        response = request.post("/api/battles/" + currentBattleId + "/start");
         response.then().statusCode(200);
     }
 
     @Then("the battle status should be to {string}")
-    public void theBattleStatusShouldBeTo(String status) {
-        response.then().body("state", Matchers.equalTo(status));
+    public void theBattleStatusShouldBeTo(String expectedState) {
+        response.then().body("state", Matchers.equalTo(expectedState));
+    }
+
+    // Robot registration validation step definitions
+    @When("I attempt to register a robot with null name")
+    public void iAttemptToRegisterARobotWithNullName() {
+        Map<String, String> robot = new HashMap<>();
+        robot.put("name", null);
+        response = request.body(robot).post("/api/robots/register");
+    }
+
+    @When("I attempt to register a robot with empty name")
+    public void iAttemptToRegisterARobotWithEmptyName() {
+        Map<String, String> robot = new HashMap<>();
+        robot.put("name", "");
+        response = request.body(robot).post("/api/robots/register");
+    }
+
+    @When("I attempt to register a robot with whitespace-only name")
+    public void iAttemptToRegisterARobotWithWhitespaceOnlyName() {
+        Map<String, String> robot = new HashMap<>();
+        robot.put("name", "   ");
+        response = request.body(robot).post("/api/robots/register");
+    }
+
+    @When("I attempt to register a robot with name longer than 50 characters")
+    public void iAttemptToRegisterARobotWithNameLongerThan50Characters() {
+        Map<String, String> robot = new HashMap<>();
+        robot.put("name", "a".repeat(51));
+        response = request.body(robot).post("/api/robots/register");
+    }
+
+    @When("I attempt to register a robot with name {string}")
+    public void iAttemptToRegisterARobotWithName(String robotName) {
+        Map<String, String> robot = new HashMap<>();
+        robot.put("name", robotName);
+        response = request.body(robot).post("/api/robots/register");
+    }
+
+    @When("I register a robot with name {string}")
+    public void iRegisterARobotWithName(String robotName) {
+        Map<String, String> robot = new HashMap<>();
+        robot.put("name", robotName);
+        response = request.body(robot).post("/api/robots/register");
+
+        // Store the robot ID in test context if successful
+        if (response.getStatusCode() == 200) {
+            String robotId = response.jsonPath().getString("id");
+            String battleId = response.jsonPath().getString("battleId");
+            testContext.storeRobot(robotName, robotId);
+            // Also update the current battle ID if we don't have one
+            if (testContext.getCurrentBattleId() == null && battleId != null) {
+                testContext.setCurrentBattleId(battleId);
+            }
+        }
+    }
+
+    @When("I attempt to register a robot with null request body")
+    public void iAttemptToRegisterARobotWithNullRequestBody() {
+        response = request.post("/api/robots/register");
+    }
+
+    @When("I attempt to register a robot for battle with null battle ID")
+    public void iAttemptToRegisterARobotForBattleWithNullBattleId() {
+        Map<String, String> robot = new HashMap<>();
+        robot.put("name", "TestRobot");
+        // Save response for validation in BattleSteps
+        Response robotResponse = request.body(robot).post("/api/robots/register/null");
+        testContext.setResponse(robotResponse);
+        response = robotResponse;
+    }
+
+    @When("I attempt to register a robot for battle with empty battle ID")
+    public void iAttemptToRegisterARobotForBattleWithEmptyBattleId() {
+        Map<String, String> robot = new HashMap<>();
+        robot.put("name", "TestRobot");
+        Response robotResponse = request.body(robot).post("/api/robots/register/ ");
+        testContext.setResponse(robotResponse);
+        response = robotResponse;
+    }
+
+    @When("I attempt to register a robot for battle with battle ID longer than 100 characters")
+    public void iAttemptToRegisterARobotForBattleWithBattleIdLongerThan100Characters() {
+        Map<String, String> robot = new HashMap<>();
+        robot.put("name", "TestRobot");
+        String longBattleId = "a".repeat(101);
+        Response robotResponse = request.body(robot).post("/api/robots/register/" + longBattleId);
+        testContext.setResponse(robotResponse);
+        response = robotResponse;
     }
 
     // New step definitions for multiple battles support
@@ -477,4 +570,5 @@ public class RobotSteps {
         // Then start the battle
         iStartBattle(battleName);
     }
+
 }

@@ -43,3 +43,10 @@ Feature: Robot Registration
     When I check the status of the battle supplying my battle id and robot id
     And it's a valid battle and robot id
     Then the battle status should be to "IN_PROGRESS"
+
+  # Robot Registration Validation Scenarios
+  Scenario: Accept robot registration with valid special characters
+    Given I create a new battle with name "Test Battle"
+    When I register a robot with name "Valid-Robot_Name 123"
+    Then a robot id should be generated for my robot
+    And I should receive the battle id and a unique robot id

@@ -813,3 +813,33 @@ Follow the guidelines in .junie/guidelines.md. Seems we've missed more serializa
 
 ## 169th Prompt
 Follow the guidelines in .junie/guidelines.md for this task. Add a scenario and implement it that validates that once a battle has been registered, AND has never been started, but has had no further activity against it for 30 minutes (like registering robots), then it should be automatically deleted.
+
+## 170th Prompt
+Follow the guidlines in ,junie/guidlines.md. After those validation changes, a lot of tests are failing. Investigate the root cause and fix them.
+
+## 171st Prompt
+Follow the guidelines in .junie/guidelines.md. Have a look at just this one failing test "Reject robot move with empty direction" "features/robot_actions_validation.feature". It seems the test is incorrectly expecting a 200 status code while it should expect the 400 with an error. The server validation looks correct. The test itself seems to be a problem.
+
+## 172nd Prompt
+Follow the guidelines in .junie/guidelines.md. remove all the failing BDD test from the project.
+
+## 173rd Prompt
+Fix only this one failing BDD test "Accept laser fire with valid parameters". Follow the guidelines in .junie/guidelines.md
+
+## 174th Prompt
+Follow the guidelines in .junie/guidelines.md fix this failing BDD test "Accept battle deletion with valid battle ID".
+
+## 175th Prompt
+Follow the guidelines in .junie/guidelines.md. The current swagger page fails when opening the POST api/battles documentation. It fails with "Could not resolve reference: JSON Pointer evaluation failed while evaluating token "examples" against an ObjectElement". Lets fix that.
+
+## 176th Prompt
+Follow the guidelines in .junie/guidelines.md. The service already deletes battles that are invective but have never been started. Enhance that to remove battles that have started but have been running for 2 hours
+
+## 177th Prompt
+Follow the guidelines in .junie/guidelines.md and update the Swagger documentation to better align with the actual error handling responses seen in the current version of the REST endpoints.
+
+## 178th Prompt
+Follow the guidelines in .junie/guidelines.md. Have a look at the current version of the Rest Endpoints to understand the error handling responses. Update the swagger doc to better align with the error response messages and objects.
+
+## 179th Prompt
+Follow the guidelines in .junie/guidelines.md. With the recent changes to the status codes returned, 3 tests are failing. Update the tests to reflect the new http codes

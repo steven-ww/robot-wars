@@ -58,17 +58,65 @@ public class RobotResource {
     @APIResponse(responseCode = "200", description = "Robot registered successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Robot.class),
-        examples = @ExampleObject(name = "RegisteredRobot", ref = "#/components/examples/RobotResponse")))
-    @APIResponse(responseCode = "409", description = "Conflict in registering robot",
+        examples = @ExampleObject(name = "RobotRegistered", summary = "Robot information",
+                description = "Example robot response with position and status", value = """
+            {
+                "id": "robot-456def78-9abc-123d-e456-789012345678",
+                "name": "DestroyerBot",
+                "battleId": "battle-123e4567-e89b-12d3-a456-556642440000",
+                "positionX": 25,
+                "positionY": 30,
+                "direction": "NORTH",
+                "status": "IDLE",
+                "targetBlocks": 0,
+                "blocksRemaining": 0,
+                "hitPoints": 100,
+                "maxHitPoints": 100
+            }
+            """)))
+    @APIResponse(responseCode = "400", description = "Invalid robot data",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", ref = "#/components/examples/ConflictErrorResponse")))
-    public Response registerRobot(@Parameter(description = "Robot registration details",
+        examples = @ExampleObject(name = "ValidationError", summary = "Validation error",
+                description = "Example validation error response", value = """
+            {
+                "message": "Robot name is required and cannot be empty"
+            }
+            """)))
+    @APIResponse(responseCode = "409", description = "Robot already exists",
+        content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "ConflictError", summary = "Conflict error",
+                description = "Example conflict error response", value = """
+            {
+                "message": "Robot name already exists in this battle"
+            }
+            """)))
+    public Response registerRobot(
+        @Parameter(description = "Details of the robot to register",
         content = @Content(examples = @ExampleObject(name = "RegisterRobotRequest",
-                ref = "#/components/examples/RegisterRobotRequest"))) Robot robot) {
+                summary = "Register a robot",
+                description = "Example request to register a new robot",
+                value = """
+                    {
+                        "name": "DestroyerBot"
+                    }
+                    """))) Robot robot) {
         try {
+            // Validate required fields
+            ValidationResult validationResult = validateRobotRegistration(robot);
+            if (!validationResult.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(validationResult.getErrorMessage()))
+                        .build();
+            }
+
             Robot registeredRobot = battleService.registerRobot(robot.getName());
             return Response.ok(registeredRobot).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ErrorResponse(e.getMessage()))
@@ -105,6 +153,21 @@ public class RobotResource {
         @Parameter(description = "Details of the robot to register") Robot robot,
         @Parameter(description = "ID of the battle to join") @PathParam("battleId") String battleId) {
         try {
+            // Validate required fields
+            ValidationResult robotValidation = validateRobotRegistration(robot);
+            if (!robotValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(robotValidation.getErrorMessage()))
+                        .build();
+            }
+
+            ValidationResult battleIdValidation = validateBattleId(battleId);
+            if (!battleIdValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(battleIdValidation.getErrorMessage()))
+                        .build();
+            }
+
             Robot registeredRobot = battleService.registerRobotForBattle(robot.getName(), battleId);
             return Response.ok(registeredRobot).build();
         } catch (IllegalArgumentException e) {
@@ -136,21 +199,38 @@ public class RobotResource {
     @APIResponse(responseCode = "200", description = "Battle status retrieved",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Battle.class)))
-    @APIResponse(responseCode = "400", description = "Invalid battle ID provided",
+    @APIResponse(responseCode = "400", description = "Invalid battle ID format",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "InvalidFormat", summary = "Invalid battle ID format",
+                description = "Error when battle ID format is invalid", value = """
+            {
+                "message": "Battle ID is required and cannot be empty"
+            }
+            """)))
+    @APIResponse(responseCode = "404", description = "Battle not found",
+        content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "BattleNotFound", summary = "Battle not found",
+                description = "Error when battle with given ID does not exist", value = """
+            {
+                "message": "Battle not found with ID: battle-123"
+            }
+            """)))
     public Response getBattleStatus(
         @Parameter(description = "ID of the battle to retrieve status for") @PathParam("battleId") String battleId) {
         try {
-            if (!battleService.isValidBattleId(battleId)) {
+            // Validate battle ID format
+            if (battleId == null || battleId.trim().isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Invalid battle ID"))
+                        .entity(new ErrorResponse("Battle ID is required and cannot be empty"))
                         .build();
             }
+
             Battle battle = battleService.getBattleStatus(battleId);
             return Response.ok(battle).build();
         } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            return Response.status(Response.Status.NOT_FOUND)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
         }
@@ -175,22 +255,39 @@ public class RobotResource {
     @APIResponse(responseCode = "200", description = "Battle status for robot retrieved",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Battle.class)))
-    @APIResponse(responseCode = "400", description = "Invalid IDs provided",
+    @APIResponse(responseCode = "400", description = "Invalid ID format",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "InvalidFormat", summary = "Invalid ID format",
+                description = "Error when battle ID or robot ID format is invalid", value = """
+            {
+                "message": "Battle ID is required and cannot be empty"
+            }
+            """)))
+    @APIResponse(responseCode = "404", description = "Battle or robot not found",
+        content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "NotFound", summary = "Battle or robot not found",
+                description = "Error when battle or robot with given ID does not exist", value = """
+            {
+                "message": "Invalid battle ID: battle-123"
+            }
+            """)))
     public Response getBattleStatusForRobot(
         @Parameter(description = "ID of the battle to retrieve status for") @PathParam("battleId") String battleId,
         @Parameter(description = "ID of the robot") @PathParam("robotId") String robotId) {
         try {
-            if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
+            // Validate ID formats
+            if (battleId == null || battleId.trim().isEmpty() || robotId == null || robotId.trim().isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .entity(new ErrorResponse("Battle ID and robot ID are required and cannot be empty"))
                         .build();
             }
+
             Battle battle = battleService.getBattleStatusForRobot(battleId, robotId);
             return Response.ok(battle).build();
         } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            return Response.status(Response.Status.NOT_FOUND)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
         }
@@ -262,22 +359,70 @@ public class RobotResource {
     @APIResponse(responseCode = "200", description = "Robot movement initiated successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Robot.class),
-        examples = @ExampleObject(name = "RobotMoving", ref = "#/components/examples/RobotResponse")))
+        examples = @ExampleObject(name = "RobotMoving", summary = "Robot information",
+                description = "Example robot response with position and status", value = """
+            {
+                "id": "robot-456def78-9abc-123d-e456-789012345678",
+                "name": "DestroyerBot",
+                "battleId": "battle-123e4567-e89b-12d3-a456-556642440000",
+                "positionX": 25,
+                "positionY": 30,
+                "direction": "NORTH",
+                "status": "MOVING",
+                "targetBlocks": 3,
+                "blocksRemaining": 2,
+                "hitPoints": 100,
+                "maxHitPoints": 100
+            }
+            """)))
     @APIResponse(responseCode = "400", description = "Invalid IDs or move parameters",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ValidationError", ref = "#/components/examples/ValidationErrorResponse")))
+        examples = @ExampleObject(name = "ValidationError", summary = "Invalid direction error",
+                description = "Error when direction is invalid", value = """
+            {
+                "message": "Invalid direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW"
+            }
+            """)))
     @APIResponse(responseCode = "409", description = "Robot cannot move",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", ref = "#/components/examples/ConflictErrorResponse")))
+        examples = @ExampleObject(name = "ConflictError", summary = "Movement blocked error",
+                description = "Error when robot movement is blocked", value = """
+            {
+                "message": "Robot cannot move - path is blocked by a wall"
+            }
+            """)))
     public Response moveRobot(
         @Parameter(description = "ID of the battle the robot is in") @PathParam("battleId") String battleId,
         @Parameter(description = "ID of the robot") @PathParam("robotId") String robotId,
         @Parameter(description = "Movement request parameters",
         content = @Content(examples = @ExampleObject(name = "MoveRequest",
-                ref = "#/components/examples/MoveRequest"))) MoveRequest moveRequest) {
+                summary = "Move robot request",
+                description = "Example request to move a robot",
+                value = """
+                    {
+                        "direction": "NORTH",
+                        "blocks": 3
+                    }
+                    """))) MoveRequest moveRequest) {
         try {
+            // Validate path parameters
+            ValidationResult pathValidation = validateBattleAndRobotId(battleId, robotId);
+            if (!pathValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(pathValidation.getErrorMessage()))
+                        .build();
+            }
+
+            // Validate move request
+            ValidationResult moveValidation = validateMoveRequest(moveRequest);
+            if (!moveValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(moveValidation.getErrorMessage()))
+                        .build();
+            }
+
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(new ErrorResponse("Invalid battle ID or robot ID"))
@@ -321,22 +466,73 @@ public class RobotResource {
     @APIResponse(responseCode = "200", description = "Radar scan completed successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = RadarResponse.class),
-        examples = @ExampleObject(name = "RadarResponse", ref = "#/components/examples/RadarResponse")))
+        examples = @ExampleObject(name = "RadarResponse", summary = "Radar scan results",
+                description = "Example radar scan response with detections", value = """
+            {
+                "range": 8,
+                "detections": [
+                    {
+                        "x": 25,
+                        "y": 27,
+                        "type": "WALL",
+                        "details": "Wall segment detected"
+                    },
+                    {
+                        "x": 30,
+                        "y": 35,
+                        "type": "ROBOT",
+                        "details": "Enemy robot: CrusherBot"
+                    }
+                ]
+            }
+            """)))
     @APIResponse(responseCode = "400", description = "Invalid IDs or radar parameters",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ValidationError", ref = "#/components/examples/ValidationErrorResponse")))
+        examples = @ExampleObject(name = "ValidationError", summary = "Radar range error",
+                description = "Error when radar range is invalid", value = """
+            {
+                "message": "Radar range must be greater than 0"
+            }
+            """)))
     @APIResponse(responseCode = "409", description = "Radar operation failed",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", ref = "#/components/examples/ConflictErrorResponse")))
+        examples = @ExampleObject(name = "ConflictError", summary = "Radar operation conflict",
+                description = "Error when radar operation cannot be performed", value = """
+            {
+                "message": "Robot is currently busy and cannot perform radar scan"
+            }
+            """)))
     public Response performRadarScan(
         @Parameter(description = "ID of the battle the robot is in") @PathParam("battleId") String battleId,
         @Parameter(description = "ID of the robot") @PathParam("robotId") String robotId,
         @Parameter(description = "Radar scan parameters",
         content = @Content(examples = @ExampleObject(name = "RadarRequest",
-                ref = "#/components/examples/RadarRequest"))) RadarRequest radarRequest) {
+                summary = "Radar scan request",
+                description = "Example request to perform a radar scan",
+                value = """
+                    {
+                        "range": 8
+                    }
+                    """))) RadarRequest radarRequest) {
         try {
+            // Validate path parameters
+            ValidationResult pathValidation = validateBattleAndRobotId(battleId, robotId);
+            if (!pathValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(pathValidation.getErrorMessage()))
+                        .build();
+            }
+
+            // Validate radar request
+            ValidationResult radarValidation = validateRadarRequest(radarRequest);
+            if (!radarValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(radarValidation.getErrorMessage()))
+                        .build();
+            }
+
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(new ErrorResponse("Invalid battle ID or robot ID"))
@@ -380,24 +576,94 @@ public class RobotResource {
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = LaserResponse.class),
         examples = {
-            @ExampleObject(name = "LaserHit", ref = "#/components/examples/LaserHitResponse"),
-            @ExampleObject(name = "LaserMiss", ref = "#/components/examples/LaserMissResponse")
+            @ExampleObject(name = "LaserHit", summary = "Laser hit response",
+                description = "Example response when laser hits a robot", value = """
+                {
+                    "hit": true,
+                    "hitRobotId": "robot-789abc12-def3-456g-h789-123456789012",
+                    "hitRobotName": "TargetBot",
+                    "damageDealt": 20,
+                    "range": 15,
+                    "direction": "EAST",
+                    "laserPath": [
+                        {"x": 25, "y": 30},
+                        {"x": 26, "y": 30},
+                        {"x": 27, "y": 30},
+                        {"x": 28, "y": 30}
+                    ],
+                    "hitPosition": {"x": 28, "y": 30},
+                    "blockedBy": "ROBOT"
+                }
+                """),
+            @ExampleObject(name = "LaserMiss", summary = "Laser miss response",
+                description = "Example response when laser misses or is blocked", value = """
+                {
+                    "hit": false,
+                    "hitRobotId": null,
+                    "hitRobotName": null,
+                    "damageDealt": 0,
+                    "range": 15,
+                    "direction": "EAST",
+                    "laserPath": [
+                        {"x": 25, "y": 30},
+                        {"x": 26, "y": 30},
+                        {"x": 27, "y": 30},
+                        {"x": 28, "y": 30},
+                        {"x": 29, "y": 30}
+                    ],
+                    "hitPosition": null,
+                    "blockedBy": "WALL"
+                }
+                """)
         }))
     @APIResponse(responseCode = "400", description = "Invalid IDs or laser parameters",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ValidationError", ref = "#/components/examples/ValidationErrorResponse")))
+        examples = @ExampleObject(name = "ValidationError", summary = "Laser direction required error",
+                description = "Error when laser direction is missing", value = """
+            {
+                "message": "Laser direction is required and cannot be empty"
+            }
+            """)))
     @APIResponse(responseCode = "409", description = "Laser operation failed",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", ref = "#/components/examples/ConflictErrorResponse")))
+        examples = @ExampleObject(name = "ConflictError", summary = "Laser operation conflict",
+                description = "Error when laser operation cannot be performed", value = """
+            {
+                "message": "Robot is currently busy and cannot fire laser"
+            }
+            """)))
     public Response fireLaser(
         @Parameter(description = "ID of the battle the robot is in") @PathParam("battleId") String battleId,
         @Parameter(description = "ID of the robot") @PathParam("robotId") String robotId,
         @Parameter(description = "Laser firing parameters",
         content = @Content(examples = @ExampleObject(name = "LaserRequest",
-                ref = "#/components/examples/LaserRequest"))) LaserRequest laserRequest) {
+                summary = "Fire laser request",
+                description = "Example request to fire a laser",
+                value = """
+                    {
+                        "direction": "EAST",
+                        "range": 15
+                    }
+                    """))) LaserRequest laserRequest) {
         try {
+            // Validate path parameters
+            ValidationResult pathValidation = validateBattleAndRobotId(battleId, robotId);
+            if (!pathValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(pathValidation.getErrorMessage()))
+                        .build();
+            }
+
+            // Validate laser request
+            ValidationResult laserValidation = validateLaserRequest(laserRequest);
+            if (!laserValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(laserValidation.getErrorMessage()))
+                        .build();
+            }
+
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(new ErrorResponse("Invalid battle ID or robot ID"))
@@ -417,6 +683,187 @@ public class RobotResource {
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
+        }
+    }
+
+    /**
+     * Validates robot registration data.
+     *
+     * @param robot The robot to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateRobotRegistration(Robot robot) {
+        if (robot == null) {
+            return new ValidationResult(false, "Robot data is required");
+        }
+
+        if (robot.getName() == null || robot.getName().trim().isEmpty() || "null".equals(robot.getName())) {
+            return new ValidationResult(false, "Robot name is required and cannot be empty");
+        }
+
+        if (robot.getName().length() > 50) {
+            return new ValidationResult(false, "Robot name must be 50 characters or less");
+        }
+
+        // Check for invalid characters in robot name
+        if (!robot.getName().matches("^[a-zA-Z0-9\\s\\-_]+$")) {
+            return new ValidationResult(false,
+                "Robot name can only contain letters, numbers, spaces, hyphens, and underscores");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validates battle ID.
+     *
+     * @param battleId The battle ID to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateBattleId(String battleId) {
+        if (battleId == null || battleId.trim().isEmpty() || "null".equals(battleId)) {
+            return new ValidationResult(false, "Battle ID is required and cannot be empty");
+        }
+
+        if (battleId.length() > 100) {
+            return new ValidationResult(false, "Battle ID is too long");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validates both battle ID and robot ID.
+     *
+     * @param battleId The battle ID to validate
+     * @param robotId The robot ID to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateBattleAndRobotId(String battleId, String robotId) {
+        ValidationResult battleIdResult = validateBattleId(battleId);
+        if (!battleIdResult.isValid()) {
+            return battleIdResult;
+        }
+
+        if (robotId == null || robotId.trim().isEmpty()) {
+            return new ValidationResult(false, "Robot ID is required and cannot be empty");
+        }
+
+        if (robotId.length() > 100) {
+            return new ValidationResult(false, "Robot ID is too long");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validates move request.
+     *
+     * @param moveRequest The move request to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateMoveRequest(MoveRequest moveRequest) {
+        if (moveRequest == null) {
+            return new ValidationResult(false, "Move request is required");
+        }
+
+        if (moveRequest.direction() == null || moveRequest.direction().trim().isEmpty()) {
+            return new ValidationResult(false, "Direction is required and cannot be empty");
+        }
+
+        String[] validDirections = {"NORTH", "SOUTH", "EAST", "WEST", "NE", "NW", "SE", "SW"};
+        boolean isValidDirection = false;
+        for (String validDirection : validDirections) {
+            if (validDirection.equals(moveRequest.direction().toUpperCase())) {
+                isValidDirection = true;
+                break;
+            }
+        }
+
+        if (!isValidDirection) {
+            return new ValidationResult(false,
+                "Invalid direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW");
+        }
+
+        if (moveRequest.blocks() <= 0) {
+            return new ValidationResult(false, "Number of blocks must be greater than 0");
+        }
+
+        if (moveRequest.blocks() > 10) {
+            return new ValidationResult(false, "Number of blocks must be 10 or less");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validates radar request.
+     *
+     * @param radarRequest The radar request to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateRadarRequest(RadarRequest radarRequest) {
+        if (radarRequest == null) {
+            return new ValidationResult(false, "Radar request is required");
+        }
+
+        if (radarRequest.range() <= 0) {
+            return new ValidationResult(false, "Radar range must be greater than 0");
+        }
+
+        if (radarRequest.range() > 20) {
+            return new ValidationResult(false, "Radar range must be 20 or less");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validates laser request.
+     *
+     * @param laserRequest The laser request to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateLaserRequest(LaserRequest laserRequest) {
+        if (laserRequest == null) {
+            return new ValidationResult(false, "Laser request is required");
+        }
+
+        if (laserRequest.direction() == null || laserRequest.direction().trim().isEmpty()) {
+            return new ValidationResult(false, "Laser direction is required and cannot be empty");
+        }
+
+        String[] validDirections = {"NORTH", "SOUTH", "EAST", "WEST", "NE", "NW", "SE", "SW"};
+        boolean isValidDirection = false;
+        for (String validDirection : validDirections) {
+            if (validDirection.equals(laserRequest.direction().toUpperCase())) {
+                isValidDirection = true;
+                break;
+            }
+        }
+
+        if (!isValidDirection) {
+            return new ValidationResult(false,
+                "Invalid laser direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW");
+        }
+
+        if (laserRequest.range() <= 0) {
+            return new ValidationResult(false, "Laser range must be greater than 0");
+        }
+
+        if (laserRequest.range() > 50) {
+            return new ValidationResult(false, "Laser range must be 50 or less");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validation result record.
+     */
+    private record ValidationResult(boolean isValid, String errorMessage) {
+        public String getErrorMessage() {
+            return errorMessage;
         }
     }
 

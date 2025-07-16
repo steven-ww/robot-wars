@@ -58,7 +58,13 @@ public class BattleResource {
         schema = @Schema(type = SchemaType.ARRAY, implementation = Battle.class)))
     @APIResponse(responseCode = "500", description = "Internal server error",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "InternalError", summary = "Internal server error",
+                description = "Error when an unexpected server error occurs", value = """
+            {
+                "message": "Error retrieving battles: Database connection failed"
+            }
+            """)))
     public Response getAllBattles() {
         try {
             var battleSummaries = battleService.getAllBattleSummaries();
@@ -88,21 +94,62 @@ public class BattleResource {
     @APIResponse(responseCode = "200", description = "Battle created successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Battle.class),
-        examples = @ExampleObject(name = "BattleCreated", ref = "#/components/examples/BattleResponse")))
+        examples = @ExampleObject(name = "BattleCreated", summary = "Battle information",
+                description = "Example battle response with all details", value = """
+            {
+                "id": "battle-123e4567-e89b-12d3-a456-556642440000",
+                "name": "Epic Robot Showdown",
+                "arenaWidth": 60,
+                "arenaHeight": 40,
+                "robotMovementTimeSeconds": 1.5,
+                "state": "WAITING_ON_ROBOTS",
+                "robots": [],
+                "walls": [],
+                "winnerId": null,
+                "winnerName": null
+            }
+            """)))
     @APIResponse(responseCode = "400", description = "Invalid input data",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ValidationError", ref = "#/components/examples/ValidationErrorResponse")))
+        examples = @ExampleObject(name = "ValidationError", summary = "Validation error",
+                description = "Example validation error response", value = """
+            {
+                "message": "Battle name is required and cannot be empty"
+            }
+            """)))
     @APIResponse(responseCode = "409", description = "Conflict in creating battle",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", ref = "#/components/examples/ConflictErrorResponse")))
+        examples = @ExampleObject(name = "ConflictError", summary = "Conflict error",
+                description = "Example conflict error response", value = """
+            {
+                "message": "Battle with this name already exists"
+            }
+            """)))
     public Response createBattle(
         @Parameter(description = "Battle creation details",
         content = @Content(examples = @ExampleObject(name = "CreateBattleRequest",
-                ref = "#/components/examples/CreateBattleRequest")))
+                summary = "Create a new battle",
+                description = "Example request to create a new battle with custom dimensions",
+                value = """
+                    {
+                        "name": "Epic Robot Showdown",
+                        "width": 60,
+                        "height": 40,
+                        "robotMovementTimeSeconds": 1.5
+                    }
+                    """)))
         CreateBattleRequest request) {
         try {
+            // Validate required fields
+            ValidationResult validationResult = validateCreateBattleRequest(request);
+            if (!validationResult.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(validationResult.getErrorMessage()))
+                        .build();
+            }
+
             Battle battle;
             if (request.width() != null && request.height() != null
                     && request.robotMovementTimeSeconds() != null) {
@@ -145,18 +192,52 @@ public class BattleResource {
     @APIResponse(responseCode = "200", description = "Battle started successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Battle.class)))
-    @APIResponse(responseCode = "400", description = "Invalid battle ID",
+    @APIResponse(responseCode = "400", description = "Invalid battle ID format",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "InvalidFormat", summary = "Invalid battle ID format",
+                description = "Error when battle ID format is invalid", value = """
+            {
+                "message": "Battle ID is required and cannot be empty"
+            }
+            """)))
+    @APIResponse(responseCode = "404", description = "Battle not found",
+        content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "BattleNotFound", summary = "Battle not found",
+                description = "Error when battle with given ID does not exist", value = """
+            {
+                "message": "Battle not found with ID: battle-123"
+            }
+            """)))
     @APIResponse(responseCode = "409", description = "Battle cannot be started",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "ConflictError", summary = "Battle cannot be started",
+                description = "Error when battle state prevents starting", value = """
+            {
+                "message": "Battle cannot be started - insufficient robots registered"
+            }
+            """)))
     public Response startBattle(
             @Parameter(description = "ID of the battle to start") @PathParam("battleId") String battleId) {
         try {
+            // Validate required path parameter
+            if (battleId == null || battleId.trim().isEmpty() || "null".equals(battleId)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Battle ID is required and cannot be empty"))
+                        .build();
+            }
+
             Battle battle = battleService.startBattle(battleId);
             return Response.ok(battle).build();
         } catch (IllegalArgumentException e) {
+            // Check if this is a "not found" case vs invalid format
+            if (e.getMessage().contains("not found") || e.getMessage().contains("does not exist")) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(new ErrorResponse(e.getMessage()))
+                        .build();
+            }
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
@@ -183,15 +264,43 @@ public class BattleResource {
         description = "Deletes a battle identified by battle ID if it has been completed."
     )
     @APIResponse(responseCode = "204", description = "Battle deleted successfully")
+    @APIResponse(responseCode = "400", description = "Invalid battle ID format",
+        content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "InvalidFormat", summary = "Invalid battle ID format",
+                description = "Error when battle ID format is invalid", value = """
+            {
+                "message": "Battle ID is required and cannot be empty"
+            }
+            """)))
     @APIResponse(responseCode = "404", description = "Battle not found",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "400", description = "Bad request",
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "BattleNotFound", summary = "Battle not found",
+                description = "Error when battle with given ID does not exist", value = """
+            {
+                "message": "Battle not found with ID: battle-123"
+            }
+            """)))
+    @APIResponse(responseCode = "409", description = "Battle cannot be deleted",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "ConflictError", summary = "Battle cannot be deleted",
+                description = "Error when battle state prevents deletion", value = """
+            {
+                "message": "Battle cannot be deleted - battle is still in progress"
+            }
+            """)))
     public Response deleteBattle(
             @Parameter(description = "ID of the battle to delete") @PathParam("battleId") String battleId) {
         try {
+            // Validate required path parameter
+            if (battleId == null || battleId.trim().isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Battle ID is required and cannot be empty"))
+                        .build();
+            }
+
             battleService.deleteBattle(battleId);
             return Response.noContent().build();
         } catch (IllegalArgumentException e) {
@@ -199,9 +308,70 @@ public class BattleResource {
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
         } catch (IllegalStateException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            return Response.status(Response.Status.CONFLICT)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
+        }
+    }
+
+    /**
+     * Validates the create battle request.
+     *
+     * @param request The request to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateCreateBattleRequest(CreateBattleRequest request) {
+        if (request == null) {
+            return new ValidationResult(false, "Request body is required");
+        }
+
+        if (request.name() == null || request.name().trim().isEmpty()) {
+            return new ValidationResult(false, "Battle name is required and cannot be empty");
+        }
+
+        if (request.name().length() > 100) {
+            return new ValidationResult(false, "Battle name must be 100 characters or less");
+        }
+
+        // Validate optional width and height together
+        if ((request.width() != null && request.height() == null)
+            || (request.width() == null && request.height() != null)) {
+            return new ValidationResult(false, "Both width and height must be provided together, or neither");
+        }
+
+        if (request.width() != null && request.width() < 10) {
+            return new ValidationResult(false, "Arena width must be at least 10 units");
+        }
+
+        if (request.width() != null && request.width() > 1000) {
+            return new ValidationResult(false, "Arena width must be at most 1000 units");
+        }
+
+        if (request.height() != null && request.height() < 10) {
+            return new ValidationResult(false, "Arena height must be at least 10 units");
+        }
+
+        if (request.height() != null && request.height() > 1000) {
+            return new ValidationResult(false, "Arena height must be at most 1000 units");
+        }
+
+        if (request.robotMovementTimeSeconds() != null && request.robotMovementTimeSeconds() < 0.1) {
+            return new ValidationResult(false, "Robot movement time must be at least 0.1 seconds");
+        }
+
+        if (request.robotMovementTimeSeconds() != null && request.robotMovementTimeSeconds() > 10.0) {
+            return new ValidationResult(false, "Robot movement time must be at most 10.0 seconds");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validation result record.
+     */
+    private record ValidationResult(boolean isValid, String errorMessage) {
+        public String getErrorMessage() {
+            return errorMessage;
         }
     }
 
