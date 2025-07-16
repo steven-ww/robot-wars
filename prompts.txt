@@ -831,3 +831,6 @@ Follow the guidelines in .junie/guidelines.md fix this failing BDD test "Accept 
 
 ## 175th Prompt
 Follow the guidelines in .junie/guidelines.md. The current swagger page fails when opening the POST api/battles documentation. It fails with "Could not resolve reference: JSON Pointer evaluation failed while evaluating token "examples" against an ObjectElement". Lets fix that.
+
+## 176th Prompt
+Follow the guidelines in .junie/guidelines.md. The service already deletes battles that are invective but have never been started. Enhance that to remove battles that have started but have been running for 2 hours

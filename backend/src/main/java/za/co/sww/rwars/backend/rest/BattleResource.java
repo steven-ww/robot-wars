@@ -88,7 +88,8 @@ public class BattleResource {
     @APIResponse(responseCode = "200", description = "Battle created successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Battle.class),
-        examples = @ExampleObject(name = "BattleCreated", summary = "Battle information", description = "Example battle response with all details", value = """
+        examples = @ExampleObject(name = "BattleCreated", summary = "Battle information",
+                description = "Example battle response with all details", value = """
             {
                 "id": "battle-123e4567-e89b-12d3-a456-556642440000",
                 "name": "Epic Robot Showdown",
@@ -105,7 +106,8 @@ public class BattleResource {
     @APIResponse(responseCode = "400", description = "Invalid input data",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ValidationError", summary = "Validation error", description = "Example validation error response", value = """
+        examples = @ExampleObject(name = "ValidationError", summary = "Validation error",
+                description = "Example validation error response", value = """
             {
                 "message": "Invalid direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW"
             }
@@ -113,7 +115,8 @@ public class BattleResource {
     @APIResponse(responseCode = "409", description = "Conflict in creating battle",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", summary = "Conflict error", description = "Example conflict error response", value = """
+        examples = @ExampleObject(name = "ConflictError", summary = "Conflict error",
+                description = "Example conflict error response", value = """
             {
                 "message": "Robot cannot move - path is blocked by a wall"
             }

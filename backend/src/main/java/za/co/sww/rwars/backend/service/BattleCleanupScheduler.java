@@ -13,8 +13,10 @@ import za.co.sww.rwars.backend.model.Battle;
 /**
  * Scheduled service for automatic cleanup of inactive battles.
  *
- * This service runs periodically to check for battles that have been inactive
- * for more than 30 minutes and automatically deletes them to keep the system clean.
+ * This service runs periodically to check for battles that qualify for deletion:
+ * 1. Battles in WAITING_ON_ROBOTS state (never started) that are older than 30 minutes
+ * 2. Battles in IN_PROGRESS state that have been running for more than 2 hours
+ * These battles are automatically deleted to keep the system clean.
  */
 @ApplicationScoped
 public class BattleCleanupScheduler {
@@ -28,12 +30,12 @@ public class BattleCleanupScheduler {
     private BattleService battleService;
 
     /**
-     * Scheduled task that runs every 10 minutes to clean up inactive battles.
+     * Scheduled task that runs every 10 minutes to clean up battles that qualify for deletion.
      *
      * This method identifies battles that:
-     * 1. Are in WAITING_ON_ROBOTS state (never started)
-     * 2. Were created more than 30 minutes ago
-     * 3. Automatically deletes them to prevent accumulation of abandoned battles
+     * 1. Are in WAITING_ON_ROBOTS state (never started) and created more than 30 minutes ago
+     * 2. Are in IN_PROGRESS state and have been running for more than 2 hours
+     * 3. Automatically deletes them to prevent accumulation of abandoned or long-running battles
      */
     @Scheduled(every = "10m")
     public void cleanupInactiveBattles() {
@@ -66,23 +68,31 @@ public class BattleCleanupScheduler {
     }
 
     /**
-     * Determines if a battle should be deleted due to inactivity.
+     * Determines if a battle should be deleted due to inactivity or excessive runtime.
+     *
+     * A battle qualifies for deletion if:
+     * 1. It's in WAITING_ON_ROBOTS state and was created before the cutoff time (30 minutes ago)
+     * 2. It's in IN_PROGRESS state and has been running for more than 2 hours
      *
      * @param battle The battle to check
-     * @param cutoffTime The time cutoff for inactivity
+     * @param cutoffTime The time cutoff for inactivity (30 minutes ago)
      * @return true if the battle should be deleted, false otherwise
      */
     private boolean shouldDeleteBattle(Battle battle, LocalDateTime cutoffTime) {
-        // Only delete battles that are in WAITING_ON_ROBOTS state (never started)
-        if (battle.getState() != Battle.BattleState.WAITING_ON_ROBOTS) {
-            return false;
+        // Delete battles in WAITING_ON_ROBOTS state (never started) and older than cutoff time
+        if (battle.getState() == Battle.BattleState.WAITING_ON_ROBOTS
+            && battle.getCreatedAt() != null
+            && battle.getCreatedAt().isBefore(cutoffTime)) {
+            return true;
         }
 
-        // Only delete battles that were created before the cutoff time
-        if (battle.getCreatedAt() == null || battle.getCreatedAt().isAfter(cutoffTime)) {
-            return false;
+        // Delete battles in IN_PROGRESS state running for more than 2 hours
+        if (battle.getState() == Battle.BattleState.IN_PROGRESS
+            && battle.getCreatedAt() != null
+            && battle.getCreatedAt().plusHours(2).isBefore(LocalDateTime.now())) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 }
