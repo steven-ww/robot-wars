@@ -89,15 +89,27 @@ class LaserServiceTest {
     @Test
     void testLaserFireHit() {
         // Position robots at known locations to ensure a guaranteed hit
-        // Robot1 at (10, 10) and Robot2 at (10, 13) - 3 blocks north (Y increases)
-        try {
-            battleService.setRobotPositionForTesting(battleId, robotId1, 10, 10);
-            battleService.setRobotPositionForTesting(battleId, robotId2, 10, 13);
-        } catch (Exception e) {
-            // If positioning fails due to walls, try alternative positions
-            battleService.setRobotPositionForTesting(battleId, robotId1, 5, 10);
-            battleService.setRobotPositionForTesting(battleId, robotId2, 5, 13);
+        // Try multiple position pairs until we find one that works (avoiding walls)
+        int[][][] positionPairs = {
+            {{10, 10}, {10, 13}}, // Robot1 at (10, 10) and Robot2 at (10, 13) - 3 blocks north
+            {{5, 10}, {5, 13}},   // Alternative: Robot1 at (5, 10) and Robot2 at (5, 13)
+            {{15, 10}, {15, 13}}, // Alternative: Robot1 at (15, 10) and Robot2 at (15, 13)
+            {{8, 8}, {8, 11}},    // Alternative: Robot1 at (8, 8) and Robot2 at (8, 11)
+            {{12, 8}, {12, 11}}   // Alternative: Robot1 at (12, 8) and Robot2 at (12, 11)
+        };
+        
+        boolean positioned = false;
+        for (int[][] pair : positionPairs) {
+            try {
+                battleService.setRobotPositionForTesting(battleId, robotId1, pair[0][0], pair[0][1]);
+                battleService.setRobotPositionForTesting(battleId, robotId2, pair[1][0], pair[1][1]);
+                positioned = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Try next position pair
+            }
         }
+        assertTrue(positioned, "Failed to position robots in wall-free locations for hit test");
 
         // Fire laser north from robot1 towards robot2
         LaserResponse response = battleService.fireLaser(battleId, robotId1, "NORTH", 10);
@@ -142,12 +154,19 @@ class LaserServiceTest {
     @Test
     void testLaserFireBoundaryBlock() {
         // Position robot near edge using proper testing method
-        try {
-            battleService.setRobotPositionForTesting(battleId, robotId1, 19, 10);
-        } catch (Exception e) {
-            // If positioning fails due to walls, try alternative edge position
-            battleService.setRobotPositionForTesting(battleId, robotId1, 18, 10);
+        // Try multiple edge positions until one works (avoiding walls)
+        int[][] edgePositions = {{19, 10}, {18, 10}, {17, 10}, {19, 8}, {18, 8}};
+        boolean positioned = false;
+        for (int[] pos : edgePositions) {
+            try {
+                battleService.setRobotPositionForTesting(battleId, robotId1, pos[0], pos[1]);
+                positioned = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Try next edge position
+            }
         }
+        assertTrue(positioned, "Failed to position robot near edge in wall-free location");
 
         // Fire laser east (should hit boundary)
         LaserResponse response = battleService.fireLaser(battleId, robotId1, "EAST", 5);
