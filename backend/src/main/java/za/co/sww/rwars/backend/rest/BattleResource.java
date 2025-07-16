@@ -58,7 +58,13 @@ public class BattleResource {
         schema = @Schema(type = SchemaType.ARRAY, implementation = Battle.class)))
     @APIResponse(responseCode = "500", description = "Internal server error",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "InternalError", summary = "Internal server error",
+                description = "Error when an unexpected server error occurs", value = """
+            {
+                "message": "Error retrieving battles: Database connection failed"
+            }
+            """)))
     public Response getAllBattles() {
         try {
             var battleSummaries = battleService.getAllBattleSummaries();
@@ -109,7 +115,7 @@ public class BattleResource {
         examples = @ExampleObject(name = "ValidationError", summary = "Validation error",
                 description = "Example validation error response", value = """
             {
-                "message": "Invalid direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW"
+                "message": "Battle name is required and cannot be empty"
             }
             """)))
     @APIResponse(responseCode = "409", description = "Conflict in creating battle",
@@ -118,7 +124,7 @@ public class BattleResource {
         examples = @ExampleObject(name = "ConflictError", summary = "Conflict error",
                 description = "Example conflict error response", value = """
             {
-                "message": "Robot cannot move - path is blocked by a wall"
+                "message": "Battle with this name already exists"
             }
             """)))
     public Response createBattle(
@@ -186,12 +192,33 @@ public class BattleResource {
     @APIResponse(responseCode = "200", description = "Battle started successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Battle.class)))
-    @APIResponse(responseCode = "400", description = "Invalid battle ID",
+    @APIResponse(responseCode = "400", description = "Invalid battle ID format",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "InvalidFormat", summary = "Invalid battle ID format",
+                description = "Error when battle ID format is invalid", value = """
+            {
+                "message": "Battle ID is required and cannot be empty"
+            }
+            """)))
+    @APIResponse(responseCode = "404", description = "Battle not found",
+        content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "BattleNotFound", summary = "Battle not found",
+                description = "Error when battle with given ID does not exist", value = """
+            {
+                "message": "Battle not found with ID: battle-123"
+            }
+            """)))
     @APIResponse(responseCode = "409", description = "Battle cannot be started",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "ConflictError", summary = "Battle cannot be started",
+                description = "Error when battle state prevents starting", value = """
+            {
+                "message": "Battle cannot be started - insufficient robots registered"
+            }
+            """)))
     public Response startBattle(
             @Parameter(description = "ID of the battle to start") @PathParam("battleId") String battleId) {
         try {
@@ -205,6 +232,12 @@ public class BattleResource {
             Battle battle = battleService.startBattle(battleId);
             return Response.ok(battle).build();
         } catch (IllegalArgumentException e) {
+            // Check if this is a "not found" case vs invalid format
+            if (e.getMessage().contains("not found") || e.getMessage().contains("does not exist")) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(new ErrorResponse(e.getMessage()))
+                        .build();
+            }
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
@@ -231,12 +264,33 @@ public class BattleResource {
         description = "Deletes a battle identified by battle ID if it has been completed."
     )
     @APIResponse(responseCode = "204", description = "Battle deleted successfully")
+    @APIResponse(responseCode = "400", description = "Invalid battle ID format",
+        content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "InvalidFormat", summary = "Invalid battle ID format",
+                description = "Error when battle ID format is invalid", value = """
+            {
+                "message": "Battle ID is required and cannot be empty"
+            }
+            """)))
     @APIResponse(responseCode = "404", description = "Battle not found",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "400", description = "Bad request",
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "BattleNotFound", summary = "Battle not found",
+                description = "Error when battle with given ID does not exist", value = """
+            {
+                "message": "Battle not found with ID: battle-123"
+            }
+            """)))
+    @APIResponse(responseCode = "409", description = "Battle cannot be deleted",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = ErrorResponse.class),
+        examples = @ExampleObject(name = "ConflictError", summary = "Battle cannot be deleted",
+                description = "Error when battle state prevents deletion", value = """
+            {
+                "message": "Battle cannot be deleted - battle is still in progress"
+            }
+            """)))
     public Response deleteBattle(
             @Parameter(description = "ID of the battle to delete") @PathParam("battleId") String battleId) {
         try {
@@ -254,7 +308,7 @@ public class BattleResource {
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
         } catch (IllegalStateException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
+            return Response.status(Response.Status.CONFLICT)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
         }

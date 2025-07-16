@@ -834,3 +834,12 @@ Follow the guidelines in .junie/guidelines.md. The current swagger page fails wh
 
 ## 176th Prompt
 Follow the guidelines in .junie/guidelines.md. The service already deletes battles that are invective but have never been started. Enhance that to remove battles that have started but have been running for 2 hours
+
+## 177th Prompt
+Follow the guidelines in .junie/guidelines.md and update the Swagger documentation to better align with the actual error handling responses seen in the current version of the REST endpoints.
+
+## 178th Prompt
+Follow the guidelines in .junie/guidelines.md. Have a look at the current version of the Rest Endpoints to understand the error handling responses. Update the swagger doc to better align with the error response messages and objects.
+
+## 179th Prompt
+Follow the guidelines in .junie/guidelines.md. With the recent changes to the status codes returned, 3 tests are failing. Update the tests to reflect the new http codes

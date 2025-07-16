@@ -23,14 +23,14 @@ Feature: Delete Battle REST API
     And I have registered robot "Robot2" for the battle
     And the battle is in progress
     When I make a DELETE request to "/api/battles/{battleId}"
-    Then the response status should be 400
+    Then the response status should be 409
     And the response should contain error message "Cannot delete battle that is not completed"
     And the battle should still exist in the system
 
   Scenario: Cannot delete a battle in WAITING_ON_ROBOTS state
     Given I have created a battle with name "Waiting Battle"
     When I make a DELETE request to "/api/battles/{battleId}"
-    Then the response status should be 400
+    Then the response status should be 409
     And the response should contain error message "Cannot delete battle that is not completed"
     And the battle should still exist in the system
 
@@ -39,7 +39,7 @@ Feature: Delete Battle REST API
     And I have registered robot "Robot1" for the battle
     And I have registered robot "Robot2" for the battle
     When I make a DELETE request to "/api/battles/{battleId}"
-    Then the response status should be 400
+    Then the response status should be 409
     And the response should contain error message "Cannot delete battle that is not completed"
     And the battle should still exist in the system
 

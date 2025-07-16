@@ -165,3 +165,106 @@ components:
       description: "Example conflict error response"
       value:
         message: "Robot cannot move - path is blocked by a wall"
+
+    # Specific validation error examples
+    RobotNameRequiredError:
+      summary: "Robot name required error"
+      description: "Error when robot name is missing"
+      value:
+        message: "Robot name is required and cannot be empty"
+
+    RobotNameTooLongError:
+      summary: "Robot name too long error"
+      description: "Error when robot name exceeds maximum length"
+      value:
+        message: "Robot name must be 50 characters or less"
+
+    InvalidRobotNameError:
+      summary: "Invalid robot name characters error"
+      description: "Error when robot name contains invalid characters"
+      value:
+        message: "Robot name can only contain letters, numbers, spaces, hyphens, and underscores"
+
+    BattleIdRequiredError:
+      summary: "Battle ID required error"
+      description: "Error when battle ID is missing"
+      value:
+        message: "Battle ID is required and cannot be empty"
+
+    RobotIdRequiredError:
+      summary: "Robot ID required error"
+      description: "Error when robot ID is missing"
+      value:
+        message: "Robot ID is required and cannot be empty"
+
+    InvalidBattleRobotIdError:
+      summary: "Invalid battle or robot ID error"
+      description: "Error when battle or robot ID is invalid"
+      value:
+        message: "Invalid battle ID or robot ID"
+
+    MoveRequestRequiredError:
+      summary: "Move request required error"
+      description: "Error when move request is missing"
+      value:
+        message: "Move request is required"
+
+    DirectionRequiredError:
+      summary: "Direction required error"
+      description: "Error when direction is missing"
+      value:
+        message: "Direction is required and cannot be empty"
+
+    InvalidDirectionError:
+      summary: "Invalid direction error"
+      description: "Error when direction is invalid"
+      value:
+        message: "Invalid direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW"
+
+    BlocksRangeError:
+      summary: "Blocks range error"
+      description: "Error when blocks value is out of range"
+      value:
+        message: "Number of blocks must be greater than 0"
+
+    BlocksMaxError:
+      summary: "Blocks maximum error"
+      description: "Error when blocks value exceeds maximum"
+      value:
+        message: "Number of blocks must be 10 or less"
+
+    RadarRangeError:
+      summary: "Radar range error"
+      description: "Error when radar range is invalid"
+      value:
+        message: "Radar range must be greater than 0"
+
+    RadarMaxError:
+      summary: "Radar maximum error"
+      description: "Error when radar range exceeds maximum"
+      value:
+        message: "Radar range must be 20 or less"
+
+    LaserDirectionRequiredError:
+      summary: "Laser direction required error"
+      description: "Error when laser direction is missing"
+      value:
+        message: "Laser direction is required and cannot be empty"
+
+    InvalidLaserDirectionError:
+      summary: "Invalid laser direction error"
+      description: "Error when laser direction is invalid"
+      value:
+        message: "Invalid laser direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW"
+
+    LaserRangeError:
+      summary: "Laser range error"
+      description: "Error when laser range is invalid"
+      value:
+        message: "Laser range must be greater than 0"
+
+    LaserMaxError:
+      summary: "Laser maximum error"
+      description: "Error when laser range exceeds maximum"
+      value:
+        message: "Laser range must be 50 or less"
