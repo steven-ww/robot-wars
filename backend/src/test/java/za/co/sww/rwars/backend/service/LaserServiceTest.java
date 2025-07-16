@@ -46,7 +46,36 @@ class LaserServiceTest {
 
     @Test
     void testLaserFireMiss() {
-        // Fire laser in a direction where there's no robot
+        // Position robot1 in a known location where laser will miss
+        // Position it in center of arena where it has clear path
+        int[][] positions = {{10, 10}, {5, 10}, {15, 10}, {8, 10}, {12, 10}};
+        boolean positioned = false;
+        for (int[] pos : positions) {
+            try {
+                battleService.setRobotPositionForTesting(battleId, robotId1, pos[0], pos[1]);
+                positioned = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Try next position
+            }
+        }
+        assertTrue(positioned, "Failed to position robot in a wall-free location");
+
+        // Position robot2 far away to ensure no hit
+        int[][] robot2Positions = {{1, 1}, {2, 2}, {3, 3}, {1, 2}, {2, 1}};
+        boolean robot2Positioned = false;
+        for (int[] pos : robot2Positions) {
+            try {
+                battleService.setRobotPositionForTesting(battleId, robotId2, pos[0], pos[1]);
+                robot2Positioned = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Try next position
+            }
+        }
+        assertTrue(robot2Positioned, "Failed to position robot2 in a wall-free location");
+
+        // Fire laser in a direction where there's no robot (NORTH with limited range)
         LaserResponse response = battleService.fireLaser(battleId, robotId1, "NORTH", 5);
 
         assertNotNull(response);
@@ -154,6 +183,20 @@ class LaserServiceTest {
 
     @Test
     void testLaserFireDiagonalDirection() {
+        // Position robot1 in a known location for diagonal laser test
+        int[][] positions = {{10, 10}, {5, 10}, {15, 10}, {8, 10}, {12, 10}};
+        boolean positioned = false;
+        for (int[] pos : positions) {
+            try {
+                battleService.setRobotPositionForTesting(battleId, robotId1, pos[0], pos[1]);
+                positioned = true;
+                break;
+            } catch (IllegalArgumentException e) {
+                // Try next position
+            }
+        }
+        assertTrue(positioned, "Failed to position robot in a wall-free location");
+
         // Test diagonal laser firing
         LaserResponse response = battleService.fireLaser(battleId, robotId1, "NE", 5);
 
