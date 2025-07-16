@@ -600,6 +600,111 @@ public class BattleSteps {
         }
     }
 
+    // Validation step definitions
+    @When("I attempt to create a battle with null name")
+    public void iAttemptToCreateABattleWithNullName() {
+        Map<String, Object> battleRequest = new HashMap<>();
+        battleRequest.put("name", null);
+        response = request.body(battleRequest).post("/api/battles");
+    }
+
+    @When("I attempt to create a battle with empty name")
+    public void iAttemptToCreateABattleWithEmptyName() {
+        Map<String, Object> battleRequest = new HashMap<>();
+        battleRequest.put("name", "");
+        response = request.body(battleRequest).post("/api/battles");
+    }
+
+    @When("I attempt to create a battle with whitespace-only name")
+    public void iAttemptToCreateABattleWithWhitespaceOnlyName() {
+        Map<String, Object> battleRequest = new HashMap<>();
+        battleRequest.put("name", "   ");
+        response = request.body(battleRequest).post("/api/battles");
+    }
+
+    @When("I attempt to create a battle with name longer than 100 characters")
+    public void iAttemptToCreateABattleWithNameLongerThan100Characters() {
+        Map<String, Object> battleRequest = new HashMap<>();
+        battleRequest.put("name", "a".repeat(101));
+        response = request.body(battleRequest).post("/api/battles");
+    }
+
+    @When("I attempt to create a battle with null request body")
+    public void iAttemptToCreateABattleWithNullRequestBody() {
+        response = request.post("/api/battles");
+    }
+
+    @When("I attempt to start a battle with null battle ID")
+    public void iAttemptToStartABattleWithNullBattleId() {
+        response = request.post("/api/battles/null/start");
+    }
+
+    @When("I attempt to start a battle with empty battle ID")
+    public void iAttemptToStartABattleWithEmptyBattleId() {
+        response = request.post("/api/battles/ /start");
+    }
+
+    @When("I attempt to start a battle with battle ID longer than 100 characters")
+    public void iAttemptToStartABattleWithBattleIdLongerThan100Characters() {
+        String longBattleId = "a".repeat(101);
+        response = request.post("/api/battles/" + longBattleId + "/start");
+    }
+
+    @When("I attempt to delete a battle with null battle ID")
+    public void iAttemptToDeleteABattleWithNullBattleId() {
+        response = request.delete("/api/battles/null");
+    }
+
+    @When("I attempt to delete a battle with empty battle ID")
+    public void iAttemptToDeleteABattleWithEmptyBattleId() {
+        response = request.delete("/api/battles/ ");
+    }
+
+    @When("I attempt to delete a battle with battle ID longer than 100 characters")
+    public void iAttemptToDeleteABattleWithBattleIdLongerThan100Characters() {
+        String longBattleId = "a".repeat(101);
+        response = request.delete("/api/battles/" + longBattleId);
+    }
+
+    @When("I start the battle")
+    public void iStartTheBattle() {
+        String currentBattleId = testContext.getCurrentBattleId();
+        if (currentBattleId != null) {
+            response = request.post("/api/battles/" + currentBattleId + "/start");
+        }
+    }
+
+    @When("I delete the battle")
+    public void iDeleteTheBattle() {
+        String currentBattleId = testContext.getCurrentBattleId();
+        if (currentBattleId != null) {
+            response = request.delete("/api/battles/" + currentBattleId);
+        }
+    }
+
+    @Then("I should receive a validation error {string}")
+    public void iShouldReceiveAValidationError(String expectedMessage) {
+        Response responseToCheck = response;
+        if (responseToCheck == null) {
+            responseToCheck = testContext.getResponse();
+        }
+        Assertions.assertNotNull(responseToCheck, "Response should not be null");
+        responseToCheck.then().statusCode(400);
+        responseToCheck.then().body("message", Matchers.equalTo(expectedMessage));
+    }
+
+    @Then("the battle should start successfully")
+    public void theBattleShouldStartSuccessfully() {
+        response.then().statusCode(200);
+        response.then().body("state", Matchers.equalTo("IN_PROGRESS"));
+    }
+
+    @Then("the battle should be deleted successfully")
+    public void theBattleShouldBeDeletedSuccessfully() {
+        response.then().statusCode(200);
+        response.then().body("message", Matchers.equalTo("Battle deleted successfully"));
+    }
+
     @Then("the response should contain {string}")
     public void theResponseShouldContain(String battleName) {
         response.then().body("name", Matchers.hasItem(battleName));

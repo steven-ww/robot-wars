@@ -2,6 +2,7 @@ package za.co.sww.rwars.steps;
 
 import java.util.HashMap;
 import java.util.Map;
+import io.restassured.response.Response;
 
 /**
  * Shared context for storing test data between step definitions.
@@ -16,6 +17,7 @@ public class TestContext {
     private String currentBattleId;
     private int firstDeleteStatus;
     private int secondDeleteStatus;
+    private Response response;
 
     public static TestContext getInstance() {
         return INSTANCE;
@@ -83,5 +85,16 @@ public class TestContext {
 
     public int getSecondDeleteStatus() {
         return secondDeleteStatus;
+    }
+    public void setResponse(Response response) {
+        this.response = response;
+    }
+
+    public Response getResponse() {
+        return response;
+    }
+
+    public String getFirstAvailableRobotId() {
+        return robotsByName.values().stream().findFirst().orElse(null);
     }
 }

@@ -103,6 +103,14 @@ public class BattleResource {
                 ref = "#/components/examples/CreateBattleRequest")))
         CreateBattleRequest request) {
         try {
+            // Validate required fields
+            ValidationResult validationResult = validateCreateBattleRequest(request);
+            if (!validationResult.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(validationResult.getErrorMessage()))
+                        .build();
+            }
+
             Battle battle;
             if (request.width() != null && request.height() != null
                     && request.robotMovementTimeSeconds() != null) {
@@ -154,6 +162,13 @@ public class BattleResource {
     public Response startBattle(
             @Parameter(description = "ID of the battle to start") @PathParam("battleId") String battleId) {
         try {
+            // Validate required path parameter
+            if (battleId == null || battleId.trim().isEmpty() || "null".equals(battleId)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Battle ID is required and cannot be empty"))
+                        .build();
+            }
+
             Battle battle = battleService.startBattle(battleId);
             return Response.ok(battle).build();
         } catch (IllegalArgumentException e) {
@@ -192,6 +207,13 @@ public class BattleResource {
     public Response deleteBattle(
             @Parameter(description = "ID of the battle to delete") @PathParam("battleId") String battleId) {
         try {
+            // Validate required path parameter
+            if (battleId == null || battleId.trim().isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse("Battle ID is required and cannot be empty"))
+                        .build();
+            }
+
             battleService.deleteBattle(battleId);
             return Response.noContent().build();
         } catch (IllegalArgumentException e) {
@@ -202,6 +224,67 @@ public class BattleResource {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
+        }
+    }
+
+    /**
+     * Validates the create battle request.
+     *
+     * @param request The request to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateCreateBattleRequest(CreateBattleRequest request) {
+        if (request == null) {
+            return new ValidationResult(false, "Request body is required");
+        }
+
+        if (request.name() == null || request.name().trim().isEmpty()) {
+            return new ValidationResult(false, "Battle name is required and cannot be empty");
+        }
+
+        if (request.name().length() > 100) {
+            return new ValidationResult(false, "Battle name must be 100 characters or less");
+        }
+
+        // Validate optional width and height together
+        if ((request.width() != null && request.height() == null) ||
+            (request.width() == null && request.height() != null)) {
+            return new ValidationResult(false, "Both width and height must be provided together, or neither");
+        }
+
+        if (request.width() != null && request.width() < 10) {
+            return new ValidationResult(false, "Arena width must be at least 10 units");
+        }
+
+        if (request.width() != null && request.width() > 1000) {
+            return new ValidationResult(false, "Arena width must be at most 1000 units");
+        }
+
+        if (request.height() != null && request.height() < 10) {
+            return new ValidationResult(false, "Arena height must be at least 10 units");
+        }
+
+        if (request.height() != null && request.height() > 1000) {
+            return new ValidationResult(false, "Arena height must be at most 1000 units");
+        }
+
+        if (request.robotMovementTimeSeconds() != null && request.robotMovementTimeSeconds() < 0.1) {
+            return new ValidationResult(false, "Robot movement time must be at least 0.1 seconds");
+        }
+
+        if (request.robotMovementTimeSeconds() != null && request.robotMovementTimeSeconds() > 10.0) {
+            return new ValidationResult(false, "Robot movement time must be at most 10.0 seconds");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validation result record.
+     */
+    private record ValidationResult(boolean isValid, String errorMessage) {
+        public String getErrorMessage() {
+            return errorMessage;
         }
     }
 

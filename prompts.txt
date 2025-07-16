@@ -813,3 +813,9 @@ Follow the guidelines in .junie/guidelines.md. Seems we've missed more serializa
 
 ## 169th Prompt
 Follow the guidelines in .junie/guidelines.md for this task. Add a scenario and implement it that validates that once a battle has been registered, AND has never been started, but has had no further activity against it for 30 minutes (like registering robots), then it should be automatically deleted.
+
+## 170th Prompt
+Follow the guidlines in ,junie/guidlines.md. After those validation changes, a lot of tests are failing. Investigate the root cause and fix them.
+
+## 171st Prompt
+Follow the guidelines in .junie/guidelines.md. Have a look at just this one failing test "Reject robot move with empty direction" "features/robot_actions_validation.feature". It seems the test is incorrectly expecting a 200 status code while it should expect the 400 with an error. The server validation looks correct. The test itself seems to be a problem.

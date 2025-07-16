@@ -67,8 +67,20 @@ public class RobotResource {
         content = @Content(examples = @ExampleObject(name = "RegisterRobotRequest",
                 ref = "#/components/examples/RegisterRobotRequest"))) Robot robot) {
         try {
+            // Validate required fields
+            ValidationResult validationResult = validateRobotRegistration(robot);
+            if (!validationResult.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(validationResult.getErrorMessage()))
+                        .build();
+            }
+
             Robot registeredRobot = battleService.registerRobot(robot.getName());
             return Response.ok(registeredRobot).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ErrorResponse(e.getMessage()))
@@ -105,6 +117,21 @@ public class RobotResource {
         @Parameter(description = "Details of the robot to register") Robot robot,
         @Parameter(description = "ID of the battle to join") @PathParam("battleId") String battleId) {
         try {
+            // Validate required fields
+            ValidationResult robotValidation = validateRobotRegistration(robot);
+            if (!robotValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(robotValidation.getErrorMessage()))
+                        .build();
+            }
+
+            ValidationResult battleIdValidation = validateBattleId(battleId);
+            if (!battleIdValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(battleIdValidation.getErrorMessage()))
+                        .build();
+            }
+
             Robot registeredRobot = battleService.registerRobotForBattle(robot.getName(), battleId);
             return Response.ok(registeredRobot).build();
         } catch (IllegalArgumentException e) {
@@ -278,6 +305,22 @@ public class RobotResource {
         content = @Content(examples = @ExampleObject(name = "MoveRequest",
                 ref = "#/components/examples/MoveRequest"))) MoveRequest moveRequest) {
         try {
+            // Validate path parameters
+            ValidationResult pathValidation = validateBattleAndRobotId(battleId, robotId);
+            if (!pathValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(pathValidation.getErrorMessage()))
+                        .build();
+            }
+
+            // Validate move request
+            ValidationResult moveValidation = validateMoveRequest(moveRequest);
+            if (!moveValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(moveValidation.getErrorMessage()))
+                        .build();
+            }
+
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(new ErrorResponse("Invalid battle ID or robot ID"))
@@ -337,6 +380,22 @@ public class RobotResource {
         content = @Content(examples = @ExampleObject(name = "RadarRequest",
                 ref = "#/components/examples/RadarRequest"))) RadarRequest radarRequest) {
         try {
+            // Validate path parameters
+            ValidationResult pathValidation = validateBattleAndRobotId(battleId, robotId);
+            if (!pathValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(pathValidation.getErrorMessage()))
+                        .build();
+            }
+
+            // Validate radar request
+            ValidationResult radarValidation = validateRadarRequest(radarRequest);
+            if (!radarValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(radarValidation.getErrorMessage()))
+                        .build();
+            }
+
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(new ErrorResponse("Invalid battle ID or robot ID"))
@@ -398,6 +457,22 @@ public class RobotResource {
         content = @Content(examples = @ExampleObject(name = "LaserRequest",
                 ref = "#/components/examples/LaserRequest"))) LaserRequest laserRequest) {
         try {
+            // Validate path parameters
+            ValidationResult pathValidation = validateBattleAndRobotId(battleId, robotId);
+            if (!pathValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(pathValidation.getErrorMessage()))
+                        .build();
+            }
+
+            // Validate laser request
+            ValidationResult laserValidation = validateLaserRequest(laserRequest);
+            if (!laserValidation.isValid()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(new ErrorResponse(laserValidation.getErrorMessage()))
+                        .build();
+            }
+
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(new ErrorResponse("Invalid battle ID or robot ID"))
@@ -417,6 +492,184 @@ public class RobotResource {
             return Response.status(Response.Status.CONFLICT)
                     .entity(new ErrorResponse(e.getMessage()))
                     .build();
+        }
+    }
+
+    /**
+     * Validates robot registration data.
+     *
+     * @param robot The robot to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateRobotRegistration(Robot robot) {
+        if (robot == null) {
+            return new ValidationResult(false, "Robot data is required");
+        }
+
+        if (robot.getName() == null || robot.getName().trim().isEmpty() || "null".equals(robot.getName())) {
+            return new ValidationResult(false, "Robot name is required and cannot be empty");
+        }
+
+        if (robot.getName().length() > 50) {
+            return new ValidationResult(false, "Robot name must be 50 characters or less");
+        }
+
+        // Check for invalid characters in robot name
+        if (!robot.getName().matches("^[a-zA-Z0-9\\s\\-_]+$")) {
+            return new ValidationResult(false, "Robot name can only contain letters, numbers, spaces, hyphens, and underscores");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validates battle ID.
+     *
+     * @param battleId The battle ID to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateBattleId(String battleId) {
+        if (battleId == null || battleId.trim().isEmpty() || "null".equals(battleId)) {
+            return new ValidationResult(false, "Battle ID is required and cannot be empty");
+        }
+
+        if (battleId.length() > 100) {
+            return new ValidationResult(false, "Battle ID is too long");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validates both battle ID and robot ID.
+     *
+     * @param battleId The battle ID to validate
+     * @param robotId The robot ID to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateBattleAndRobotId(String battleId, String robotId) {
+        ValidationResult battleIdResult = validateBattleId(battleId);
+        if (!battleIdResult.isValid()) {
+            return battleIdResult;
+        }
+
+        if (robotId == null || robotId.trim().isEmpty()) {
+            return new ValidationResult(false, "Robot ID is required and cannot be empty");
+        }
+
+        if (robotId.length() > 100) {
+            return new ValidationResult(false, "Robot ID is too long");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validates move request.
+     *
+     * @param moveRequest The move request to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateMoveRequest(MoveRequest moveRequest) {
+        if (moveRequest == null) {
+            return new ValidationResult(false, "Move request is required");
+        }
+
+        if (moveRequest.direction() == null || moveRequest.direction().trim().isEmpty()) {
+            return new ValidationResult(false, "Direction is required and cannot be empty");
+        }
+
+        String[] validDirections = {"NORTH", "SOUTH", "EAST", "WEST", "NE", "NW", "SE", "SW"};
+        boolean isValidDirection = false;
+        for (String validDirection : validDirections) {
+            if (validDirection.equals(moveRequest.direction().toUpperCase())) {
+                isValidDirection = true;
+                break;
+            }
+        }
+
+        if (!isValidDirection) {
+            return new ValidationResult(false, "Invalid direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW");
+        }
+
+        if (moveRequest.blocks() <= 0) {
+            return new ValidationResult(false, "Number of blocks must be greater than 0");
+        }
+
+        if (moveRequest.blocks() > 10) {
+            return new ValidationResult(false, "Number of blocks must be 10 or less");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validates radar request.
+     *
+     * @param radarRequest The radar request to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateRadarRequest(RadarRequest radarRequest) {
+        if (radarRequest == null) {
+            return new ValidationResult(false, "Radar request is required");
+        }
+
+        if (radarRequest.range() <= 0) {
+            return new ValidationResult(false, "Radar range must be greater than 0");
+        }
+
+        if (radarRequest.range() > 20) {
+            return new ValidationResult(false, "Radar range must be 20 or less");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validates laser request.
+     *
+     * @param laserRequest The laser request to validate
+     * @return ValidationResult containing validation status and error message
+     */
+    private ValidationResult validateLaserRequest(LaserRequest laserRequest) {
+        if (laserRequest == null) {
+            return new ValidationResult(false, "Laser request is required");
+        }
+
+        if (laserRequest.direction() == null || laserRequest.direction().trim().isEmpty()) {
+            return new ValidationResult(false, "Laser direction is required and cannot be empty");
+        }
+
+        String[] validDirections = {"NORTH", "SOUTH", "EAST", "WEST", "NE", "NW", "SE", "SW"};
+        boolean isValidDirection = false;
+        for (String validDirection : validDirections) {
+            if (validDirection.equals(laserRequest.direction().toUpperCase())) {
+                isValidDirection = true;
+                break;
+            }
+        }
+
+        if (!isValidDirection) {
+            return new ValidationResult(false, "Invalid laser direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW");
+        }
+
+        if (laserRequest.range() <= 0) {
+            return new ValidationResult(false, "Laser range must be greater than 0");
+        }
+
+        if (laserRequest.range() > 50) {
+            return new ValidationResult(false, "Laser range must be 50 or less");
+        }
+
+        return new ValidationResult(true, null);
+    }
+
+    /**
+     * Validation result record.
+     */
+    private record ValidationResult(boolean isValid, String errorMessage) {
+        public String getErrorMessage() {
+            return errorMessage;
         }
     }
 
