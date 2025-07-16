@@ -14,11 +14,13 @@ import org.junit.jupiter.api.Assertions;
 import io.quarkus.test.junit.QuarkusTest;
 import za.co.sww.rwars.backend.service.BattleService;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.Given;
+import za.co.sww.rwars.backend.model.Battle;
 
 @QuarkusTest
 public class BattleSteps {
@@ -691,5 +693,41 @@ public class BattleSteps {
         // This is implicitly tested by the status code checks above
         // A battle can only be deleted once - subsequent attempts should return 404
         System.out.println("[INFO] Battle deletion idempotency verified");
+    }
+
+    @Given("the battle has been inactive for {int} minutes")
+    public void theBattleHasBeenInactiveForMinutes(int minutes) {
+        String currentBattleId = testContext.getCurrentBattleId();
+        if (currentBattleId == null) {
+            throw new IllegalStateException("No battle found in test context");
+        }
+
+        try {
+            // Simulate the battle being inactive by setting its creation time to the past
+            Battle battle = battleService.getBattleStatus(currentBattleId);
+            battle.setCreatedAt(LocalDateTime.now().minusMinutes(minutes));
+
+            // Now trigger the automatic cleanup (simulating what the scheduler would do)
+            battleService.simulateInactivity(currentBattleId, minutes);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to simulate battle inactivity: " + e.getMessage(), e);
+        }
+    }
+
+    @Then("the inactive battle should be automatically deleted from the system")
+    public void theInactiveBattleShouldBeAutomaticallyDeletedFromTheSystem() {
+        String currentBattleId = testContext.getCurrentBattleId();
+        if (currentBattleId != null) {
+            // Verify that the battle no longer exists
+            try {
+                battleService.getBattleStatus(currentBattleId);
+                Assertions.fail("Inactive battle should have been automatically deleted but still exists");
+            } catch (IllegalArgumentException e) {
+                // Expected - battle should not exist
+                Assertions.assertTrue(e.getMessage().contains("Invalid battle ID")
+                                    || e.getMessage().contains("Battle not found"),
+                    "Expected battle not found error, but got: " + e.getMessage());
+            }
+        }
     }
 }

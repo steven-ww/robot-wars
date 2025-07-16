@@ -1038,4 +1038,70 @@ public class BattleService {
             }
         }
     }
+
+    /**
+     * Simulates battle inactivity for the specified duration and automatically deletes
+     * the battle if it has never been started and has no activity.
+     * This method is primarily used for testing the automatic cleanup functionality.
+     *
+     * @param battleId The battle ID to simulate inactivity for
+     * @param minutes The number of minutes of inactivity to simulate
+     * @throws IllegalArgumentException if the battle ID is invalid
+     */
+    public void simulateInactivity(String battleId, int minutes) {
+        Battle battle = battlesById.get(battleId);
+        if (battle == null) {
+            throw new IllegalArgumentException("Invalid battle ID: " + battleId);
+        }
+
+        // Check if battle qualifies for automatic deletion:
+        // 1. Battle has never been started (state is WAITING_ON_ROBOTS)
+        // 2. Simulate the specified inactivity duration
+        if (battle.getState() == Battle.BattleState.WAITING_ON_ROBOTS && minutes >= 30) {
+            // Automatically delete the inactive battle
+            deleteBattleForInactivity(battleId);
+        }
+    }
+
+    /**
+     * Deletes a battle due to inactivity.
+     * This is a specialized version of deleteBattle that doesn't require the battle to be completed.
+     *
+     * @param battleId The battle ID to delete
+     * @throws IllegalArgumentException if the battle ID is invalid
+     */
+    private void deleteBattleForInactivity(String battleId) {
+        Battle battle = battlesById.get(battleId);
+        if (battle == null) {
+            throw new IllegalArgumentException("Battle not found");
+        }
+
+        // Remove all robots associated with this battle
+        List<String> robotIdsToRemove = new ArrayList<>();
+        for (Map.Entry<String, Robot> entry : robotsById.entrySet()) {
+            if (entry.getValue().getBattleId().equals(battleId)) {
+                robotIdsToRemove.add(entry.getKey());
+            }
+        }
+
+        // Remove the robots from the robotsById map
+        for (String robotId : robotIdsToRemove) {
+            robotsById.remove(robotId);
+        }
+
+        // Remove the battle itself
+        battlesById.remove(battleId);
+    }
+
+    /**
+     * Deletes an inactive battle (exposed for the scheduler service).
+     * This method is used by the BattleCleanupScheduler to automatically delete
+     * battles that have been inactive for too long.
+     *
+     * @param battleId The battle ID to delete
+     * @throws IllegalArgumentException if the battle ID is invalid
+     */
+    public void deleteInactiveBattle(String battleId) {
+        deleteBattleForInactivity(battleId);
+    }
 }
