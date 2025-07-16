@@ -516,7 +516,8 @@ public class RobotResource {
 
         // Check for invalid characters in robot name
         if (!robot.getName().matches("^[a-zA-Z0-9\\s\\-_]+$")) {
-            return new ValidationResult(false, "Robot name can only contain letters, numbers, spaces, hyphens, and underscores");
+            return new ValidationResult(false,
+                "Robot name can only contain letters, numbers, spaces, hyphens, and underscores");
         }
 
         return new ValidationResult(true, null);
@@ -589,7 +590,8 @@ public class RobotResource {
         }
 
         if (!isValidDirection) {
-            return new ValidationResult(false, "Invalid direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW");
+            return new ValidationResult(false,
+                "Invalid direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW");
         }
 
         if (moveRequest.blocks() <= 0) {
@@ -650,7 +652,8 @@ public class RobotResource {
         }
 
         if (!isValidDirection) {
-            return new ValidationResult(false, "Invalid laser direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW");
+            return new ValidationResult(false,
+                "Invalid laser direction. Must be one of: NORTH, SOUTH, EAST, WEST, NE, NW, SE, SW");
         }
 
         if (laserRequest.range() <= 0) {

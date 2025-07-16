@@ -50,31 +50,7 @@ Feature: Battle Creation
     Then I should receive an error indicating the battle name already exists
 
   # Battle Name Validation Scenarios
-  Scenario: Reject battle creation with null name
-    When I attempt to create a battle with null name
-    Then I should receive a validation error "Battle name is required and cannot be empty"
-
-  Scenario: Reject battle creation with empty name
-    When I attempt to create a battle with empty name
-    Then I should receive a validation error "Battle name is required and cannot be empty"
-
-  Scenario: Reject battle creation with whitespace-only name
-    When I attempt to create a battle with whitespace-only name
-    Then I should receive a validation error "Battle name is required and cannot be empty"
-
-  Scenario: Reject battle creation with name too long
-    When I attempt to create a battle with name longer than 100 characters
-    Then I should receive a validation error "Battle name must be 100 characters or less"
-
-  Scenario: Reject battle creation with invalid characters in name
-    When I attempt to create a battle with name "Battle@Name!"
-    Then I should receive a validation error "Battle name can only contain letters, numbers, spaces, hyphens, and underscores"
-
   Scenario: Accept battle creation with valid special characters
     When I create a new battle with name "Valid-Battle_Name 123"
     Then a battle with the name "Valid-Battle_Name 123" should be created
     And I should receive the battle details including id, name, and arena dimensions
-
-  Scenario: Reject battle creation with null request body
-    When I attempt to create a battle with null request body
-    Then I should receive a validation error "Battle data is required"

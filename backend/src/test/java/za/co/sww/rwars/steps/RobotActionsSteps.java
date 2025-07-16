@@ -8,8 +8,6 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
 import io.quarkus.test.junit.QuarkusTest;
 import za.co.sww.rwars.backend.service.BattleService;
 
@@ -47,7 +45,7 @@ public class RobotActionsSteps {
         Map<String, Object> moveRequest = new HashMap<>();
         moveRequest.put("direction", "NORTH");
         moveRequest.put("blocks", 1);
-        
+
         response = request.body(moveRequest).post("/api/robots/battle/null/robot/" + robotId + "/move");
         testContext.setResponse(response);
     }
@@ -61,7 +59,7 @@ public class RobotActionsSteps {
         Map<String, Object> moveRequest = new HashMap<>();
         moveRequest.put("direction", "NORTH");
         moveRequest.put("blocks", 1);
-        
+
         response = request.body(moveRequest).post("/api/robots/battle/ /robot/" + robotId + "/move");
         testContext.setResponse(response);
     }
@@ -73,7 +71,7 @@ public class RobotActionsSteps {
         Map<String, Object> moveRequest = new HashMap<>();
         moveRequest.put("direction", "NORTH");
         moveRequest.put("blocks", 1);
-        
+
         response = request.body(moveRequest).post("/api/robots/battle/" + longBattleId + "/robot/" + robotId + "/move");
         testContext.setResponse(response);
     }
@@ -84,7 +82,7 @@ public class RobotActionsSteps {
         Map<String, Object> moveRequest = new HashMap<>();
         moveRequest.put("direction", "NORTH");
         moveRequest.put("blocks", 1);
-        
+
         response = request.body(moveRequest).post("/api/robots/battle/" + battleId + "/robot/null/move");
         testContext.setResponse(response);
     }
@@ -95,7 +93,7 @@ public class RobotActionsSteps {
         Map<String, Object> moveRequest = new HashMap<>();
         moveRequest.put("direction", "NORTH");
         moveRequest.put("blocks", 1);
-        
+
         response = request.body(moveRequest).post("/api/robots/battle/" + battleId + "/robot/ /move");
         testContext.setResponse(response);
     }
@@ -107,7 +105,7 @@ public class RobotActionsSteps {
         Map<String, Object> moveRequest = new HashMap<>();
         moveRequest.put("direction", "NORTH");
         moveRequest.put("blocks", 1);
-        
+
         response = request.body(moveRequest).post("/api/robots/battle/" + battleId + "/robot/" + longRobotId + "/move");
         testContext.setResponse(response);
     }
@@ -116,7 +114,7 @@ public class RobotActionsSteps {
     public void iAttemptToMoveARobotWithNullMoveRequest() {
         String battleId = testContext.getCurrentBattleId();
         String robotId = testContext.getFirstAvailableRobotId();
-        
+
         response = request.post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/move");
         testContext.setResponse(response);
     }
@@ -128,7 +126,7 @@ public class RobotActionsSteps {
         Map<String, Object> moveRequest = new HashMap<>();
         moveRequest.put("direction", null);
         moveRequest.put("blocks", 1);
-        
+
         response = request.body(moveRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/move");
         testContext.setResponse(response);
     }
@@ -140,7 +138,7 @@ public class RobotActionsSteps {
         Map<String, Object> moveRequest = new HashMap<>();
         moveRequest.put("direction", "");
         moveRequest.put("blocks", 1);
-        
+
         response = request.body(moveRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/move");
         testContext.setResponse(response);
     }
@@ -152,7 +150,7 @@ public class RobotActionsSteps {
         Map<String, Object> moveRequest = new HashMap<>();
         moveRequest.put("direction", direction);
         moveRequest.put("blocks", 1);
-        
+
         response = request.body(moveRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/move");
         testContext.setResponse(response);
     }
@@ -164,7 +162,7 @@ public class RobotActionsSteps {
         Map<String, Object> moveRequest = new HashMap<>();
         moveRequest.put("direction", "NORTH");
         moveRequest.put("blocks", blocks);
-        
+
         response = request.body(moveRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/move");
         testContext.setResponse(response);
     }
@@ -176,7 +174,7 @@ public class RobotActionsSteps {
         Map<String, Object> moveRequest = new HashMap<>();
         moveRequest.put("direction", direction);
         moveRequest.put("blocks", blocks);
-        
+
         response = request.body(moveRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/move");
     }
 
@@ -194,7 +192,7 @@ public class RobotActionsSteps {
         }
         Map<String, Object> radarRequest = new HashMap<>();
         radarRequest.put("range", 5);
-        
+
         response = request.body(radarRequest).post("/api/robots/battle/null/robot/" + robotId + "/radar");
         testContext.setResponse(response);
     }
@@ -207,7 +205,7 @@ public class RobotActionsSteps {
         }
         Map<String, Object> radarRequest = new HashMap<>();
         radarRequest.put("range", 5);
-        
+
         response = request.body(radarRequest).post("/api/robots/battle/ /robot/" + robotId + "/radar");
         testContext.setResponse(response);
     }
@@ -217,7 +215,7 @@ public class RobotActionsSteps {
         String battleId = testContext.getCurrentBattleId();
         Map<String, Object> radarRequest = new HashMap<>();
         radarRequest.put("range", 5);
-        
+
         response = request.body(radarRequest).post("/api/robots/battle/" + battleId + "/robot/null/radar");
         testContext.setResponse(response);
     }
@@ -227,7 +225,7 @@ public class RobotActionsSteps {
         String battleId = testContext.getCurrentBattleId();
         Map<String, Object> radarRequest = new HashMap<>();
         radarRequest.put("range", 5);
-        
+
         response = request.body(radarRequest).post("/api/robots/battle/" + battleId + "/robot/ /radar");
         testContext.setResponse(response);
     }
@@ -236,7 +234,7 @@ public class RobotActionsSteps {
     public void iAttemptToPerformRadarScanWithNullRadarRequest() {
         String battleId = testContext.getCurrentBattleId();
         String robotId = testContext.getFirstAvailableRobotId();
-        
+
         response = request.post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/radar");
         testContext.setResponse(response);
     }
@@ -247,7 +245,7 @@ public class RobotActionsSteps {
         String robotId = testContext.getFirstAvailableRobotId();
         Map<String, Object> radarRequest = new HashMap<>();
         radarRequest.put("range", range);
-        
+
         response = request.body(radarRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/radar");
         testContext.setResponse(response);
     }
@@ -258,7 +256,7 @@ public class RobotActionsSteps {
         String robotId = testContext.getFirstAvailableRobotId();
         Map<String, Object> radarRequest = new HashMap<>();
         radarRequest.put("range", range);
-        
+
         response = request.body(radarRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/radar");
     }
 
@@ -277,7 +275,7 @@ public class RobotActionsSteps {
         Map<String, Object> laserRequest = new HashMap<>();
         laserRequest.put("direction", "NORTH");
         laserRequest.put("range", 10);
-        
+
         response = request.body(laserRequest).post("/api/robots/battle/null/robot/" + robotId + "/laser");
         testContext.setResponse(response);
     }
@@ -291,7 +289,7 @@ public class RobotActionsSteps {
         Map<String, Object> laserRequest = new HashMap<>();
         laserRequest.put("direction", "NORTH");
         laserRequest.put("range", 10);
-        
+
         response = request.body(laserRequest).post("/api/robots/battle/ /robot/" + robotId + "/laser");
         testContext.setResponse(response);
     }
@@ -302,7 +300,7 @@ public class RobotActionsSteps {
         Map<String, Object> laserRequest = new HashMap<>();
         laserRequest.put("direction", "NORTH");
         laserRequest.put("range", 10);
-        
+
         response = request.body(laserRequest).post("/api/robots/battle/" + battleId + "/robot/null/laser");
         testContext.setResponse(response);
     }
@@ -313,7 +311,7 @@ public class RobotActionsSteps {
         Map<String, Object> laserRequest = new HashMap<>();
         laserRequest.put("direction", "NORTH");
         laserRequest.put("range", 10);
-        
+
         response = request.body(laserRequest).post("/api/robots/battle/" + battleId + "/robot/ /laser");
         testContext.setResponse(response);
     }
@@ -322,7 +320,7 @@ public class RobotActionsSteps {
     public void iAttemptToFireLaserWithNullLaserRequest() {
         String battleId = testContext.getCurrentBattleId();
         String robotId = testContext.getFirstAvailableRobotId();
-        
+
         response = request.post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/laser");
         testContext.setResponse(response);
     }
@@ -334,7 +332,7 @@ public class RobotActionsSteps {
         Map<String, Object> laserRequest = new HashMap<>();
         laserRequest.put("direction", null);
         laserRequest.put("range", 10);
-        
+
         response = request.body(laserRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/laser");
         testContext.setResponse(response);
     }
@@ -346,7 +344,7 @@ public class RobotActionsSteps {
         Map<String, Object> laserRequest = new HashMap<>();
         laserRequest.put("direction", "");
         laserRequest.put("range", 10);
-        
+
         response = request.body(laserRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/laser");
         testContext.setResponse(response);
     }
@@ -358,7 +356,7 @@ public class RobotActionsSteps {
         Map<String, Object> laserRequest = new HashMap<>();
         laserRequest.put("direction", direction);
         laserRequest.put("range", 10);
-        
+
         response = request.body(laserRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/laser");
         testContext.setResponse(response);
     }
@@ -370,7 +368,7 @@ public class RobotActionsSteps {
         Map<String, Object> laserRequest = new HashMap<>();
         laserRequest.put("direction", "NORTH");
         laserRequest.put("range", range);
-        
+
         response = request.body(laserRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/laser");
         testContext.setResponse(response);
     }
@@ -382,7 +380,7 @@ public class RobotActionsSteps {
         Map<String, Object> laserRequest = new HashMap<>();
         laserRequest.put("direction", direction);
         laserRequest.put("range", range);
-        
+
         response = request.body(laserRequest).post("/api/robots/battle/" + battleId + "/robot/" + robotId + "/laser");
     }
 

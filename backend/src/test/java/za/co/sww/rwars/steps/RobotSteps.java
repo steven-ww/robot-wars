@@ -205,8 +205,13 @@ public class RobotSteps {
 
     @And("the battle administrator has started the battle")
     public void theBattleAdministratorHasStartedTheBattle() {
+        // Get the battle ID from test context, fallback to local battleId if not found
+        String currentBattleId = testContext.getCurrentBattleId();
+        if (currentBattleId == null) {
+            currentBattleId = battleId;
+        }
         // Store the response to ensure it's available for subsequent steps
-        response = request.post("/api/battles/" + battleId + "/start");
+        response = request.post("/api/battles/" + currentBattleId + "/start");
         response.then().statusCode(200);
     }
 
@@ -256,7 +261,7 @@ public class RobotSteps {
         Map<String, String> robot = new HashMap<>();
         robot.put("name", robotName);
         response = request.body(robot).post("/api/robots/register");
-        
+
         // Store the robot ID in test context if successful
         if (response.getStatusCode() == 200) {
             String robotId = response.jsonPath().getString("id");

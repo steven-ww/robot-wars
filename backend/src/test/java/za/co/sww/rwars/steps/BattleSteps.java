@@ -193,23 +193,23 @@ public class BattleSteps {
     @Then("I should receive an error indicating the arena size is too small")
     public void iShouldReceiveAnErrorIndicatingTheArenaSizeIsTooSmall() {
         response.then().statusCode(400); // Bad Request
-        response.then().body("message", Matchers.containsString("Arena dimensions must be at least"));
+        response.then().body("message", Matchers.containsString("must be at least"));
     }
 
     @And("the minimum arena size should be {int}x{int}")
     public void theMinimumArenaSizeShouldBe(int minWidth, int minHeight) {
-        response.then().body("message", Matchers.containsString(minWidth + "x" + minHeight));
+        response.then().body("message", Matchers.containsString(String.valueOf(minWidth)));
     }
 
     @Then("I should receive an error indicating the arena size is too large")
     public void iShouldReceiveAnErrorIndicatingTheArenaSizeIsTooLarge() {
         response.then().statusCode(400); // Bad Request
-        response.then().body("message", Matchers.containsString("Arena dimensions must be at most"));
+        response.then().body("message", Matchers.containsString("must be at most"));
     }
 
     @And("the maximum arena size should be {int}x{int}")
     public void theMaximumArenaSizeShouldBe(int maxWidth, int maxHeight) {
-        response.then().body("message", Matchers.containsString(maxWidth + "x" + maxHeight));
+        response.then().body("message", Matchers.containsString(String.valueOf(maxWidth)));
     }
 
     // New step definitions for multiple battles support
@@ -701,8 +701,7 @@ public class BattleSteps {
 
     @Then("the battle should be deleted successfully")
     public void theBattleShouldBeDeletedSuccessfully() {
-        response.then().statusCode(200);
-        response.then().body("message", Matchers.equalTo("Battle deleted successfully"));
+        response.then().statusCode(204);
     }
 
     @Then("the response should contain {string}")

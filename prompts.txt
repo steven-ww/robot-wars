@@ -819,3 +819,12 @@ Follow the guidlines in ,junie/guidlines.md. After those validation changes, a l
 
 ## 171st Prompt
 Follow the guidelines in .junie/guidelines.md. Have a look at just this one failing test "Reject robot move with empty direction" "features/robot_actions_validation.feature". It seems the test is incorrectly expecting a 200 status code while it should expect the 400 with an error. The server validation looks correct. The test itself seems to be a problem.
+
+## 172nd Prompt
+Follow the guidelines in .junie/guidelines.md. remove all the failing BDD test from the project.
+
+## 173rd Prompt
+Fix only this one failing BDD test "Accept laser fire with valid parameters". Follow the guidelines in .junie/guidelines.md
+
+## 174th Prompt
+Follow the guidelines in .junie/guidelines.md fix this failing BDD test "Accept battle deletion with valid battle ID".

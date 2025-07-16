@@ -247,8 +247,8 @@ public class BattleResource {
         }
 
         // Validate optional width and height together
-        if ((request.width() != null && request.height() == null) ||
-            (request.width() == null && request.height() != null)) {
+        if ((request.width() != null && request.height() == null)
+            || (request.width() == null && request.height() != null)) {
             return new ValidationResult(false, "Both width and height must be provided together, or neither");
         }
 
