@@ -1,5 +1,6 @@
 package za.co.sww.rwars.backend.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,6 +56,9 @@ public class Battle {
     @Schema(description = "List of robot actions that have occurred during the battle")
     private List<RobotAction> robotActions;
 
+    @Schema(description = "When the battle was created")
+    private LocalDateTime createdAt;
+
     public Battle() {
         this.id = UUID.randomUUID().toString();
         this.robots = new ArrayList<>();
@@ -62,6 +66,7 @@ public class Battle {
         this.robotActions = new ArrayList<>();
         this.state = BattleState.WAITING_ON_ROBOTS;
         this.robotMovementTimeSeconds = 1.0; // Default value
+        this.createdAt = LocalDateTime.now();
     }
 
     public Battle(String name, int arenaWidth, int arenaHeight) {
@@ -74,6 +79,7 @@ public class Battle {
         this.robotActions = new ArrayList<>();
         this.state = BattleState.WAITING_ON_ROBOTS;
         this.robotMovementTimeSeconds = 1.0; // Default value
+        this.createdAt = LocalDateTime.now();
     }
 
     public Battle(String name, int arenaWidth, int arenaHeight, double robotMovementTimeSeconds) {
@@ -86,6 +92,7 @@ public class Battle {
         this.robotActions = new ArrayList<>();
         this.state = BattleState.WAITING_ON_ROBOTS;
         this.robotMovementTimeSeconds = robotMovementTimeSeconds;
+        this.createdAt = LocalDateTime.now();
     }
 
     public String getId() {
@@ -225,5 +232,13 @@ public class Battle {
 
     public void addRobotAction(String robotId, String robotName, String action) {
         this.robotActions.add(new RobotAction(robotId, robotName, action));
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

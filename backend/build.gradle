@@ -39,6 +39,9 @@ dependencies {
 
     // Virtual threads support
     implementation 'io.quarkus:quarkus-virtual-threads'
+    
+    // Scheduler for automated tasks
+    implementation 'io.quarkus:quarkus-scheduler'
 
     // OpenAPI and Swagger
     implementation 'io.quarkus:quarkus-smallrye-openapi'

@@ -79,3 +79,10 @@ Feature: Delete Battle REST API
     Then one request should return status 204
     And subsequent requests should return status 404
     And the battle should be deleted only once
+
+  Scenario: Automatically delete inactive battles after 30 minutes
+    Given I have created a battle with name "Inactive Battle"
+    And the battle has been inactive for 30 minutes
+    When I make a GET request to "/api/battles"
+    Then the response should not contain "Inactive Battle"
+    And the inactive battle should be automatically deleted from the system
