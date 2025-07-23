@@ -8,18 +8,24 @@ import PhaserArenaComponent from '../../components/PhaserArenaComponent';
 jest.mock('../../components/PhaserArenaComponent', () => {
   return ({ battleId }: { battleId: string }) => {
     const React = require('react');
-    return React.createElement('div', { style: { padding: '10px' } },
+    return React.createElement(
+      'div',
+      { style: { padding: '10px' } },
       React.createElement('h2', null, 'Battle Arena'),
-      React.createElement('div', {
-        'data-testid': 'phaser-arena-container',
-        style: {
-          width: '100%',
-          height: '600px',
-          border: '1px solid #333',
-          borderRadius: '8px',
-          overflow: 'hidden'
-        }
-      }, `Mocked Phaser Arena for battleId: ${battleId}`)
+      React.createElement(
+        'div',
+        {
+          'data-testid': 'phaser-arena-container',
+          style: {
+            width: '100%',
+            height: '600px',
+            border: '1px solid #333',
+            borderRadius: '8px',
+            overflow: 'hidden',
+          },
+        },
+        `Mocked Phaser Arena for battleId: ${battleId}`
+      )
     );
   };
 });
@@ -44,7 +50,9 @@ defineFeature(feature, test => {
   }) => {
     given('a battle arena is displayed for a completed battle', async () => {
       render(
-        React.createElement(PhaserArenaComponent, { battleId: 'test-battle-id' })
+        React.createElement(PhaserArenaComponent, {
+          battleId: 'test-battle-id',
+        })
       );
       await server.connected;
     });
@@ -92,35 +100,45 @@ defineFeature(feature, test => {
     then('the battle results should be displayed', async () => {
       // With Phaser canvas rendering, battle completion is handled internally
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 
     then('the winner should be announced', async () => {
       // With Phaser canvas rendering, winner announcements are handled internally
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 
     then('the battle summary should show final statistics', async () => {
       // With Phaser canvas rendering, battle statistics are handled internally
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 
     then('the final robot status should be displayed', async () => {
       // With Phaser canvas rendering, robot status is handled internally
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 
     then('the winner robot should be highlighted on the arena', async () => {
       // With Phaser canvas rendering, winner highlighting is handled internally
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -132,7 +150,9 @@ defineFeature(feature, test => {
   }) => {
     given('a battle arena is displayed for a completed battle', async () => {
       render(
-        React.createElement(PhaserArenaComponent, { battleId: 'test-battle-id' })
+        React.createElement(PhaserArenaComponent, {
+          battleId: 'test-battle-id',
+        })
       );
       await server.connected;
     });
@@ -178,14 +198,18 @@ defineFeature(feature, test => {
     then('the battle results should be displayed', async () => {
       // With Phaser canvas rendering, battle completion is handled internally
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 
     then('a no winner message should be shown', async () => {
       // With Phaser canvas rendering, no winner messages are handled internally
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -193,7 +217,9 @@ defineFeature(feature, test => {
   test('Battle state badge shows correct status', ({ given, when, then }) => {
     given('a battle arena is displayed', async () => {
       render(
-        React.createElement(PhaserArenaComponent, { battleId: 'test-battle-id' })
+        React.createElement(PhaserArenaComponent, {
+          battleId: 'test-battle-id',
+        })
       );
       await server.connected;
     });
@@ -228,7 +254,9 @@ defineFeature(feature, test => {
     then('the battle state badge should show IN_PROGRESS', async () => {
       // With Phaser canvas rendering, battle state badges are handled internally
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 
@@ -264,7 +292,9 @@ defineFeature(feature, test => {
     then('the battle state badge should show COMPLETED', async () => {
       // With Phaser canvas rendering, battle state badges are handled internally
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
   });

@@ -9,18 +9,24 @@ import WS from 'jest-websocket-mock';
 jest.mock('../../components/PhaserArenaComponent', () => {
   return ({ battleId }: { battleId: string }) => {
     const React = require('react');
-    return React.createElement('div', { style: { padding: '10px' } },
+    return React.createElement(
+      'div',
+      { style: { padding: '10px' } },
       React.createElement('h2', null, 'Battle Arena'),
-      React.createElement('div', {
-        'data-testid': 'phaser-arena-container',
-        style: {
-          width: '100%',
-          height: '600px',
-          border: '1px solid #333',
-          borderRadius: '8px',
-          overflow: 'hidden'
-        }
-      }, `Mocked Phaser Arena for battleId: ${battleId}`)
+      React.createElement(
+        'div',
+        {
+          'data-testid': 'phaser-arena-container',
+          style: {
+            width: '100%',
+            height: '600px',
+            border: '1px solid #333',
+            borderRadius: '8px',
+            overflow: 'hidden',
+          },
+        },
+        `Mocked Phaser Arena for battleId: ${battleId}`
+      )
     );
   };
 });
@@ -104,7 +110,9 @@ defineFeature(feature, test => {
 
     when('I navigate to the arena page', () => {
       render(
-        React.createElement(PhaserArenaComponent, { battleId: 'test-battle-id' })
+        React.createElement(PhaserArenaComponent, {
+          battleId: 'test-battle-id',
+        })
       );
     });
 
@@ -118,7 +126,9 @@ defineFeature(feature, test => {
 
     then('I should see the arena with dimensions 20x20', async () => {
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
 
       // With Phaser, we can't easily test canvas dimensions, but we can verify the component renders
@@ -130,7 +140,9 @@ defineFeature(feature, test => {
       // With Phaser canvas rendering, we can't directly test for robot elements
       // Instead, we verify the component is mounted and WebSocket is connected
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 
@@ -138,7 +150,9 @@ defineFeature(feature, test => {
       // With Phaser canvas rendering, we can't directly test robot positions via DOM
       // We verify the component is rendering and WebSocket data was received
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
       // The robot positioning is handled internally by Phaser scene
     });
@@ -168,7 +182,9 @@ defineFeature(feature, test => {
 
     given('I am viewing the arena', async () => {
       render(
-        React.createElement(PhaserArenaComponent, { battleId: 'test-battle-id' })
+        React.createElement(PhaserArenaComponent, {
+          battleId: 'test-battle-id',
+        })
       );
 
       // Wait for the WebSocket connection to be established
@@ -179,7 +195,9 @@ defineFeature(feature, test => {
 
       // Wait for the arena to render
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 
@@ -206,7 +224,9 @@ defineFeature(feature, test => {
       // With Phaser canvas rendering, we can't directly test robot position changes via DOM
       // We verify the component continues to render properly after receiving updates
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
       // The robot position updates are handled internally by Phaser scene
     });
@@ -231,7 +251,9 @@ defineFeature(feature, test => {
 
     given('I am viewing the arena', async () => {
       render(
-        React.createElement(PhaserArenaComponent, { battleId: 'test-battle-id' })
+        React.createElement(PhaserArenaComponent, {
+          battleId: 'test-battle-id',
+        })
       );
 
       // Wait for the WebSocket connection to be established
@@ -242,7 +264,9 @@ defineFeature(feature, test => {
 
       // Wait for the arena to render
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 
@@ -267,7 +291,9 @@ defineFeature(feature, test => {
       'the robot should be displayed with a "MOVING" indicator',
       async () => {
         await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+          expect(
+            screen.getByTestId('phaser-arena-container')
+          ).toBeInTheDocument();
         });
 
         // With Phaser canvas rendering, status changes are handled internally
@@ -294,7 +320,9 @@ defineFeature(feature, test => {
 
     when('the websocket connection fails', async () => {
       render(
-        React.createElement(PhaserArenaComponent, { battleId: 'test-battle-id' })
+        React.createElement(PhaserArenaComponent, {
+          battleId: 'test-battle-id',
+        })
       );
 
       // Wait for the WebSocket connection to be established
@@ -354,7 +382,9 @@ defineFeature(feature, test => {
     given('I am viewing the arena with live WebSocket connection', async () => {
       // Use the unique battle ID for this test
       render(
-        React.createElement(PhaserArenaComponent, { battleId: 'auto-refresh-test' })
+        React.createElement(PhaserArenaComponent, {
+          battleId: 'auto-refresh-test',
+        })
       );
 
       // Wait for the WebSocket connection to be established
@@ -399,7 +429,9 @@ defineFeature(feature, test => {
 
       // Wait for the arena to render
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 
@@ -498,7 +530,9 @@ defineFeature(feature, test => {
       async () => {
         // Verify that the arena is still rendered and responsive
         await waitFor(() => {
-          expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+          expect(
+            screen.getByTestId('phaser-arena-container')
+          ).toBeInTheDocument();
         });
         // With Phaser canvas, battle state changes are handled internally
       }
@@ -507,7 +541,9 @@ defineFeature(feature, test => {
     and('all robot positions should update in real-time', async () => {
       // With Phaser canvas rendering, position updates are handled internally
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 
@@ -516,7 +552,9 @@ defineFeature(feature, test => {
       async () => {
         // With Phaser canvas rendering, status changes are handled internally
         await waitFor(() => {
-          expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+          expect(
+            screen.getByTestId('phaser-arena-container')
+          ).toBeInTheDocument();
         });
       }
     );
@@ -530,7 +568,9 @@ defineFeature(feature, test => {
     and('the connection status should show "Live Updates"', async () => {
       // With Phaser canvas rendering, connection status is handled internally
       await waitFor(() => {
-        expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
       });
     });
 

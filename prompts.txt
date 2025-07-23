@@ -813,3 +813,6 @@ Follow the guidelines in .junie/guidelines.md. Seems we've missed more serializa
 
 ## 169th Prompt
 I'd like to implement phaser.js. Can you add phaser to the ./junie/guidelines.md file. Follow the rules in that file and change the arena and battle rendering to use phaser.js.
+
+## 170th Prompt
+That's worked well. Remember to follow the guidelines in .junie/guidelines.md. The render of the lazer isn't co-ordinated with the robot. That is, the lazer shot is rendered even as the robot changes position. this creates a "dirty" look as the lazer is seen as originating from an empty location. I think what we should do is have the lazer render for a shorter period AND if the robot moves while the lazer is still rendered, then the lazer render should be removed.

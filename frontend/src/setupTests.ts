@@ -85,7 +85,11 @@ jest.mock('phaser', () => {
       stop: jest.fn(),
       get: jest.fn(),
       remove: jest.fn(),
-      getScene: jest.fn(),
+      getScene: jest.fn().mockReturnValue({
+        scene: {
+          isActive: jest.fn().mockReturnValue(false),
+        },
+      }),
     },
     canvas: {
       style: {},
@@ -174,7 +178,7 @@ jest.mock('phaser', () => {
 
 // Mock HTMLCanvasElement.getContext to avoid JSDOM canvas issues
 Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
-  value: jest.fn((contextType) => {
+  value: jest.fn(contextType => {
     if (contextType === 'webgl' || contextType === 'webgl2') {
       return {
         // Mock WebGL context methods

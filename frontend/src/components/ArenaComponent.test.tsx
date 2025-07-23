@@ -36,7 +36,7 @@ jest.mock('./PhaserArenaComponent', () => {
             height: '600px',
             border: '1px solid #333',
             borderRadius: '8px',
-            overflow: 'hidden'
+            overflow: 'hidden',
           }}
         >
           Mocked Phaser Arena for battleId: {battleId}
@@ -84,7 +84,7 @@ describe('PhaserArenaComponent', () => {
 
     // Verify the component renders with the correct container
     expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
-    
+
     // Verify the component title
     expect(screen.getByText('Battle Arena')).toBeInTheDocument();
 
