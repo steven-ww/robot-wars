@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import GreetingComponent from './components/GreetingComponent';
-import ArenaTabComponent from './components/ArenaTabComponent';
+import PhaserArenaComponent from './components/PhaserArenaComponent';
 import BattleManagement from './components/BattleManagement';
 
 function App() {
@@ -40,7 +40,7 @@ function App() {
         ) : activeTab === 'rest' ? (
           <GreetingComponent />
         ) : (
-          <ArenaTabComponent />
+          <PhaserArenaComponent battleId="test-battle-id" />
         )}
       </main>
       <footer>

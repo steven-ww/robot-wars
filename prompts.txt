@@ -810,3 +810,6 @@ Follow the guidelines in the .junie/guidelines.md file for this task. Update the
 
 ## 168th Prompt
 Follow the guidelines in .junie/guidelines.md. Seems we've missed more serialization issues for the backend on a native build. see this error : Error serializing battle state to JSON: No serializer found for class za.co.sww.rwars.backend.websocket.BattleStateSocket$BattleStateResponse and no properties discovered to create BeanSerializer (to avoid exception, disable SerializationFeature.FAIL_ON_EMPTY_BEANS). This appears to be a native image, in which case you may need to configure reflection for the class that is to be serialized
+
+## 169th Prompt
+I'd like to implement phaser.js. Can you add phaser to the ./junie/guidelines.md file. Follow the rules in that file and change the arena and battle rendering to use phaser.js.

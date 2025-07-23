@@ -39,6 +39,11 @@
 #### 4.2 Frontend
 - **Language**: TypeScript
 - **Framework**: React
+- **Game Engine**: Phaser.js for battle arena rendering and animations
+  - Use PhaserArenaComponent for all arena rendering (replaces legacy ArenaComponent)
+  - WebSocket integration for real-time battle state updates
+  - Arena scenes with robot sprites, walls, laser effects, and animations
+  - Responsive scaling and proper cleanup for React integration
 - **Build Tool**: Compatible with chosen technologies
 - **Deployment**: Static files for web server deployment
 - **Linting**: ESLint
