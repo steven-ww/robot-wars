@@ -206,6 +206,9 @@ class BattleArenaScene extends Phaser.Scene {
   }
 
   private updateBattleState(battleState: BattleState) {
+    // First, check for robot position changes and clear lasers immediately
+    this.clearLasersForMovedRobots(battleState.robots);
+
     // Update arena dimensions if they changed
     if (
       battleState.arenaWidth !== this.arenaWidth ||
@@ -279,6 +282,23 @@ class BattleArenaScene extends Phaser.Scene {
     }
   }
 
+  private clearLasersForMovedRobots(robots: Robot[]) {
+    robots.forEach(robot => {
+      const lastPosition = this.robotPositions.get(robot.id);
+      const currentPosition = { x: robot.positionX, y: robot.positionY };
+
+      if (
+        lastPosition &&
+        (lastPosition.x !== currentPosition.x ||
+          lastPosition.y !== currentPosition.y)
+      ) {
+        // Robot has moved, clear any active lasers from this robot immediately
+        this.clearActiveLasersForRobot(robot.id);
+        console.log(`Cleared lasers for moved robot: ${robot.id}`);
+      }
+    });
+  }
+
   private updateRobots(robots: Robot[], winnerId?: string) {
     // Remove robots that no longer exist
     const currentRobotIds = new Set(robots.map(r => r.id));
@@ -296,20 +316,8 @@ class BattleArenaScene extends Phaser.Scene {
       const isWinner = winnerId === robot.id;
       let container = this.robots.get(robot.id);
 
-      // Check if robot moved and clear its lasers if so
-      const lastPosition = this.robotPositions.get(robot.id);
+      // Update stored position (laser clearing already done in clearLasersForMovedRobots)
       const currentPosition = { x: robot.positionX, y: robot.positionY };
-
-      if (
-        lastPosition &&
-        (lastPosition.x !== currentPosition.x ||
-          lastPosition.y !== currentPosition.y)
-      ) {
-        // Robot has moved, clear any active lasers from this robot
-        this.clearActiveLasersForRobot(robot.id);
-      }
-
-      // Update stored position
       this.robotPositions.set(robot.id, currentPosition);
 
       if (!container) {
@@ -462,12 +470,12 @@ class BattleArenaScene extends Phaser.Scene {
       });
     }
 
-    // Remove laser after shorter duration (500ms total)
+    // Remove laser after much shorter duration (150ms total)
     this.tweens.add({
       targets: [laser, glowLaser],
       alpha: 0,
-      duration: 200,
-      delay: 300,
+      duration: 100,
+      delay: 50,
       onComplete: () => {
         laser.destroy();
         glowLaser.destroy();
