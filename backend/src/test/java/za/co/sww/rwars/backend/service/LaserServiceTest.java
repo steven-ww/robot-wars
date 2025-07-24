@@ -47,7 +47,7 @@ class LaserServiceTest {
     @Test
     void testLaserFireMiss() {
         // Fire laser in a direction where there's no robot
-        LaserResponse response = battleService.fireLaser(battleId, robotId1, "NORTH", 5);
+        LaserResponse response = battleService.fireLaser(battleId, robotId1, "NORTH");
 
         assertNotNull(response);
         assertFalse(response.isHit());
@@ -71,7 +71,7 @@ class LaserServiceTest {
         }
 
         // Fire laser north from robot1 towards robot2
-        LaserResponse response = battleService.fireLaser(battleId, robotId1, "NORTH", 10);
+        LaserResponse response = battleService.fireLaser(battleId, robotId1, "NORTH");
 
         assertNotNull(response);
         assertTrue(response.isHit());
@@ -79,7 +79,7 @@ class LaserServiceTest {
         assertEquals("TargetBot", response.getHitRobotName());
         assertEquals(20, response.getDamageDealt()); // Default damage
         assertEquals("NORTH", response.getDirection());
-        assertEquals(10, response.getRange());
+        assertEquals(5, response.getRange());
         assertNotNull(response.getHitPosition());
         assertEquals("ROBOT", response.getBlockedBy());
 
@@ -91,7 +91,7 @@ class LaserServiceTest {
     @Test
     void testLaserFireInvalidDirection() {
         try {
-            battleService.fireLaser(battleId, robotId1, "INVALID", 5);
+            battleService.fireLaser(battleId, robotId1, "INVALID");
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("Invalid direction"));
         }
@@ -104,7 +104,7 @@ class LaserServiceTest {
         robot.setStatus(Robot.RobotStatus.CRASHED);
 
         try {
-            battleService.fireLaser(battleId, robotId1, "NORTH", 5);
+            battleService.fireLaser(battleId, robotId1, "NORTH");
         } catch (IllegalStateException e) {
             assertTrue(e.getMessage().contains("Robot is not active"));
         }
@@ -121,7 +121,7 @@ class LaserServiceTest {
         }
 
         // Fire laser east (should hit boundary)
-        LaserResponse response = battleService.fireLaser(battleId, robotId1, "EAST", 5);
+        LaserResponse response = battleService.fireLaser(battleId, robotId1, "EAST");
 
         assertNotNull(response);
         assertFalse(response.isHit());
@@ -146,16 +146,16 @@ class LaserServiceTest {
         }
         assertTrue(positioned, "Failed to position robot in a wall-free location");
         // Fire laser without specifying range (should use default)
-        LaserResponse response = battleService.fireLaser(battleId, robotId1, "SOUTH", 0);
+        LaserResponse response = battleService.fireLaser(battleId, robotId1, "SOUTH");
 
         assertNotNull(response);
-        assertEquals(10, response.getRange()); // Default range
+        assertEquals(5, response.getRange()); // Default range
     }
 
     @Test
     void testLaserFireDiagonalDirection() {
         // Test diagonal laser firing
-        LaserResponse response = battleService.fireLaser(battleId, robotId1, "NE", 5);
+        LaserResponse response = battleService.fireLaser(battleId, robotId1, "NE");
 
         assertNotNull(response);
         assertEquals("NE", response.getDirection());

@@ -68,7 +68,7 @@ public class BattleService {
     @ConfigProperty(name = "battle.robot.default-hit-points", defaultValue = "100")
     private int defaultHitPoints;
 
-    @ConfigProperty(name = "battle.laser.default-range", defaultValue = "10")
+    @ConfigProperty(name = "battle.laser.default-range", defaultValue = "5")
     private int defaultLaserRange;
 
     @ConfigProperty(name = "battle.laser.max-range", defaultValue = "50")
@@ -854,12 +854,11 @@ public class BattleService {
      * @param battleId The battle ID
      * @param robotId The robot ID
      * @param direction The direction to fire the laser
-     * @param range The range of the laser (optional, uses default if 0 or negative)
      * @return The laser response
      * @throws IllegalArgumentException if the battle ID, robot ID, or direction is invalid
      * @throws IllegalStateException if the battle is not in progress or robot is not active
      */
-    public LaserResponse fireLaser(String battleId, String robotId, String direction, int range) {
+    public LaserResponse fireLaser(String battleId, String robotId, String direction) {
         if (!isValidBattleAndRobotId(battleId, robotId)) {
             throw new IllegalArgumentException("Invalid battle ID or robot ID");
         }
@@ -882,8 +881,8 @@ public class BattleService {
             throw new IllegalArgumentException("Invalid direction: " + direction);
         }
 
-        // Use default range if not specified or invalid
-        int effectiveRange = (range > 0 && range <= maxLaserRange) ? range : defaultLaserRange;
+        // Use default laser range
+        int effectiveRange = defaultLaserRange;
 
         // Record the robot action
         battle.addRobotAction(robotId, firingRobot.getName(), "fire laser");

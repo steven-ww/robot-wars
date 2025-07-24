@@ -96,7 +96,6 @@ examples:
     description: "Example request to fire a laser"
     value:
       direction: "EAST"
-      range: 15
 
   LaserHitResponse:
     summary: "Laser hit response"
@@ -106,7 +105,7 @@ examples:
       hitRobotId: "robot-789abc12-def3-456g-h789-123456789012"
       hitRobotName: "TargetBot"
       damageDealt: 20
-      range: 15
+      range: 5
       direction: "EAST"
       laserPath:
         - x: 25
@@ -130,7 +129,7 @@ examples:
       hitRobotId: null
       hitRobotName: null
       damageDealt: 0
-      range: 15
+      range: 5
       direction: "EAST"
       laserPath:
         - x: 25

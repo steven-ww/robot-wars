@@ -223,17 +223,13 @@ class RobotApiClient(private val baseUrl: String) {
      * @param battleId The battle ID
      * @param robotId The robot ID
      * @param direction The direction to fire the laser (NORTH, SOUTH, EAST, WEST, NE, SE, SW, NW)
-     * @param range The laser range (default: 10)
      * @return The laser response containing hit information
      * @throws IOException if the API call fails
      */
     @Throws(IOException::class)
-    suspend fun fireLaser(battleId: String, robotId: String, direction: String, range: Int = 10): LaserResponse {
+    suspend fun fireLaser(battleId: String, robotId: String, direction: String): LaserResponse {
         val requestBody = mapper.writeValueAsString(
-            mapOf(
-                "direction" to direction,
-                "range" to range,
-            ),
+            mapOf("direction" to direction),
         ).toRequestBody(jsonMediaType)
 
         val request = Request.Builder()
