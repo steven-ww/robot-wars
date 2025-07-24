@@ -826,3 +826,6 @@ I found the existing `ArenaTabComponent.tsx` file that already implements these 
 
 ## 172nd Prompt
 The tests pass locally, but in the CI pipeline they fail. The error is shown in the tempError.txt file. Follow the guidelines in the../.junie/guidelines.md file.
+
+## 173rd Prompt
+Follow the guidelines in .junie/guidelines.md. There is now only one test failing when running the tests in the CI in github. I've placed this error in the tempError.txt. Please have a look and fix this.
