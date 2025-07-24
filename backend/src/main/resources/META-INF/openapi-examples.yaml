@@ -1,6 +1,5 @@
 # OpenAPI examples for the Robot Wars API
-components:
-  examples:
+examples:
     # Battle Examples
     CreateBattleRequest:
       summary: "Create a new battle"

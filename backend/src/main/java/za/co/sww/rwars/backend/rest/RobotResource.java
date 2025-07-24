@@ -58,14 +58,14 @@ public class RobotResource {
     @APIResponse(responseCode = "200", description = "Robot registered successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Robot.class),
-        examples = @ExampleObject(name = "RegisteredRobot", ref = "#/components/examples/RobotResponse")))
+        examples = @ExampleObject(name = "RegisteredRobot", ref = "#/examples/RobotResponse")))
     @APIResponse(responseCode = "409", description = "Conflict in registering robot",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", ref = "#/components/examples/ConflictErrorResponse")))
+        examples = @ExampleObject(name = "ConflictError", ref = "#/examples/ConflictErrorResponse")))
     public Response registerRobot(@Parameter(description = "Robot registration details",
         content = @Content(examples = @ExampleObject(name = "RegisterRobotRequest",
-                ref = "#/components/examples/RegisterRobotRequest"))) Robot robot) {
+                ref = "#/examples/RegisterRobotRequest"))) Robot robot) {
         try {
             Robot registeredRobot = battleService.registerRobot(robot.getName());
             return Response.ok(registeredRobot).build();
@@ -262,21 +262,21 @@ public class RobotResource {
     @APIResponse(responseCode = "200", description = "Robot movement initiated successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Robot.class),
-        examples = @ExampleObject(name = "RobotMoving", ref = "#/components/examples/RobotResponse")))
+        examples = @ExampleObject(name = "RobotMoving", ref = "#/examples/RobotResponse")))
     @APIResponse(responseCode = "400", description = "Invalid IDs or move parameters",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ValidationError", ref = "#/components/examples/ValidationErrorResponse")))
+        examples = @ExampleObject(name = "ValidationError", ref = "#/examples/ValidationErrorResponse")))
     @APIResponse(responseCode = "409", description = "Robot cannot move",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", ref = "#/components/examples/ConflictErrorResponse")))
+        examples = @ExampleObject(name = "ConflictError", ref = "#/examples/ConflictErrorResponse")))
     public Response moveRobot(
         @Parameter(description = "ID of the battle the robot is in") @PathParam("battleId") String battleId,
         @Parameter(description = "ID of the robot") @PathParam("robotId") String robotId,
         @Parameter(description = "Movement request parameters",
         content = @Content(examples = @ExampleObject(name = "MoveRequest",
-                ref = "#/components/examples/MoveRequest"))) MoveRequest moveRequest) {
+                ref = "#/examples/MoveRequest"))) MoveRequest moveRequest) {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -321,21 +321,21 @@ public class RobotResource {
     @APIResponse(responseCode = "200", description = "Radar scan completed successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = RadarResponse.class),
-        examples = @ExampleObject(name = "RadarResponse", ref = "#/components/examples/RadarResponse")))
+        examples = @ExampleObject(name = "RadarResponse", ref = "#/examples/RadarResponse")))
     @APIResponse(responseCode = "400", description = "Invalid IDs or radar parameters",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ValidationError", ref = "#/components/examples/ValidationErrorResponse")))
+        examples = @ExampleObject(name = "ValidationError", ref = "#/examples/ValidationErrorResponse")))
     @APIResponse(responseCode = "409", description = "Radar operation failed",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", ref = "#/components/examples/ConflictErrorResponse")))
+        examples = @ExampleObject(name = "ConflictError", ref = "#/examples/ConflictErrorResponse")))
     public Response performRadarScan(
         @Parameter(description = "ID of the battle the robot is in") @PathParam("battleId") String battleId,
         @Parameter(description = "ID of the robot") @PathParam("robotId") String robotId,
         @Parameter(description = "Radar scan parameters",
         content = @Content(examples = @ExampleObject(name = "RadarRequest",
-                ref = "#/components/examples/RadarRequest"))) RadarRequest radarRequest) {
+                ref = "#/examples/RadarRequest"))) RadarRequest radarRequest) {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -381,23 +381,23 @@ public class RobotResource {
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = LaserResponse.class),
         examples = {
-            @ExampleObject(name = "LaserHit", ref = "#/components/examples/LaserHitResponse"),
-            @ExampleObject(name = "LaserMiss", ref = "#/components/examples/LaserMissResponse")
+            @ExampleObject(name = "LaserHit", ref = "#/examples/LaserHitResponse"),
+            @ExampleObject(name = "LaserMiss", ref = "#/examples/LaserMissResponse")
         }))
     @APIResponse(responseCode = "400", description = "Invalid IDs or laser parameters",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ValidationError", ref = "#/components/examples/ValidationErrorResponse")))
+        examples = @ExampleObject(name = "ValidationError", ref = "#/examples/ValidationErrorResponse")))
     @APIResponse(responseCode = "409", description = "Laser operation failed",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", ref = "#/components/examples/ConflictErrorResponse")))
+        examples = @ExampleObject(name = "ConflictError", ref = "#/examples/ConflictErrorResponse")))
     public Response fireLaser(
         @Parameter(description = "ID of the battle the robot is in") @PathParam("battleId") String battleId,
         @Parameter(description = "ID of the robot") @PathParam("robotId") String robotId,
         @Parameter(description = "Laser firing parameters",
         content = @Content(examples = @ExampleObject(name = "LaserRequest",
-                ref = "#/components/examples/LaserRequest"))) LaserRequest laserRequest) {
+                ref = "#/examples/LaserRequest"))) LaserRequest laserRequest) {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
