@@ -88,19 +88,58 @@ public class BattleResource {
     @APIResponse(responseCode = "200", description = "Battle created successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Battle.class),
-        examples = @ExampleObject(name = "BattleCreated", ref = "#/examples/BattleResponse")))
+        examples = @ExampleObject(name = "BattleCreated", 
+            summary = "Battle information",
+            description = "Example battle response with all details",
+            value = """
+                {
+                  "id": "battle-123e4567-e89b-12d3-a456-556642440000",
+                  "name": "Epic Robot Showdown",
+                  "arenaWidth": 60,
+                  "arenaHeight": 40,
+                  "robotMovementTimeSeconds": 1.5,
+                  "state": "WAITING_ON_ROBOTS",
+                  "robots": [],
+                  "walls": [],
+                  "winnerId": null,
+                  "winnerName": null
+                }
+                """)))
     @APIResponse(responseCode = "400", description = "Invalid input data",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ValidationError", ref = "#/examples/ValidationErrorResponse")))
+        examples = @ExampleObject(name = "ValidationError",
+            summary = "Validation error",
+            description = "Example validation error response",
+            value = """
+                {
+                  "message": "Invalid arena dimensions. Width and height must be between 10 and 1000."
+                }
+                """)))
     @APIResponse(responseCode = "409", description = "Conflict in creating battle",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", ref = "#/examples/ConflictErrorResponse")))
+        examples = @ExampleObject(name = "ConflictError",
+            summary = "Conflict error",
+            description = "Example conflict error response",
+            value = """
+                {
+                  "message": "Battle with this name already exists"
+                }
+                """)))
     public Response createBattle(
         @Parameter(description = "Battle creation details",
         content = @Content(examples = @ExampleObject(name = "CreateBattleRequest",
-                ref = "#/examples/CreateBattleRequest")))
+                summary = "Create a new battle",
+                description = "Example request to create a new battle with custom dimensions",
+                value = """
+                    {
+                      "name": "Epic Robot Showdown",
+                      "width": 60,
+                      "height": 40,
+                      "robotMovementTimeSeconds": 1.5
+                    }
+                    """)))
         CreateBattleRequest request) {
         try {
             Battle battle;

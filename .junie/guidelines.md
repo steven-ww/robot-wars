@@ -35,6 +35,12 @@
 - **Build Tool**: Gradle
   - gradlew is in the root folder, not in the backend project
 - **Deployment**: Docker container with native executable
+- **OpenAPI Documentation**:
+  - **CRITICAL**: All examples MUST be inline in annotations using `@ExampleObject` with `value` property
+  - **NEVER** use external references like `ref = "#/examples/..."` - these will fail in Quarkus
+  - Quarkus generates OpenAPI spec dynamically from annotations - external files are NOT merged
+  - Use JSON strings in `value` field for all examples
+  - Test Swagger UI functionality after any OpenAPI changes
 
 #### 4.2 Frontend
 - **Language**: TypeScript
