@@ -823,3 +823,6 @@ I have reviewed the conversation, and the user has fixed the PhaserArenaComponen
 The user wants to follow the `.junie/guidelines.md` and preserve tests as is without modifying tests but instead reintroduce the missing functionality that the tests expect. I examined the `main_app_arena.test.ts` to identify test expectations like the "No battle selected" message, buttons for "Select Battle", battle list, handling battle not found messages, displaying battle names with "Battle Arena - <battle name>", and that the test expects elements with `data-testid="arena-component"`.
 
 I found the existing `ArenaTabComponent.tsx` file that already implements these UI and logic features, including battle fetching, selection, localStorage integration, displaying messages, and showing PhaserArenaComponent internally for the selected battle. Hence, the appropriate solution is to update the main `App.tsx` component to render `ArenaTabComponent` instead of rendering `PhaserArenaComponent` directly.
+
+## 172nd Prompt
+The tests pass locally, but in the CI pipeline they fail. The error is shown in the tempError.txt file. Follow the guidelines in the../.junie/guidelines.md file.
