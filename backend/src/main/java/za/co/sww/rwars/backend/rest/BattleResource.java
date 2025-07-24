@@ -88,19 +88,19 @@ public class BattleResource {
     @APIResponse(responseCode = "200", description = "Battle created successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Battle.class),
-        examples = @ExampleObject(name = "BattleCreated", ref = "#/components/examples/BattleResponse")))
+        examples = @ExampleObject(name = "BattleCreated", ref = "#/examples/BattleResponse")))
     @APIResponse(responseCode = "400", description = "Invalid input data",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ValidationError", ref = "#/components/examples/ValidationErrorResponse")))
+        examples = @ExampleObject(name = "ValidationError", ref = "#/examples/ValidationErrorResponse")))
     @APIResponse(responseCode = "409", description = "Conflict in creating battle",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = ErrorResponse.class),
-        examples = @ExampleObject(name = "ConflictError", ref = "#/components/examples/ConflictErrorResponse")))
+        examples = @ExampleObject(name = "ConflictError", ref = "#/examples/ConflictErrorResponse")))
     public Response createBattle(
         @Parameter(description = "Battle creation details",
         content = @Content(examples = @ExampleObject(name = "CreateBattleRequest",
-                ref = "#/components/examples/CreateBattleRequest")))
+                ref = "#/examples/CreateBattleRequest")))
         CreateBattleRequest request) {
         try {
             Battle battle;

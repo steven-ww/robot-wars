@@ -49,7 +49,7 @@ import jakarta.ws.rs.core.Application;
             """,
         contact = @Contact(
             name = "Robot Wars Support",
-            email = "support@robotwars.com"
+            email = "rwars-info@steven-webber.com"
         ),
         license = @License(
             name = "MIT License",

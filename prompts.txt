@@ -835,3 +835,12 @@ Follow the guidelines in .juine/guidelines.md. The fire lazer function allows th
 
 ## 175th Prompt
 Follow the guidelines in .junie/guidelines.md. The swagger ui has been broken again (you fixed this same issue earlier - you might find info in the prompts.txt file). The errors can be found in this swaggerErrorTemp.txt file. Also, the servers list is wrong. YOu had changed it to use a default, but now it's back to listing dev and prod and the prod url is wrong. Set it back to use a default based on where it's running.
+
+## 176th Prompt
+update the email address used for the robot wars admin to rwars-info@steven.webber.com
+
+## 177th Prompt
+Sorry, correct that, it's rwars-info@steven-webber.com NOT rwars-info@steven.webber.com
+
+## 178th Prompt
+Follow the guidelines in .junie/guidelines.md. The swagger ui has been broken again (you fixed this same issue earlier - you might find info in the prompts.txt file). The errors can be found in this swaggerErrorTemp2.txt file. Also, the servers list is wrong. YOu had changed it to use a default, but now it's back to listing dev and prod and the prod url is wrong. Set it back to use a default based on where it's running.
