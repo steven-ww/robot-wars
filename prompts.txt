@@ -829,3 +829,6 @@ The tests pass locally, but in the CI pipeline they fail. The error is shown in 
 
 ## 173rd Prompt
 Follow the guidelines in .junie/guidelines.md. There is now only one test failing when running the tests in the CI in github. I've placed this error in the tempError.txt. Please have a look and fix this.
+
+## 174th Prompt
+Follow the guidelines in .juine/guidelines.md. The fire lazer function allows the client to set the length of radar fired. This should not be supported. The backend should have a configurable value this is used (5), and the fire lazer command should use this. Change the API to support this, update the documentation and swagger, update the front-end if needed and update the robo-demo project to align. Make sure everything builds after all the changes.

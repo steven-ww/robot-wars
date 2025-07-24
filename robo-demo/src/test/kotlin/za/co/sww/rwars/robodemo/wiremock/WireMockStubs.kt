@@ -338,7 +338,6 @@ class WireMockStubs {
      *
      * @param robotName The name of the robot
      * @param direction The direction to fire the laser
-     * @param range The laser range
      * @param hit Whether the laser hit a target
      * @param hitRobotName The name of the robot that was hit (if any)
      * @return The laser response
@@ -346,12 +345,13 @@ class WireMockStubs {
     fun stubFireLaser(
         robotName: String,
         direction: String,
-        range: Int = 10,
         hit: Boolean = false,
         hitRobotName: String? = null,
     ): LaserResponse {
         val robotId = robotIds[robotName] ?: throw IllegalArgumentException("Robot not found: $robotName")
 
+        // Fixed range of 5 as configured on the server
+        val range = 5
         val laserResponse = LaserResponse(
             hit = hit,
             hitRobotId = if (hit && hitRobotName != null) robotIds[hitRobotName] else null,
@@ -372,12 +372,7 @@ class WireMockStubs {
             post(urlPathMatching("/api/robots/battle/$battleId/robot/$robotId/laser"))
                 .withRequestBody(
                     equalToJson(
-                        mapper.writeValueAsString(
-                            mapOf(
-                                "direction" to direction,
-                                "range" to range,
-                            ),
-                        ),
+                        mapper.writeValueAsString(mapOf("direction" to direction)),
                         true,
                         false,
                     ),

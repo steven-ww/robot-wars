@@ -361,11 +361,11 @@ public class RobotResource {
     /**
      * Fires a laser for a robot.
      *
-     * Executes a laser action for a robot in a specified direction and optional range.
+     * Executes a laser action for a robot in a specified direction using the configured laser range.
      *
      * @param battleId The battle ID
      * @param robotId The robot ID
-     * @param laserRequest The laser request containing direction and optional range
+     * @param laserRequest The laser request containing direction
      * @return The laser response
      */
     @POST
@@ -373,8 +373,9 @@ public class RobotResource {
     @RunOnVirtualThread
     @Operation(
         summary = "Fire a laser",
-        description = "Fires a laser from the robot in the specified direction with optional range. The laser travels "
-                + "until it hits a wall, robot, or reaches maximum range."
+        description = "Fires a laser from the robot in the specified direction using the configured "
+                + "laser range. The laser travels until it hits a wall, robot, or reaches the "
+                + "configured maximum range."
     )
     @APIResponse(responseCode = "200", description = "Laser fired successfully",
         content = @Content(mediaType = "application/json",
@@ -406,8 +407,7 @@ public class RobotResource {
             LaserResponse laserResponse = battleService.fireLaser(
                     battleId,
                     robotId,
-                    laserRequest.direction(),
-                    laserRequest.range());
+                    laserRequest.direction());
             return Response.ok(laserResponse).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -478,16 +478,10 @@ public class RobotResource {
         @Schema(description = "Direction to fire the laser",
                 example = "NORTH",
                 enumeration = {"NORTH", "SOUTH", "EAST", "WEST", "NE", "NW", "SE", "SW"})
-        String direction,
-
-        @Schema(description = "Range of the laser in grid units",
-                example = "10",
-                minimum = "1",
-                maximum = "50")
-        int range
+        String direction
     ) {
         public LaserRequest() {
-            this(null, 10);
+            this(null);
         }
     }
 
