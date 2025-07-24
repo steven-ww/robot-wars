@@ -847,3 +847,6 @@ Follow the guidelines in .junie/guidelines.md. The swagger ui has broken again (
 
 ## 179th Prompt
 Follow the guidelines in .junie/guidelines.md. The swagger page is still failing. See the errors in swaggerError3.txt. You've made 2 previous attempts to fix the swagger errors. (See earlier error files and prompts). You seem to be missing something, or trying something that isn't valid. Re-evaluate the solution. Confirm it supports what you are trying to do, then come up with a solution.
+
+## 180th Prompt
+Refactor both of them to use the approach you recommend. Remember to follow the .junie/guidelines.md. Also update the guidelines with this new approach.
