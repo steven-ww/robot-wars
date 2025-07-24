@@ -57,8 +57,7 @@ import jakarta.ws.rs.core.Application;
         )
     ),
     servers = {
-        @Server(url = "http://localhost:8080", description = "Development Server"),
-        @Server(url = "https://api.robotwars.com", description = "Production Server")
+        @Server(description = "Robot Wars API Server")
     },
     tags = {
         @Tag(name = "Battles", description = "Battle creation and management operations"),

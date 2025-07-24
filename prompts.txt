@@ -832,3 +832,6 @@ Follow the guidelines in .junie/guidelines.md. There is now only one test failin
 
 ## 174th Prompt
 Follow the guidelines in .juine/guidelines.md. The fire lazer function allows the client to set the length of radar fired. This should not be supported. The backend should have a configurable value this is used (5), and the fire lazer command should use this. Change the API to support this, update the documentation and swagger, update the front-end if needed and update the robo-demo project to align. Make sure everything builds after all the changes.
+
+## 175th Prompt
+Follow the guidelines in .junie/guidelines.md. The swagger ui has been broken again (you fixed this same issue earlier - you might find info in the prompts.txt file). The errors can be found in this swaggerErrorTemp.txt file. Also, the servers list is wrong. YOu had changed it to use a default, but now it's back to listing dev and prod and the prod url is wrong. Set it back to use a default based on where it's running.
