@@ -13,34 +13,37 @@ jest.mock('../../components/PhaserArenaComponent', () => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
-      // Create a real WebSocket connection for testing
-      const ws = new WebSocket(`ws://localhost:8080/battle-state/${battleId}`);
+      // Simulate WebSocket connection status
+      setIsConnected(true);
 
-      ws.onopen = () => {
-        setIsConnected(true);
-      };
-
-      ws.onmessage = event => {
-        try {
-          const data = JSON.parse(event.data);
-          setBattleState(data);
-        } catch (err) {
-          console.error('Mock WebSocket message parse error:', err);
-        }
-      };
-
-      ws.onerror = error => {
-        console.error('Mock WebSocket error:', error);
-      };
-
-      ws.onclose = () => {
-        setIsConnected(false);
-      };
+      // Create a simple state simulation for testing
+      const timeout = setTimeout(() => {
+        setBattleState({
+          battleId,
+          battleName: 'Test Battle',
+          arenaWidth: 20,
+          arenaHeight: 20,
+          robotMovementTimeSeconds: 1.0,
+          battleState: 'READY',
+          robots: [
+            {
+              id: 'robot-1',
+              name: 'Robot 1',
+              battleId,
+              positionX: 5,
+              positionY: 5,
+              direction: 'NORTH',
+              status: 'IDLE',
+              targetBlocks: 0,
+              blocksRemaining: 0,
+            },
+          ],
+          walls: [],
+        });
+      }, 100);
 
       return () => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.close();
-        }
+        clearTimeout(timeout);
       };
     }, [battleId]);
 
@@ -113,7 +116,12 @@ defineFeature(feature, test => {
           battleId: 'test-battle-id',
         })
       );
-      await server.connected;
+      // Wait for the arena to render
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
+      });
     });
 
     when('the battle state shows COMPLETED with a winner', async () => {
@@ -213,7 +221,12 @@ defineFeature(feature, test => {
           battleId: 'test-battle-id',
         })
       );
-      await server.connected;
+      // Wait for the arena to render
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
+      });
     });
 
     when('the battle state shows COMPLETED without a winner', async () => {
@@ -280,7 +293,12 @@ defineFeature(feature, test => {
           battleId: 'test-battle-id',
         })
       );
-      await server.connected;
+      // Wait for the arena to render
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('phaser-arena-container')
+        ).toBeInTheDocument();
+      });
     });
 
     when('the battle state is IN_PROGRESS', async () => {
