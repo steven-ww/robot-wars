@@ -119,6 +119,54 @@ public interface BattleResourceApi {
         CreateBattleRequest request);
 
     /**
+     * Creates a new test battle which allows starting with a single robot registered.
+     *
+     * @param request The battle creation request
+     * @return The created battle marked as test mode
+     */
+    @POST
+    @Path("/test")
+    @Operation(
+        summary = "Create a new test battle",
+        description = "Creates a developer test battle that can be started with a single robot."
+    )
+    @APIResponse(responseCode = "200", description = "Test battle created successfully",
+        content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = Battle.class),
+        examples = @ExampleObject(name = "TestBattleCreated",
+            summary = "Test battle information",
+            description = "Example test battle response",
+            value = """
+                {
+                  "id": "battle-test-123e4567-e89b-12d3-a456-556642440000",
+                  "name": "Dev Test Battle",
+                  "arenaWidth": 40,
+                  "arenaHeight": 30,
+                  "robotMovementTimeSeconds": 0.5,
+                  "state": "WAITING_ON_ROBOTS",
+                  "robots": [],
+                  "walls": [],
+                  "winnerId": null,
+                  "winnerName": null,
+                  "testMode": true
+                }
+                """)))
+    Response createTestBattle(
+        @Parameter(description = "Battle creation details",
+        content = @Content(examples = @ExampleObject(name = "CreateTestBattleRequest",
+                summary = "Create a new test battle",
+                description = "Example request to create a test battle",
+                value = """
+                    {
+                      "name": "Dev Test Battle",
+                      "width": 40,
+                      "height": 30,
+                      "robotMovementTimeSeconds": 0.5
+                    }
+                    """)))
+        CreateBattleRequest request);
+
+    /**
      * Starts a battle.
      *
      * @param battleId The battle ID

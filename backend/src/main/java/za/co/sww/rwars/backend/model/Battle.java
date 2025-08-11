@@ -55,6 +55,9 @@ public class Battle {
     @Schema(description = "List of robot actions that have occurred during the battle")
     private List<RobotAction> robotActions;
 
+    @Schema(description = "Indicates whether this battle is a developer test mode battle", example = "true")
+    private boolean testMode;
+
     public Battle() {
         this.id = UUID.randomUUID().toString();
         this.robots = new ArrayList<>();
@@ -74,6 +77,7 @@ public class Battle {
         this.robotActions = new ArrayList<>();
         this.state = BattleState.WAITING_ON_ROBOTS;
         this.robotMovementTimeSeconds = 1.0; // Default value
+        this.testMode = false;
     }
 
     public Battle(String name, int arenaWidth, int arenaHeight, double robotMovementTimeSeconds) {
@@ -86,6 +90,7 @@ public class Battle {
         this.robotActions = new ArrayList<>();
         this.state = BattleState.WAITING_ON_ROBOTS;
         this.robotMovementTimeSeconds = robotMovementTimeSeconds;
+        this.testMode = false;
     }
 
     public String getId() {
@@ -154,7 +159,7 @@ public class Battle {
     }
 
     private void updateState() {
-        if (robots.size() >= 2) {
+        if ((testMode && robots.size() >= 1) || (!testMode && robots.size() >= 2)) {
             this.state = BattleState.READY;
         }
     }
@@ -225,5 +230,13 @@ public class Battle {
 
     public void addRobotAction(String robotId, String robotName, String action) {
         this.robotActions.add(new RobotAction(robotId, robotName, action));
+    }
+
+    public boolean isTestMode() {
+        return testMode;
+    }
+
+    public void setTestMode(boolean testMode) {
+        this.testMode = testMode;
     }
 }
