@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="za.co.sww.rwars.airobot.BotLogicTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2025-08-11T13:13:06" hostname="Stevens-EE-MacBook-Pro-2.local" time="0.008">
-  <properties/>
-  <testcase name="alignmentChecks()" classname="za.co.sww.rwars.airobot.BotLogicTest" time="0.005"/>
-  <testcase name="directionTowardCardinalAndDiagonal()" classname="za.co.sww.rwars.airobot.BotLogicTest" time="0.002"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
