@@ -478,7 +478,8 @@ public class BattleService {
                             ))
                             .collect(Collectors.toList()),
                     battle.getWinnerId(),
-                    battle.getWinnerName()
+                    battle.getWinnerName(),
+                    battle.isTestMode()
                 ))
                 .collect(Collectors.toList());
     }
@@ -514,7 +515,8 @@ public class BattleService {
             int robotCount,
             List<RobotSummary> robots,
             String winnerId,
-            String winnerName
+            String winnerName,
+            boolean testMode
     ) {
     }
 

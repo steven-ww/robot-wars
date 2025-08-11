@@ -20,6 +20,7 @@ interface Battle {
   robots: Robot[];
   winnerId?: string;
   winnerName?: string;
+  testMode?: boolean;
 }
 
 const BattleManagement: React.FC = () => {
@@ -31,6 +32,7 @@ const BattleManagement: React.FC = () => {
   const [arenaHeight, setArenaHeight] = useState('');
   const [robotMovementTime, setRobotMovementTime] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showCreateTestForm, setShowCreateTestForm] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [selectedBattleId, setSelectedBattleId] = useState<string | null>(null);
   const [battleToDelete, setBattleToDelete] = useState<Battle | null>(null);
@@ -117,6 +119,60 @@ const BattleManagement: React.FC = () => {
     }
   };
 
+  // Handle creating a new test battle
+  const handleCreateTestBattle = async () => {
+    if (!newBattleName.trim()) {
+      setError('Battle name is required.');
+      return;
+    }
+
+    try {
+      const requestBody: any = { name: newBattleName.trim() };
+
+      if (arenaWidth) {
+        requestBody.width = parseInt(arenaWidth, 10);
+      }
+      if (arenaHeight) {
+        requestBody.height = parseInt(arenaHeight, 10);
+      }
+      if (robotMovementTime) {
+        requestBody.robotMovementTimeSeconds = parseFloat(robotMovementTime);
+      }
+
+      const response = await fetch(buildApiUrl('/api/battles/test'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        const newBattle = await response.json();
+        setBattles(prevBattles => [...prevBattles, newBattle]);
+        setSuccessMessage(
+          `Test Battle "${newBattle.name}" created successfully!`
+        );
+
+        // Reset form
+        setNewBattleName('');
+        setArenaWidth('');
+        setArenaHeight('');
+        setRobotMovementTime('');
+        setShowCreateTestForm(false);
+        setError(null);
+
+        // Clear success message after 3 seconds
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Failed to create a new test battle.');
+      }
+    } catch (error) {
+      setError('Failed to create a new test battle.');
+    }
+  };
+
   // Handle viewing arena for a selected battle
   const handleViewArena = (battleId: string) => {
     setSelectedBattleId(battleId);
@@ -125,6 +181,29 @@ const BattleManagement: React.FC = () => {
   // Handle going back to battle list
   const handleBackToBattleList = () => {
     setSelectedBattleId(null);
+  };
+
+  // Handle starting a READY battle
+  const handleStartBattle = async (battleId: string) => {
+    try {
+      const response = await fetch(
+        buildApiUrl(`/api/battles/${battleId}/start`),
+        {
+          method: 'POST',
+        }
+      );
+      if (response.ok) {
+        // Refresh battles list to get updated state
+        fetchBattles();
+        setSuccessMessage('Battle started successfully');
+        setTimeout(() => setSuccessMessage(''), 2000);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Failed to start battle.');
+      }
+    } catch (error) {
+      setError('Failed to start battle.');
+    }
   };
 
   // Handle initiating battle deletion
@@ -221,7 +300,24 @@ const BattleManagement: React.FC = () => {
                   margin: '10px 0',
                 }}
               >
-                <h4>{battle.name}</h4>
+                <h4>
+                  {battle.name}
+                  {battle.testMode ? (
+                    <span
+                      style={{
+                        marginLeft: '8px',
+                        fontSize: '12px',
+                        color: '#fff',
+                        backgroundColor: '#6c757d',
+                        padding: '2px 6px',
+                        borderRadius: '3px',
+                      }}
+                      data-testid={`badge-test-${battle.id}`}
+                    >
+                      Test
+                    </span>
+                  ) : null}
+                </h4>
                 <p>
                   <strong>Battle ID:</strong> {battle.id}
                 </p>
@@ -271,6 +367,23 @@ const BattleManagement: React.FC = () => {
                   >
                     View Arena
                   </button>
+                  {battle.state === 'READY' && (
+                    <button
+                      onClick={() => handleStartBattle(battle.id)}
+                      data-testid={`start-battle-${battle.id}`}
+                      style={{
+                        padding: '5px 10px',
+                        backgroundColor: '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '3px',
+                        cursor: 'pointer',
+                        marginRight: '10px',
+                      }}
+                    >
+                      Start Battle
+                    </button>
+                  )}
                   {battle.state === 'COMPLETED' && (
                     <button
                       onClick={() => handleDeleteBattle(battle)}
@@ -367,6 +480,99 @@ const BattleManagement: React.FC = () => {
               <button
                 onClick={() => {
                   setShowCreateForm(false);
+                  setNewBattleName('');
+                  setArenaWidth('');
+                  setArenaHeight('');
+                  setRobotMovementTime('');
+                  setError(null);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{ marginTop: '10px' }}>
+        {!showCreateTestForm ? (
+          <button
+            onClick={() => setShowCreateTestForm(true)}
+            data-testid="create-test-battle-button"
+          >
+            Create Test Battle
+          </button>
+        ) : (
+          <div
+            style={{
+              border: '1px solid #ccc',
+              padding: '20px',
+              marginTop: '20px',
+            }}
+          >
+            <h3>Create a New Test Battle</h3>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label>Battle Name (required):</label>
+              <input
+                type="text"
+                placeholder="Enter test battle name"
+                value={newBattleName}
+                onChange={e => setNewBattleName(e.target.value)}
+                style={{ width: '100%', padding: '5px' }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label>Arena Width (optional):</label>
+              <input
+                type="number"
+                placeholder="Default arena width"
+                value={arenaWidth}
+                onChange={e => setArenaWidth(e.target.value)}
+                style={{ width: '100%', padding: '5px' }}
+                min="10"
+                max="1000"
+              />
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label>Arena Height (optional):</label>
+              <input
+                type="number"
+                placeholder="Default arena height"
+                value={arenaHeight}
+                onChange={e => setArenaHeight(e.target.value)}
+                style={{ width: '100%', padding: '5px' }}
+                min="10"
+                max="1000"
+              />
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label>Robot Movement Time (seconds, optional):</label>
+              <input
+                type="number"
+                step="0.1"
+                placeholder="Default movement time"
+                value={robotMovementTime}
+                onChange={e => setRobotMovementTime(e.target.value)}
+                style={{ width: '100%', padding: '5px' }}
+                min="0.1"
+              />
+            </div>
+
+            <div>
+              <button
+                onClick={handleCreateTestBattle}
+                style={{ marginRight: '10px' }}
+                data-testid="submit-create-test-battle"
+              >
+                Create Test Battle
+              </button>
+              <button
+                onClick={() => {
+                  setShowCreateTestForm(false);
                   setNewBattleName('');
                   setArenaWidth('');
                   setArenaHeight('');
