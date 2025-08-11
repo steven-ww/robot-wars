@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="za.co.sww.rwars.airobot.CliOptionsTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2025-08-11T13:13:06" hostname="Stevens-EE-MacBook-Pro-2.local" time="0.002">
+  <properties/>
+  <testcase name="parsesProvidedValues()" classname="za.co.sww.rwars.airobot.CliOptionsTest" time="0.001"/>
+  <testcase name="parsesDefaults()" classname="za.co.sww.rwars.airobot.CliOptionsTest" time="0.0"/>
+  <testcase name="rejectsUnknownMode()" classname="za.co.sww.rwars.airobot.CliOptionsTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
