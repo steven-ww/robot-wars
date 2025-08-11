@@ -147,6 +147,9 @@ class BattleArenaScene extends Phaser.Scene {
       this.arenaHeight * this.cellSize
     );
 
+    // Fit camera to arena
+    this.fitCameraToArena();
+
     // Initialize walls group
     this.walls = this.add.group();
 
@@ -246,6 +249,9 @@ class BattleArenaScene extends Phaser.Scene {
       this.arenaWidth * this.cellSize,
       this.arenaHeight * this.cellSize
     );
+
+    // Refit camera after arena changes
+    this.fitCameraToArena();
 
     this.walls = this.add.group();
   }
@@ -394,6 +400,19 @@ class BattleArenaScene extends Phaser.Scene {
         });
       }
 
+      // Guard against out-of-range positions
+      if (
+        robot.positionX < 0 ||
+        robot.positionY < 0 ||
+        robot.positionX >= this.arenaWidth ||
+        robot.positionY >= this.arenaHeight
+      ) {
+        console.warn(
+          `Skipping render for robot ${robot.id} at out-of-range position (${robot.positionX}, ${robot.positionY}) in arena ${this.arenaWidth}x${this.arenaHeight}`
+        );
+        return;
+      }
+
       // Position the container
       const x = robot.positionX * this.cellSize + this.cellSize / 2;
       const y =
@@ -494,6 +513,23 @@ class BattleArenaScene extends Phaser.Scene {
         }
       },
     });
+  }
+
+  private fitCameraToArena() {
+    const worldW = this.arenaWidth * this.cellSize;
+    const worldH = this.arenaHeight * this.cellSize;
+    const cam = this.cameras.main;
+    // Set camera bounds to the arena size
+    cam.setBounds(0, 0, worldW, worldH);
+
+    // Get current view (canvas) size
+    const viewW = this.scale.width;
+    const viewH = this.scale.height;
+    if (viewW && viewH && worldW && worldH) {
+      const zoom = Math.min(viewW / worldW, viewH / worldH);
+      cam.setZoom(zoom);
+      cam.centerOn(worldW / 2, worldH / 2);
+    }
   }
 
   destroy() {
