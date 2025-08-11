@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="za.co.sww.rwars.airobot.DtoMappingTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2025-08-11T13:13:06" hostname="Stevens-EE-MacBook-Pro-2.local" time="0.024">
-  <properties/>
-  <testcase name="canDeserializeRadarResponse()" classname="za.co.sww.rwars.airobot.DtoMappingTest" time="0.019"/>
-  <testcase name="canDeserializeBattle()" classname="za.co.sww.rwars.airobot.DtoMappingTest" time="0.005"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
