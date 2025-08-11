@@ -151,6 +151,13 @@ public class BattleService {
     }
 
     /**
+     * Creates a new test battle with default arena dimensions.
+     */
+    public Battle createTestBattle(String battleName) {
+        return createTestBattle(battleName, defaultArenaWidth, defaultArenaHeight, robotMovementTimeSeconds);
+    }
+
+    /**
      * Creates a new battle with the given name and custom robot movement time.
      *
      * @param battleName The name of the battle
@@ -159,6 +166,13 @@ public class BattleService {
      */
     public Battle createBattle(String battleName, double movementTimeSeconds) {
         return createBattle(battleName, defaultArenaWidth, defaultArenaHeight, movementTimeSeconds);
+    }
+
+    /**
+     * Creates a new test battle with custom robot movement time.
+     */
+    public Battle createTestBattle(String battleName, double movementTimeSeconds) {
+        return createTestBattle(battleName, defaultArenaWidth, defaultArenaHeight, movementTimeSeconds);
     }
 
     /**
@@ -172,6 +186,13 @@ public class BattleService {
      */
     public Battle createBattle(String battleName, int width, int height) {
         return createBattle(battleName, width, height, robotMovementTimeSeconds);
+    }
+
+    /**
+     * Creates a new test battle with the given name and arena dimensions.
+     */
+    public Battle createTestBattle(String battleName, int width, int height) {
+        return createTestBattle(battleName, width, height, robotMovementTimeSeconds);
     }
 
     /**
@@ -210,6 +231,16 @@ public class BattleService {
 
         battlesById.put(newBattle.getId(), newBattle);
         return newBattle;
+    }
+
+    /**
+     * Creates a new test battle with the given name, arena dimensions, and robot movement time.
+     * In test mode, the battle becomes READY when a single robot is registered.
+     */
+    public Battle createTestBattle(String battleName, int width, int height, double movementTimeSeconds) {
+        Battle battle = createBattle(battleName, width, height, movementTimeSeconds);
+        battle.setTestMode(true);
+        return battle;
     }
 
     /**
@@ -447,7 +478,8 @@ public class BattleService {
                             ))
                             .collect(Collectors.toList()),
                     battle.getWinnerId(),
-                    battle.getWinnerName()
+                    battle.getWinnerName(),
+                    battle.isTestMode()
                 ))
                 .collect(Collectors.toList());
     }
@@ -483,7 +515,8 @@ public class BattleService {
             int robotCount,
             List<RobotSummary> robots,
             String winnerId,
-            String winnerName
+            String winnerName,
+            boolean testMode
     ) {
     }
 

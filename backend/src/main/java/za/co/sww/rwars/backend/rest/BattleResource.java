@@ -167,6 +167,83 @@ public class BattleResource {
     }
 
     /**
+     * Creates a new test battle which allows starting with a single robot registered.
+     *
+     * Allows developers to create a test battle for building and testing robots. In test mode, the battle becomes
+     * READY when one robot is registered, and can be started and used like a normal battle. All movement, radar and
+     * laser actions work as usual, and the battle ends when the robot is destroyed or crashes.
+     *
+     * @param request The battle creation request (name and optional dimensions/timing)
+     * @return The created test battle
+     */
+    @POST
+    @Path("/test")
+    @RunOnVirtualThread
+    @Operation(
+        summary = "Create a new test battle",
+        description = "Creates a developer test battle that can be used with a single robot."
+    )
+    @APIResponse(responseCode = "200", description = "Test battle created successfully",
+        content = @Content(mediaType = "application/json",
+        schema = @Schema(implementation = Battle.class),
+        examples = @ExampleObject(name = "TestBattleCreated",
+            summary = "Test battle information",
+            description = "Example test battle response",
+            value = """
+                {
+                  "id": "battle-test-123e4567-e89b-12d3-a456-556642440000",
+                  "name": "Dev Test Battle",
+                  "arenaWidth": 40,
+                  "arenaHeight": 30,
+                  "robotMovementTimeSeconds": 0.5,
+                  "state": "WAITING_ON_ROBOTS",
+                  "robots": [],
+                  "walls": [],
+                  "winnerId": null,
+                  "winnerName": null,
+                  "testMode": true
+                }
+                """)))
+    public Response createTestBattle(
+            @Parameter(description = "Battle creation details",
+            content = @Content(examples = @ExampleObject(name = "CreateTestBattleRequest",
+                    summary = "Create a new test battle",
+                    description = "Example request to create a test battle",
+                    value = """
+                        {
+                          "name": "Dev Test Battle",
+                          "width": 40,
+                          "height": 30,
+                          "robotMovementTimeSeconds": 0.5
+                        }
+                        """)))
+            CreateBattleRequest request) {
+        try {
+            Battle battle;
+            if (request.width() != null && request.height() != null
+                    && request.robotMovementTimeSeconds() != null) {
+                battle = battleService.createTestBattle(request.name(), request.width(), request.height(),
+                        request.robotMovementTimeSeconds());
+            } else if (request.width() != null && request.height() != null) {
+                battle = battleService.createTestBattle(request.name(), request.width(), request.height());
+            } else if (request.robotMovementTimeSeconds() != null) {
+                battle = battleService.createTestBattle(request.name(), request.robotMovementTimeSeconds());
+            } else {
+                battle = battleService.createTestBattle(request.name());
+            }
+            return Response.ok(battle).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
+        }
+    }
+
+    /**
      * Starts the battle.
      *
      * Initiates the specified battle, transitioning it from READY to IN_PROGRESS status.

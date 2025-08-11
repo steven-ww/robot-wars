@@ -158,6 +158,20 @@ Both REST API and WebSocket connections use the same backend URL configuration:
 - **Production**: Uses the configured `BACKEND_URL` from GitHub repository variables
 - **WebSocket Protocol**: Automatically converts `http://` to `ws://` and `https://` to `wss://`
 
+## Developer Test Mode
+
+Test Mode helps robot developers iterate quickly without a full two-robot battle. In Test Mode, a battle becomes READY when a single robot is registered, and can be started and controlled like a normal battle. The battle ends when the robot is destroyed (hit points <= 0) or crashes into a wall.
+
+How to use Test Mode from the UI (Battle Management tab):
+- Create Test Battle: Click "Create Test Battle" and provide a name (optional width/height/movement time). The created battle is tagged with a "Test" badge.
+- Register one robot using your client or robo-demo. In Test Mode, a single robot is enough to reach READY.
+- Start Battle: When a test battle shows state READY, click "Start Battle" to start it.
+- View Arena: Click "View Arena" to open the Phaser arena. Movements, radar, and laser events stream in via WebSocket.
+
+Notes:
+- Test battles are listed alongside normal battles and display a Test badge.
+- The frontend renders state transitions and winners as normal. A test battle may complete without a winner if the robot crashes.
+
 ## Component Documentation
 
 ### GreetingComponent

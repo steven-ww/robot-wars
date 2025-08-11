@@ -850,3 +850,6 @@ Follow the guidelines in .junie/guidelines.md. The swagger page is still failing
 
 ## 180th Prompt
 Refactor both of them to use the approach you recommend. Remember to follow the .junie/guidelines.md. Also update the guidelines with this new approach.
+
+## 181st Prompt
+Have a look at the prompts.txt file for a complete history of the prompts so far. Look at the backend folder. It contains a quarkus application. I want to add a feature, via BDD, that supports testing a robot. So instead of having to create a battle, register two robots and have them play until one wins, this feature should allow you to enter test mode where you can create a test battle, register one robot and then it can be instructed to move around, scan, shoot etc as normal. The battle still ends when the robot hit points move below 0 and/or it crashes into a wall. This feature will be uased by developers while creating a robot for the game. Update the documentation for the api as well as the readme to describe how this mode can be used to develop a robot. Follow the .junie/guidelines.
