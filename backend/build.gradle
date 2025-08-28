@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'io.quarkus' version '3.20.0'
+    id 'io.quarkus' version '3.26.0'
     id 'checkstyle'
 }
 
@@ -14,13 +14,16 @@ repositories {
 
 dependencies {
     // Quarkus BOM
-    implementation enforcedPlatform("io.quarkus:quarkus-bom:3.20.0")
+    implementation enforcedPlatform("io.quarkus:quarkus-bom:3.26.0")
 
     // Core dependencies
     implementation 'io.quarkus:quarkus-arc'
     implementation 'io.quarkus:quarkus-rest'
     implementation 'io.quarkus:quarkus-rest-jackson'
     
+    // Bean Validation
+    implementation 'io.quarkus:quarkus-hibernate-validator'
+
     // Jackson JSR310 module for LocalDateTime support
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 

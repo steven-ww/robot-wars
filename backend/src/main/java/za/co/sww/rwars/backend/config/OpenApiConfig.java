@@ -39,6 +39,17 @@ import jakarta.ws.rs.core.Application;
             - **Health**: Robots start with 100 hit points and are destroyed at 0 HP
             - **Walls**: Static obstacles that block movement and laser fire
 
+            ## Coordinate System and Directions
+
+            - Grid uses zero-based indices: `0 <= x < arenaWidth`, `0 <= y < arenaHeight`
+            - Direction semantics:
+              - NORTH (N) increases Y by 1 per block
+              - SOUTH (S) decreases Y by 1 per block
+              - EAST (E) increases X by 1 per block
+              - WEST (W) decreases X by 1 per block
+              - Diagonals: NE (x+1, y+1), NW (x-1, y+1), SE (x+1, y-1), SW (x-1, y-1)
+            - Moving out of bounds or into a wall crashes the robot
+
             ## WebSocket Support
 
             The API also provides WebSocket endpoints for real-time battle updates.

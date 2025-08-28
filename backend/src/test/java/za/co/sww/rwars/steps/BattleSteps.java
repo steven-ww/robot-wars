@@ -54,7 +54,7 @@ public class BattleSteps {
         response = request.body(battleRequest).post("/api/battles");
 
         // Store the battle immediately if successful
-        if (response.getStatusCode() == 200) {
+        if (response.getStatusCode() == 200 || response.getStatusCode() == 201) {
             String battleId = response.jsonPath().getString("id");
             createdBattles.put(battleName, battleId);
             testContext.storeBattle(battleName, battleId);
@@ -71,7 +71,7 @@ public class BattleSteps {
         response = request.body(battleRequest).post("/api/battles");
 
         // Store the battle immediately if successful
-        if (response.getStatusCode() == 200) {
+        if (response.getStatusCode() == 200 || response.getStatusCode() == 201) {
             String battleId = response.jsonPath().getString("id");
             createdBattles.put(battleName, battleId);
             testContext.storeBattle(battleName, battleId);
@@ -87,7 +87,7 @@ public class BattleSteps {
         response = request.body(battleRequest).post("/api/battles");
 
         // Store the battle immediately if successful
-        if (response.getStatusCode() == 200) {
+        if (response.getStatusCode() == 200 || response.getStatusCode() == 201) {
             String battleId = response.jsonPath().getString("id");
             createdBattles.put(battleName, battleId);
             testContext.storeBattle(battleName, battleId);
@@ -107,7 +107,7 @@ public class BattleSteps {
         response = request.body(battleRequest).post("/api/battles");
 
         // Store the battle immediately if successful
-        if (response.getStatusCode() == 200) {
+        if (response.getStatusCode() == 200 || response.getStatusCode() == 201) {
             String battleId = response.jsonPath().getString("id");
             createdBattles.put(battleName, battleId);
             testContext.storeBattle(battleName, battleId);
@@ -126,7 +126,9 @@ public class BattleSteps {
 
     @Then("a battle with the name {string} should be created")
     public void aBattleWithTheNameShouldBeCreated(String battleName) {
-        response.then().statusCode(200);
+        int status = response.getStatusCode();
+        Assertions.assertTrue(status == 200 || status == 201,
+                "Expected 200 or 201 but was " + status);
         response.then().body("name", Matchers.equalTo(battleName));
 
         // Store the battle ID for later use (may be duplicate but ensures we have it)

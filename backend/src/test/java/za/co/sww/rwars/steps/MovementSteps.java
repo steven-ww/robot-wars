@@ -83,21 +83,93 @@ public class MovementSteps {
 
     @When("I move my robot in direction {string} for {int} blocks")
     public void iMoveMyRobotInDirectionForBlocks(String direction, int blocks) {
-        // First, position the robot in the middle of the arena to avoid boundary issues
-        // Get the arena dimensions
+        // Get arena dimensions
         Response battleResponse = request.get("/api/robots/battle/" + battleId);
         battleResponse.then().statusCode(200);
         int arenaWidth = battleResponse.jsonPath().getInt("arenaWidth");
         int arenaHeight = battleResponse.jsonPath().getInt("arenaHeight");
 
-        // Position the robot in the middle of the arena using the BattleService directly
-        // This avoids using the public API endpoint that shouldn't be available to users
-        Robot robot = battleService.getRobotDetails(battleId, robotId);
-        robot.setPositionX(arenaWidth / 2);
-        robot.setPositionY(arenaHeight / 2);
+        // Determine direction deltas consistent with server movement (NORTH increases Y)
+        String dir = direction.toUpperCase();
+        int dx;
+        int dy;
+        switch (dir) {
+            case "NORTH", "N" -> {
+                dx = 0;
+                dy = 1;
+            }
+            case "SOUTH", "S" -> {
+                dx = 0;
+                dy = -1;
+            }
+            case "EAST",  "E" -> {
+                dx = 1;
+                dy = 0;
+            }
+            case "WEST",  "W" -> {
+                dx = -1;
+                dy = 0;
+            }
+            case "NE" -> {
+                dx = 1;
+                dy = 1;
+            }
+            case "NW" -> {
+                dx = -1;
+                dy = 1;
+            }
+            case "SE" -> {
+                dx = 1;
+                dy = -1;
+            }
+            case "SW" -> {
+                dx = -1;
+                dy = -1;
+            }
+            default -> throw new IllegalArgumentException("Invalid direction: " + direction);
+        }
 
-        // Get the current position of the robot before moving using BattleService directly
-        // This is appropriate for tests as we need to verify internal state
+        // Find a safe starting position (not on a wall, with a clear path for the requested movement)
+        Battle battle = battleService.getBattleStatus(battleId);
+        int safeX = arenaWidth / 2;
+        int safeY = arenaHeight / 2;
+        boolean placed = false;
+        for (int attempts = 0; attempts < 200 && !placed; attempts++) {
+            // Ensure start is within bounds and not on a wall
+            boolean startSafe = safeX >= 0 && safeX < arenaWidth && safeY >= 0 && safeY < arenaHeight
+                    && !battle.isPositionOccupiedByWall(safeX, safeY);
+            if (startSafe) {
+                boolean pathClear = true;
+                for (int i = 1; i <= blocks; i++) {
+                    int checkX = safeX + dx * i;
+                    int checkY = safeY + dy * i;
+                    if (checkX < 0 || checkX >= arenaWidth || checkY < 0 || checkY >= arenaHeight
+                            || battle.isPositionOccupiedByWall(checkX, checkY)) {
+                        pathClear = false;
+                        break;
+                    }
+                }
+                if (pathClear) {
+                    // Use validated setter for testing to avoid walls/bounds
+                    battleService.setRobotPositionForTesting(battleId, robotId, safeX, safeY);
+                    placed = true;
+                    break;
+                }
+            }
+            // Try a different candidate position (scan across interior area)
+            int innerW = Math.max(1, arenaWidth - 20);
+            int innerH = Math.max(1, arenaHeight - 20);
+            safeX = 10 + (attempts % innerW);
+            safeY = 10 + ((attempts / innerW) % innerH);
+        }
+
+        if (!placed) {
+            // Fallback: place near the center anyway (best effort)
+            battleService.setRobotPositionForTesting(battleId, robotId, Math.max(0, Math.min(arenaWidth - 1, safeX)),
+                    Math.max(0, Math.min(arenaHeight - 1, safeY)));
+        }
+
+        // Capture initial position for assertions
         Robot robotBeforeMove = battleService.getRobotDetails(battleId, robotId);
         initialX = robotBeforeMove.getPositionX();
         initialY = robotBeforeMove.getPositionY();
@@ -192,12 +264,52 @@ public class MovementSteps {
 
         // Position the robot in a safe location using the BattleService directly
         // This avoids using the public API endpoint that shouldn't be available to users
-        Robot robot = battleService.getRobotDetails(battleId, robotId);
+        // We'll use BattleService to validate placement and inspect walls
         Battle battle = battleService.getBattleStatus(battleId);
 
         // Find a safe position that's not on a wall and has enough space to move
         int safeX = arenaWidth / 2;
         int safeY = arenaHeight / 2;
+
+        // Determine direction deltas consistent with server movement (NORTH increases Y)
+        String dir = direction.toUpperCase();
+        int dx;
+        int dy;
+        switch (dir) {
+            case "NORTH", "N" -> {
+                dx = 0;
+                dy = 1;
+            }
+            case "SOUTH", "S" -> {
+                dx = 0;
+                dy = -1;
+            }
+            case "EAST",  "E" -> {
+                dx = 1;
+                dy = 0;
+            }
+            case "WEST",  "W" -> {
+                dx = -1;
+                dy = 0;
+            }
+            case "NE" -> {
+                dx = 1;
+                dy = 1;
+            }
+            case "NW" -> {
+                dx = -1;
+                dy = 1;
+            }
+            case "SE" -> {
+                dx = 1;
+                dy = -1;
+            }
+            case "SW" -> {
+                dx = -1;
+                dy = -1;
+            }
+            default -> throw new IllegalArgumentException("Invalid direction: " + direction);
+        }
 
         // Ensure the robot is not positioned on a wall and has space to move in the requested direction
         for (int attempts = 0; attempts < 100; attempts++) {
@@ -207,16 +319,8 @@ public class MovementSteps {
             if (positionIsSafe) {
                 boolean hasSpaceToMove = true;
                 for (int i = 1; i <= blocks; i++) {
-                    int checkX = safeX;
-                    int checkY = safeY;
-
-                    switch (direction.toUpperCase()) {
-                        case "NORTH": checkY -= i; break;
-                        case "SOUTH": checkY += i; break;
-                        case "EAST": checkX += i; break;
-                        case "WEST": checkX -= i; break;
-                        default: throw new IllegalArgumentException("Invalid direction: " + direction);
-                    }
+                    int checkX = safeX + dx * i;
+                    int checkY = safeY + dy * i;
 
                     if (checkX < 0 || checkX >= arenaWidth || checkY < 0 || checkY >= arenaHeight
                             || battle.isPositionOccupiedByWall(checkX, checkY)) {
@@ -235,8 +339,7 @@ public class MovementSteps {
             safeY = 10 + ((attempts / (arenaWidth - 20)) % (arenaHeight - 20));
         }
 
-        robot.setPositionX(safeX);
-        robot.setPositionY(safeY);
+        battleService.setRobotPositionForTesting(battleId, robotId, safeX, safeY);
 
         // Get the current position of the robot before moving using BattleService directly
         // This is appropriate for tests as we need to verify internal state
