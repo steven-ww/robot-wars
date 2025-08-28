@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import PhaserArenaComponent from '../PhaserArenaComponent';
 
 // Mock Phaser with minimal functionality to allow the Scene to run
 jest.mock('phaser', () => {
@@ -36,6 +37,7 @@ jest.mock('phaser', () => {
       this.scale = { width: 800, height: 600 };
       this.tweens = { add: jest.fn() };
       this.time = { delayedCall: jest.fn((ms: number, cb: () => void) => cb()) };
+      // eslint-disable-next-line testing-library/no-node-access
       this.children = { removeAll: jest.fn() };
     }
   }
@@ -67,7 +69,6 @@ jest.mock('phaser', () => {
   };
 });
 
-import PhaserArenaComponent from '../PhaserArenaComponent';
 
 describe('PhaserArenaComponent WebSocket error handling', () => {
   let origWebSocket: any;
