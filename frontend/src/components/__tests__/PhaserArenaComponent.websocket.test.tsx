@@ -28,15 +28,27 @@ jest.mock('phaser', () => {
     constructor() {
       this.add = {
         graphics: jest.fn(() => makeGraphics()),
-        image: jest.fn(() => ({ setOrigin: jest.fn().mockReturnThis(), destroy: jest.fn(), active: true })),
+        image: jest.fn(() => ({
+          setOrigin: jest.fn().mockReturnThis(),
+          destroy: jest.fn(),
+          active: true,
+        })),
         text: jest.fn(() => ({ setOrigin: jest.fn().mockReturnThis() })),
-        group: jest.fn(() => ({ add: jest.fn(), clear: jest.fn(), destroy: jest.fn() })),
+        group: jest.fn(() => ({
+          add: jest.fn(),
+          clear: jest.fn(),
+          destroy: jest.fn(),
+        })),
         particles: jest.fn(() => ({ destroy: jest.fn() })),
       };
-      this.cameras = { main: { setBounds: jest.fn(), setZoom: jest.fn(), centerOn: jest.fn() } };
+      this.cameras = {
+        main: { setBounds: jest.fn(), setZoom: jest.fn(), centerOn: jest.fn() },
+      };
       this.scale = { width: 800, height: 600 };
       this.tweens = { add: jest.fn() };
-      this.time = { delayedCall: jest.fn((ms: number, cb: () => void) => cb()) };
+      this.time = {
+        delayedCall: jest.fn((ms: number, cb: () => void) => cb()),
+      };
       // eslint-disable-next-line testing-library/no-node-access
       this.children = { removeAll: jest.fn() };
     }
@@ -69,7 +81,6 @@ jest.mock('phaser', () => {
   };
 });
 
-
 describe('PhaserArenaComponent WebSocket error handling', () => {
   let origWebSocket: any;
 
@@ -87,13 +98,24 @@ describe('PhaserArenaComponent WebSocket error handling', () => {
   test('logs errors on WebSocket onerror and on JSON parse failure; logs on close', () => {
     const wsInstances: any[] = [];
     (global as any).WebSocket = jest.fn(() => {
-      const ws: any = { onopen: null, onmessage: null, onerror: null, onclose: null, readyState: 1, close: jest.fn() };
+      const ws: any = {
+        onopen: null,
+        onmessage: null,
+        onerror: null,
+        onclose: null,
+        readyState: 1,
+        close: jest.fn(),
+      };
       wsInstances.push(ws);
       return ws;
     });
 
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+    const consoleLogSpy = jest
+      .spyOn(console, 'log')
+      .mockImplementation(() => {});
 
     render(<PhaserArenaComponent battleId="ws-error-test" />);
 
@@ -109,8 +131,16 @@ describe('PhaserArenaComponent WebSocket error handling', () => {
     // Simulate onclose
     if (ws.onclose) ws.onclose({ code: 1006, reason: 'abnormal' });
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('WebSocket error'), expect.anything());
-    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Error parsing WebSocket message'), expect.anything());
-    expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Disconnected from battle state WebSocket'));
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('WebSocket error'),
+      expect.anything()
+    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Error parsing WebSocket message'),
+      expect.anything()
+    );
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Disconnected from battle state WebSocket')
+    );
   });
 });
