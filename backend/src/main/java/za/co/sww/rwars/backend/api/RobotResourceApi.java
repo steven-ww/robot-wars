@@ -21,6 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 /**
  * API interface for robot registration and battle status operations.
@@ -431,6 +432,7 @@ public interface RobotResourceApi {
      * Error response record.
      */
     @Schema(description = "Error response containing error message")
+    @RegisterForReflection
     record ErrorResponse(
         @Schema(description = "Error message describing what went wrong", example = "Invalid robot ID")
         String message
@@ -444,6 +446,7 @@ public interface RobotResourceApi {
      * Move request record.
      */
     @Schema(description = "Request for moving a robot")
+    @RegisterForReflection
     record MoveRequest(
         @Schema(description = "Direction to move the robot",
                 example = "NORTH",
@@ -465,6 +468,7 @@ public interface RobotResourceApi {
      * Radar request record.
      */
     @Schema(description = "Request for performing a radar scan")
+    @RegisterForReflection
     record RadarRequest(
         @Schema(description = "Range of the radar scan in grid units",
                 example = "5",
@@ -481,6 +485,7 @@ public interface RobotResourceApi {
      * Laser request record.
      */
     @Schema(description = "Request for firing a laser")
+    @RegisterForReflection
     record LaserRequest(
         @Schema(description = "Direction to fire the laser",
                 example = "NORTH",

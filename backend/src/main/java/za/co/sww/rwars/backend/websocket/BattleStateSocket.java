@@ -52,7 +52,7 @@ public class BattleStateSocket {
         sessionsByBattleId.computeIfAbsent(battleId, k -> new ConcurrentHashMap<>())
                 .put(session.getId(), session);
 
-        LOGGER.info("New WebSocket connection for battle: " + battleId + ", session: " + session.getId());
+        LOGGER.info("event=ws_open battleId=" + battleId + " sessionId=" + session.getId());
 
         // Send the initial battle state to the client
         sendBattleState(battleId, session);
@@ -75,7 +75,7 @@ public class BattleStateSocket {
             }
         }
 
-        LOGGER.info("WebSocket connection closed for battle: " + battleId + ", session: " + session.getId());
+        LOGGER.info("event=ws_close battleId=" + battleId + " sessionId=" + session.getId());
     }
 
     /**
@@ -96,8 +96,10 @@ public class BattleStateSocket {
             }
         }
 
-        LOGGER.severe("WebSocket error for battle " + battleId
-                + ", session " + session.getId() + ": " + throwable.getMessage());
+        String errMsg = "event=ws_error battleId=" + battleId
+                + " sessionId=" + session.getId()
+                + " error=" + throwable.getMessage();
+        LOGGER.severe(errMsg);
     }
 
     /**
@@ -110,7 +112,7 @@ public class BattleStateSocket {
      */
     @OnMessage
     public void onMessage(String message, Session session, @PathParam("battleId") String battleId) {
-        LOGGER.info("Message from session " + session.getId() + " for battle " + battleId + ": " + message);
+        LOGGER.info("event=ws_message battleId=" + battleId + " sessionId=" + session.getId() + " message=" + message);
 
         // If the client requests an update, send the current battle state
         if ("update".equalsIgnoreCase(message)) {
@@ -148,7 +150,9 @@ public class BattleStateSocket {
                     String jsonResponse = objectMapper.writeValueAsString(response);
                     session.getAsyncRemote().sendText(jsonResponse);
                 } catch (JsonProcessingException e) {
-                    LOGGER.severe("Error serializing battle state to JSON: " + e.getMessage());
+                    String serErr = "event=battle_state_serialize_error battleId=" + battleId
+                            + " error=" + e.getMessage();
+                    LOGGER.severe(serErr);
                 }
             } else {
                 // Send an error message if the battle ID is invalid
@@ -157,11 +161,15 @@ public class BattleStateSocket {
                     String jsonError = objectMapper.writeValueAsString(error);
                     session.getAsyncRemote().sendText(jsonError);
                 } catch (JsonProcessingException e) {
-                    LOGGER.severe("Error serializing error response to JSON: " + e.getMessage());
+                    String errSerErr = "event=error_serialize_error battleId=" + battleId
+                            + " error=" + e.getMessage();
+                    LOGGER.severe(errSerErr);
                 }
             }
         } catch (Exception e) {
-            LOGGER.severe("Error sending battle state for battle " + battleId + ": " + e.getMessage());
+            String sendErr = "event=battle_state_send_error battleId=" + battleId
+                    + " error=" + e.getMessage();
+            LOGGER.severe(sendErr);
 
             // Send an error message
             ErrorResponse error = new ErrorResponse("Error retrieving battle state: " + e.getMessage());
@@ -169,7 +177,9 @@ public class BattleStateSocket {
                 String jsonError = objectMapper.writeValueAsString(error);
                 session.getAsyncRemote().sendText(jsonError);
             } catch (JsonProcessingException jsonException) {
-                LOGGER.severe("Error sending error message: " + jsonException.getMessage());
+                String sendErr2 = "event=error_send_error battleId=" + battleId
+                        + " error=" + jsonException.getMessage();
+                LOGGER.severe(sendErr2);
             }
         }
     }
