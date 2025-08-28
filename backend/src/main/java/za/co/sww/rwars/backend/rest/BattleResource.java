@@ -3,9 +3,11 @@ package za.co.sww.rwars.backend.rest;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
+import java.net.URI;
+import java.util.logging.Logger;
 import za.co.sww.rwars.backend.api.BattleResourceApi;
 import za.co.sww.rwars.backend.api.BattleResourceApi.CreateBattleRequest;
-import za.co.sww.rwars.backend.api.BattleResourceApi.ErrorResponse;
+import za.co.sww.rwars.backend.api.HttpError;
 import za.co.sww.rwars.backend.model.Battle;
 import za.co.sww.rwars.backend.service.BattleService;
 
@@ -18,6 +20,8 @@ import za.co.sww.rwars.backend.service.BattleService;
  */
 public class BattleResource implements BattleResourceApi {
 
+    private static final Logger LOGGER = Logger.getLogger(BattleResource.class.getName());
+
     @Inject
     private BattleService battleService;
 
@@ -29,14 +33,14 @@ public class BattleResource implements BattleResourceApi {
             return Response.ok(battleSummaries).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(new ErrorResponse("Error retrieving battles: " + e.getMessage()))
+                    .entity(new HttpError("Error retrieving battles: " + e.getMessage()))
                     .build();
         }
     }
 
     @RunOnVirtualThread
     @Override
-    public Response createBattle(CreateBattleRequest request) {
+public Response createBattle(CreateBattleRequest request) {
         try {
             Battle battle;
             if (request.width() != null && request.height() != null
@@ -50,21 +54,22 @@ public class BattleResource implements BattleResourceApi {
             } else {
                 battle = battleService.createBattle(request.name());
             }
-            return Response.ok(battle).build();
+            LOGGER.info("event=battle_created battleId=" + battle.getId() + " name=" + battle.getName());
+            return Response.created(URI.create("/api/battles/" + battle.getId())).entity(battle).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }
 
     @RunOnVirtualThread
     @Override
-    public Response createTestBattle(CreateBattleRequest request) {
+public Response createTestBattle(CreateBattleRequest request) {
         try {
             Battle battle;
             if (request.width() != null && request.height() != null
@@ -81,11 +86,11 @@ public class BattleResource implements BattleResourceApi {
             return Response.ok(battle).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }
@@ -95,14 +100,15 @@ public class BattleResource implements BattleResourceApi {
     public Response startBattle(String battleId) {
         try {
             Battle battle = battleService.startBattle(battleId);
+            LOGGER.info("event=battle_started battleId=" + battleId);
             return Response.ok(battle).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }
@@ -112,14 +118,15 @@ public class BattleResource implements BattleResourceApi {
     public Response deleteBattle(String battleId) {
         try {
             battleService.deleteBattle(battleId);
+            LOGGER.info("event=battle_deleted battleId=" + battleId);
             return Response.noContent().build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }

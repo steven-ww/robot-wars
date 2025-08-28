@@ -21,6 +21,9 @@ dependencies {
     implementation 'io.quarkus:quarkus-rest'
     implementation 'io.quarkus:quarkus-rest-jackson'
     
+    // Bean Validation
+    implementation 'io.quarkus:quarkus-hibernate-validator'
+
     // Jackson JSR310 module for LocalDateTime support
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 

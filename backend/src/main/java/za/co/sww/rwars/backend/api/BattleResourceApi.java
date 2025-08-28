@@ -1,6 +1,10 @@
 package za.co.sww.rwars.backend.api;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -44,9 +48,9 @@ public interface BattleResourceApi {
     @APIResponse(responseCode = "200", description = "List of battles retrieved",
         content = @Content(mediaType = "application/json",
         schema = @Schema(type = SchemaType.ARRAY, implementation = Battle.class)))
-    @APIResponse(responseCode = "500", description = "Internal server error",
+@APIResponse(responseCode = "500", description = "Internal server error",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = HttpError.class)))
     Response getAllBattles();
 
     /**
@@ -81,9 +85,9 @@ public interface BattleResourceApi {
                   "winnerName": null
                 }
                 """)))
-    @APIResponse(responseCode = "400", description = "Invalid input data",
+@APIResponse(responseCode = "400", description = "Invalid input data",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class),
+        schema = @Schema(implementation = HttpError.class),
         examples = @ExampleObject(name = "ValidationError",
             summary = "Validation error",
             description = "Example validation error response",
@@ -92,9 +96,9 @@ public interface BattleResourceApi {
                   "message": "Invalid arena dimensions. Width and height must be between 10 and 1000."
                 }
                 """)))
-    @APIResponse(responseCode = "409", description = "Conflict in creating battle",
+@APIResponse(responseCode = "409", description = "Conflict in creating battle",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class),
+        schema = @Schema(implementation = HttpError.class),
         examples = @ExampleObject(name = "ConflictError",
             summary = "Conflict error",
             description = "Example conflict error response",
@@ -103,7 +107,8 @@ public interface BattleResourceApi {
                   "message": "Battle with this name already exists"
                 }
                 """)))
-    Response createBattle(
+Response createBattle(
+        @Valid
         @Parameter(description = "Battle creation details",
         content = @Content(examples = @ExampleObject(name = "CreateBattleRequest",
                 summary = "Create a new battle",
@@ -151,7 +156,8 @@ public interface BattleResourceApi {
                   "testMode": true
                 }
                 """)))
-    Response createTestBattle(
+Response createTestBattle(
+        @Valid
         @Parameter(description = "Battle creation details",
         content = @Content(examples = @ExampleObject(name = "CreateTestBattleRequest",
                 summary = "Create a new test battle",
@@ -181,12 +187,12 @@ public interface BattleResourceApi {
     @APIResponse(responseCode = "200", description = "Battle started successfully",
         content = @Content(mediaType = "application/json",
         schema = @Schema(implementation = Battle.class)))
-    @APIResponse(responseCode = "400", description = "Invalid battle ID",
+@APIResponse(responseCode = "400", description = "Invalid battle ID",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "409", description = "Battle cannot be started",
+        schema = @Schema(implementation = HttpError.class)))
+@APIResponse(responseCode = "409", description = "Battle cannot be started",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = HttpError.class)))
     Response startBattle(
             @Parameter(description = "ID of the battle to start") @PathParam("battleId") String battleId);
 
@@ -203,12 +209,12 @@ public interface BattleResourceApi {
         description = "Deletes a battle identified by battle ID if it has been completed."
     )
     @APIResponse(responseCode = "204", description = "Battle deleted successfully")
-    @APIResponse(responseCode = "404", description = "Battle not found",
+@APIResponse(responseCode = "404", description = "Battle not found",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
-    @APIResponse(responseCode = "400", description = "Bad request",
+        schema = @Schema(implementation = HttpError.class)))
+@APIResponse(responseCode = "400", description = "Bad request",
         content = @Content(mediaType = "application/json",
-        schema = @Schema(implementation = ErrorResponse.class)))
+        schema = @Schema(implementation = HttpError.class)))
     Response deleteBattle(
             @Parameter(description = "ID of the battle to delete") @PathParam("battleId") String battleId);
 
@@ -216,35 +222,22 @@ public interface BattleResourceApi {
      * Battle creation request record.
      */
     @Schema(description = "Request for creating a new battle")
-    record CreateBattleRequest(
+record CreateBattleRequest(
         @Schema(description = "Name of the battle", example = "Epic Robot Battle", required = true)
-        String name,
+        @NotBlank String name,
 
-        @Schema(description = "Width of the arena in grid units", example = "50", minimum = "10", maximum = "100")
+        @Schema(description = "Width of the arena in grid units", example = "50", minimum = "10", maximum = "1000")
         Integer width,
 
-        @Schema(description = "Height of the arena in grid units", example = "50", minimum = "10", maximum = "100")
+        @Schema(description = "Height of the arena in grid units", example = "50", minimum = "10", maximum = "1000")
         Integer height,
 
         @Schema(description = "Time allowed for robot movement in seconds", example = "1.0", minimum = "0.1",
                 maximum = "10.0")
-        Double robotMovementTimeSeconds
+        @DecimalMin("0.1") @DecimalMax("10.0") Double robotMovementTimeSeconds
     ) {
         public CreateBattleRequest() {
             this(null, null, null, null);
-        }
-    }
-
-    /**
-     * Error response record.
-     */
-    @Schema(description = "Error response containing error message")
-    record ErrorResponse(
-        @Schema(description = "Error message describing what went wrong", example = "Battle not found")
-        String message
-    ) {
-        public ErrorResponse() {
-            this(null);
         }
     }
 }

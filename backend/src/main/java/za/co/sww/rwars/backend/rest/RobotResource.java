@@ -3,8 +3,8 @@ package za.co.sww.rwars.backend.rest;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
+import za.co.sww.rwars.backend.api.HttpError;
 import za.co.sww.rwars.backend.api.RobotResourceApi;
-import za.co.sww.rwars.backend.api.RobotResourceApi.ErrorResponse;
 import za.co.sww.rwars.backend.api.RobotResourceApi.MoveRequest;
 import za.co.sww.rwars.backend.api.RobotResourceApi.RadarRequest;
 import za.co.sww.rwars.backend.api.RobotResourceApi.LaserRequest;
@@ -33,7 +33,7 @@ public class RobotResource implements RobotResourceApi {
             return Response.ok(registeredRobot).build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }
@@ -46,11 +46,11 @@ public class RobotResource implements RobotResourceApi {
             return Response.ok(registeredRobot).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }
@@ -61,14 +61,14 @@ public class RobotResource implements RobotResourceApi {
         try {
             if (!battleService.isValidBattleId(battleId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Invalid battle ID"))
+                        .entity(new HttpError("Invalid battle ID"))
                         .build();
             }
             Battle battle = battleService.getBattleStatus(battleId);
             return Response.ok(battle).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }
@@ -79,14 +79,14 @@ public class RobotResource implements RobotResourceApi {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .entity(new HttpError("Invalid battle ID or robot ID"))
                         .build();
             }
             Battle battle = battleService.getBattleStatusForRobot(battleId, robotId);
             return Response.ok(battle).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }
@@ -97,7 +97,7 @@ public class RobotResource implements RobotResourceApi {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .entity(new HttpError("Invalid battle ID or robot ID"))
                         .build();
             }
             Robot robot = battleService.getRobotDetails(battleId, robotId);
@@ -105,18 +105,18 @@ public class RobotResource implements RobotResourceApi {
             return Response.ok(robotStatus).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }
 
     @RunOnVirtualThread
     @Override
-    public Response moveRobot(String battleId, String robotId, MoveRequest moveRequest) {
+public Response moveRobot(String battleId, String robotId, MoveRequest moveRequest) {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .entity(new HttpError("Invalid battle ID or robot ID"))
                         .build();
             }
             Robot robot = battleService.moveRobot(
@@ -127,22 +127,22 @@ public class RobotResource implements RobotResourceApi {
             return Response.ok(robot).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }
 
     @RunOnVirtualThread
     @Override
-    public Response performRadarScan(String battleId, String robotId, RadarRequest radarRequest) {
+public Response performRadarScan(String battleId, String robotId, RadarRequest radarRequest) {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .entity(new HttpError("Invalid battle ID or robot ID"))
                         .build();
             }
             RadarResponse radarResponse = battleService.performRadarScan(
@@ -152,22 +152,22 @@ public class RobotResource implements RobotResourceApi {
             return Response.ok(radarResponse).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }
 
     @RunOnVirtualThread
     @Override
-    public Response fireLaser(String battleId, String robotId, LaserRequest laserRequest) {
+public Response fireLaser(String battleId, String robotId, LaserRequest laserRequest) {
         try {
             if (!battleService.isValidBattleAndRobotId(battleId, robotId)) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Invalid battle ID or robot ID"))
+                        .entity(new HttpError("Invalid battle ID or robot ID"))
                         .build();
             }
             LaserResponse laserResponse = battleService.fireLaser(
@@ -177,11 +177,11 @@ public class RobotResource implements RobotResourceApi {
             return Response.ok(laserResponse).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         } catch (IllegalStateException e) {
             return Response.status(Response.Status.CONFLICT)
-                    .entity(new ErrorResponse(e.getMessage()))
+                    .entity(new HttpError(e.getMessage()))
                     .build();
         }
     }

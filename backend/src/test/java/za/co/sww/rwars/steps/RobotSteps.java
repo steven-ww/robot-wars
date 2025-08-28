@@ -357,7 +357,9 @@ public class RobotSteps {
         battleRequest.put("name", battleName);
 
         Response battleResponse = request.body(battleRequest).post("/api/battles");
-        battleResponse.then().statusCode(200);
+        int status = battleResponse.getStatusCode();
+        Assertions.assertTrue(status == 200 || status == 201,
+                "Expected 200 or 201 but was " + status);
 
         String battleId = battleResponse.jsonPath().getString("id");
         createdBattles.put(battleName, battleId);

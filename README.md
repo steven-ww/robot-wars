@@ -223,6 +223,23 @@ docker build -f src/main/docker/Dockerfile.native -t quarkus/robot-wars-backend-
 
 - `/chat/{username}`: WebSocket endpoint for chat functionality
 
+## Coordinate System and Directions
+
+The arena is a 2D grid addressed by integer coordinates `(x, y)` with zero-based indices:
+
+- Valid ranges: `0 <= x < arenaWidth` and `0 <= y < arenaHeight`
+- Direction semantics used by the engine (and tests):
+  - NORTH (or N): increases Y by 1 per block
+  - SOUTH (or S): decreases Y by 1 per block
+  - EAST (or E): increases X by 1 per block
+  - WEST (or W): decreases X by 1 per block
+  - Diagonals are supported: NE (x+1, y+1), NW (x-1, y+1), SE (x+1, y-1), SW (x-1, y-1) per block
+- Robots crash if they move out of bounds or into a wall position
+- Robots spawn at random valid positions that avoid walls
+- Movement is asynchronous: robots traverse one block per configured movement time (robotMovementTimeSeconds)
+
+These conventions apply uniformly across the REST API, WebSocket state, and test scenarios.
+
 ## CI/CD
 
 This project includes GitHub Actions workflows for continuous integration and deployment:
