@@ -138,7 +138,6 @@ jobs:
     - name: Deploy to EC2
       env:
         EC2_USER: ${{ vars.EC2_USER || 'ec2-user' }}
-        EC2_HOST: ${{ vars.EC2_HOST }}
         SSH_KEY: ${{ secrets.SSH_KEY }}
         ECR_REGISTRY: ${{ needs.native-build.outputs.ecr-registry }}
         ECR_REPOSITORY: robot-wars-backend
@@ -146,16 +145,31 @@ jobs:
         CONTAINER_NAME: ${{ vars.CONTAINER_NAME || 'robot-wars-backend' }}
         CONTAINER_PORT: ${{ vars.CONTAINER_PORT || '8080' }}
         AWS_REGION: af-south-1
+        INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
       run: |
         # Create SSH key file
         echo "$SSH_KEY" > ssh_key
         chmod 600 ssh_key
+
+        # Resolve current EC2 public IP from the instance ID
+        EC2_HOST=$(aws ec2 describe-instances \
+          --instance-ids "$INSTANCE_ID" \
+          --query "Reservations[0].Instances[0].PublicIpAddress" \
+          --output text \
+          --region "$AWS_REGION")
+
+        if [ "$EC2_HOST" = "None" ] || [ -z "$EC2_HOST" ]; then
+          echo "Failed to resolve public IP for instance $INSTANCE_ID" >&2
+          exit 1
+        fi
+
+        echo "Deploying to EC2 host $EC2_HOST"
         
         # Get ECR login token
         ECR_TOKEN=$(aws ecr get-login-password --region $AWS_REGION)
         
-        # Deploy to EC2 instance
-        ssh -i ssh_key -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
+        # Deploy to EC2 instance (no TTY allocation needed in CI)
+        ssh -T -i ssh_key -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
           # Set AWS region for the session
           export AWS_DEFAULT_REGION=$AWS_REGION
           
