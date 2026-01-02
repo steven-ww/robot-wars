@@ -39,6 +39,6 @@ build.dependsOn check
 
 // Configure Gradle wrapper
 wrapper {
-    gradleVersion = '8.5'
+    gradleVersion = '9.2.1'
     distributionType = 'bin'
 }
