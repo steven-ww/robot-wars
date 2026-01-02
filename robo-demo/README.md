@@ -23,7 +23,7 @@ The project uses:
 
 ### Prerequisites
 
-- JDK 21 or higher
+- JDK 25 or higher
 - Gradle 8.5 or higher (or use the included Gradle wrapper)
 
 ### Building the Project
