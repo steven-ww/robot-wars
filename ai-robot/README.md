@@ -1,13 +1,13 @@
 # AI Robot
 
-A simple Java 21 client that connects to the Robot Wars production API and plays the game.
+A simple Java 25 client that connects to the Robot Wars production API and plays the game.
 
 Features
 - Dev mode: creates a test battle, registers one robot, starts the battle, and plays.
 - Self-play mode: creates a normal battle, registers two robots, starts the battle, and plays both until there is a winner.
 
 Requirements
-- JDK 21
+- JDK 25
 
 Run
 - Dev mode (test battle):

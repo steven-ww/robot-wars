@@ -90,16 +90,11 @@ public class WallService {
     }
 
     private Wall generateWall(Wall.WallType type, int arenaWidth, int arenaHeight, List<Wall> existingWalls) {
-        switch (type) {
-            case SQUARE:
-                return generateSquareWall(arenaWidth, arenaHeight, existingWalls);
-            case LONG:
-                return generateLongWall(arenaWidth, arenaHeight, existingWalls);
-            case U_SHAPE:
-                return generateUShapeWall(arenaWidth, arenaHeight, existingWalls);
-            default:
-                return null;
-        }
+        return switch (type) {
+            case SQUARE -> generateSquareWall(arenaWidth, arenaHeight, existingWalls);
+            case LONG -> generateLongWall(arenaWidth, arenaHeight, existingWalls);
+            case U_SHAPE -> generateUShapeWall(arenaWidth, arenaHeight, existingWalls);
+        };
     }
 
     private Wall generateSquareWall(int arenaWidth, int arenaHeight, List<Wall> existingWalls) {

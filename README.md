@@ -12,7 +12,7 @@ This project consists of two main components:
 ## Tech Stack
 
 ### Backend
-- **Language**: Java 21
+- **Language**: Java 25
 - **Framework**: Quarkus
 - **Build Tool**: Gradle
 - **Features**:
@@ -38,11 +38,11 @@ This project consists of two main components:
 #### For Running the Application
 - No prerequisites required! The JBang wrapper will automatically install:
   - JBang itself (if not already installed)
-  - Java 21
+  - Java 25
   - Node.js 18+
 
 #### For Development (Making Changes to the Project)
-- JDK 21
+- JDK 25
 - Node.js 18+
 - Docker (optional, for containerized deployment)
 
@@ -59,8 +59,7 @@ The project includes a JBang script that starts both the backend and frontend in
    ./jbang start_dev.java
    ```
 
-   The first time you run this, JBang will install itself and download all required dependencies (Java 21 and Node.js) if they're not already on your system.
-
+   The first time you run this, JBang will install itself and download all required dependencies (Java 25 and Node.js) if they're not already on your system.
    This will:
    - Start the backend in Quarkus dev mode
    - Start the frontend development server

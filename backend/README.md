@@ -14,7 +14,7 @@ This is the backend component of the Robot Wars application, built with Quarkus.
 
 ## Tech Stack
 
-- **Language**: Java 21
+- **Language**: Java 25
 - **Framework**: Quarkus
 - **Build Tool**: Gradle
 - **Extensions**:
@@ -32,7 +32,7 @@ This is the backend component of the Robot Wars application, built with Quarkus.
 
 ### Prerequisites
 
-- JDK 21
+- JDK 25
 - Docker (optional, for containerized builds and deployment)
 
 ### Running the Application
@@ -184,7 +184,7 @@ The application configuration is in `src/main/resources/application.properties`.
 - WebSocket configuration
 - Virtual threads configuration for improved scalability
 - Dev services configuration for testing
-- Native build settings with Java 21 support
+- Native build settings with Java 25 support
 - Container image settings
 - Kubernetes deployment configuration
 

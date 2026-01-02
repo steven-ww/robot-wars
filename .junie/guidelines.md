@@ -28,7 +28,7 @@
 ### 4. Technology Stack
 
 #### 4.1 Backend
-- **Language**: Java 21
+- **Language**: Java 25
 - **Framework**: Quarkus
   - MUST use Virtual Threads where appropriate
   - Use Quarkus features and extensions
