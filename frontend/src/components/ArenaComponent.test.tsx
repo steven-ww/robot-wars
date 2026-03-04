@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import PhaserArenaComponent from './PhaserArenaComponent';
+import ArenaComponent from './ArenaComponent';
 
 const mockBattleState = {
   battleId: 'battle-1',
@@ -23,14 +23,14 @@ const mockLaserEvent = {
   ],
 };
 
-// Mock PhaserArenaComponent to avoid Phaser initialization in tests
-jest.mock('./PhaserArenaComponent', () => {
-  return function MockPhaserArenaComponent({ battleId }: { battleId: string }) {
+// Mock ArenaComponent to avoid PixiJS initialization in tests
+jest.mock('./ArenaComponent', () => {
+  return function MockArenaComponent({ battleId }: { battleId: string }) {
     return (
       <div style={{ padding: '10px' }}>
         <h2>Battle Arena</h2>
         <div
-          data-testid="phaser-arena-container"
+          data-testid="arena-container"
           style={{
             width: '100%',
             height: '600px',
@@ -39,21 +39,20 @@ jest.mock('./PhaserArenaComponent', () => {
             overflow: 'hidden',
           }}
         >
-          Mocked Phaser Arena for battleId: {battleId}
+          Mocked Arena for battleId: {battleId}
         </div>
       </div>
     );
   };
 });
 
-describe('PhaserArenaComponent', () => {
+describe('ArenaComponent', () => {
   let mockWebSocket: any;
   let originalWebSocket: any;
 
   beforeEach(() => {
     originalWebSocket = global.WebSocket;
 
-    // Mock WebSocket
     mockWebSocket = {
       onopen: null,
       onmessage: null,
@@ -64,7 +63,6 @@ describe('PhaserArenaComponent', () => {
       readyState: WebSocket.OPEN,
     };
 
-    // Create a proper mock constructor with static properties
     const MockWebSocket = jest.fn(() => mockWebSocket) as any;
     MockWebSocket.CLOSED = WebSocket.CLOSED;
     MockWebSocket.CLOSING = WebSocket.CLOSING;
@@ -79,36 +77,28 @@ describe('PhaserArenaComponent', () => {
     global.WebSocket = originalWebSocket;
   });
 
-  test('renders PhaserArenaComponent and sets up WebSocket connection', async () => {
-    render(<PhaserArenaComponent battleId="battle-1" />);
+  test('renders ArenaComponent and sets up WebSocket connection', async () => {
+    render(<ArenaComponent battleId="battle-1" />);
 
-    // Verify the component renders with the correct container
-    expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
-
-    // Verify the component title
+    expect(screen.getByTestId('arena-container')).toBeInTheDocument();
     expect(screen.getByText('Battle Arena')).toBeInTheDocument();
 
-    // Simulate WebSocket connection opening
     if (mockWebSocket.onopen) {
       mockWebSocket.onopen();
     }
 
-    // Send mock battle state
     if (mockWebSocket.onmessage) {
       mockWebSocket.onmessage({
         data: JSON.stringify(mockBattleState),
       });
     }
 
-    // Send laser event
     if (mockWebSocket.onmessage) {
       mockWebSocket.onmessage({
         data: JSON.stringify(mockLaserEvent),
       });
     }
 
-    // Since we're using a mocked Phaser, we can't test actual rendering,
-    // but we can verify the component mounted successfully
-    expect(screen.getByTestId('phaser-arena-container')).toBeInTheDocument();
+    expect(screen.getByTestId('arena-container')).toBeInTheDocument();
   });
 });

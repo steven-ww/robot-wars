@@ -4,175 +4,68 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
-// Mock Phaser globally to avoid canvas/WebGL initialization issues
-jest.mock('phaser', () => {
-  // Mock Scene class
-  const MockScene = jest.fn().mockImplementation(() => ({
-    add: {
-      image: jest.fn(),
-      sprite: jest.fn(),
-      text: jest.fn(),
-      graphics: jest.fn(),
-      rectangle: jest.fn(),
-      circle: jest.fn(),
-      line: jest.fn(),
-      container: jest.fn(),
-    },
-    physics: {
-      add: {
-        sprite: jest.fn(),
-        image: jest.fn(),
-      },
-      world: {
-        setBounds: jest.fn(),
-      },
-    },
-    cameras: {
-      main: {
-        setBounds: jest.fn(),
-        centerOn: jest.fn(),
-        setZoom: jest.fn(),
-      },
-    },
-    input: {
-      on: jest.fn(),
-      keyboard: {
-        createCursorKeys: jest.fn(),
-        addKey: jest.fn(),
-      },
-    },
-    load: {
-      image: jest.fn(),
-      spritesheet: jest.fn(),
-      json: jest.fn(),
-      on: jest.fn(),
-      start: jest.fn(),
-    },
-    create: jest.fn(),
-    update: jest.fn(),
-    preload: jest.fn(),
-    init: jest.fn(),
-    registry: {
-      get: jest.fn(),
-      set: jest.fn(),
-    },
-    data: {
-      get: jest.fn(),
-      set: jest.fn(),
-    },
-    time: {
-      addEvent: jest.fn(),
-      delayedCall: jest.fn(),
-    },
-    tweens: {
-      add: jest.fn(),
-    },
-    sound: {
-      add: jest.fn(),
-    },
-    sys: {
-      game: {
-        destroy: jest.fn(),
-      },
-    },
-  }));
-
-  // Mock Game class
-  const MockGame = jest.fn().mockImplementation(() => ({
-    scene: {
-      add: jest.fn(),
-      start: jest.fn(),
-      stop: jest.fn(),
-      get: jest.fn(),
-      remove: jest.fn(),
-      getScene: jest.fn().mockReturnValue({
-        scene: {
-          isActive: jest.fn().mockReturnValue(false),
-        },
-      }),
-    },
-    canvas: {
-      style: {},
-      parentNode: {
-        removeChild: jest.fn(),
-      },
-    },
+// Mock PixiJS globally to avoid canvas/WebGL initialization issues in tests
+jest.mock('pixi.js', () => {
+  const mockContainer = () => ({
+    addChild: jest.fn(),
+    removeChildren: jest.fn(),
     destroy: jest.fn(),
-    registry: {
-      get: jest.fn(),
-      set: jest.fn(),
-    },
-    events: {
-      on: jest.fn(),
-      off: jest.fn(),
-      emit: jest.fn(),
-    },
-    scale: {
-      resize: jest.fn(),
-    },
-    config: {},
-  }));
+    destroyed: false,
+    scale: { set: jest.fn() },
+    x: 0,
+    y: 0,
+    alpha: 1,
+    children: [] as any[],
+  });
 
-  // Mock GameObjects
-  const MockGameObjects = {
-    Container: jest.fn(),
-    Image: jest.fn(),
-    Sprite: jest.fn(),
-    Text: jest.fn(),
-    Graphics: jest.fn(),
-    Rectangle: jest.fn(),
-  };
+  const mockGraphics = () => ({
+    beginFill: jest.fn().mockReturnThis(),
+    endFill: jest.fn().mockReturnThis(),
+    drawCircle: jest.fn().mockReturnThis(),
+    drawRect: jest.fn().mockReturnThis(),
+    drawRoundedRect: jest.fn().mockReturnThis(),
+    lineStyle: jest.fn().mockReturnThis(),
+    moveTo: jest.fn().mockReturnThis(),
+    lineTo: jest.fn().mockReturnThis(),
+    clear: jest.fn().mockReturnThis(),
+    destroy: jest.fn(),
+    destroyed: false,
+    x: 0,
+    y: 0,
+    alpha: 1,
+    scale: { set: jest.fn() },
+    children: [] as any[],
+  });
 
-  // Mock input objects
-  const MockInput = {
-    Keyboard: {
-      Key: jest.fn(),
-    },
-  };
+  const mockText = () => ({
+    anchor: { set: jest.fn() },
+    destroy: jest.fn(),
+    x: 0,
+    y: 0,
+    text: '',
+    children: [] as any[],
+  });
 
-  // Main Phaser mock object
   return {
-    __esModule: true,
-    default: {
-      Game: MockGame,
-      Scene: MockScene,
-      GameObjects: MockGameObjects,
-      Input: MockInput,
-      AUTO: 'AUTO',
-      WEBGL: 'WEBGL',
-      CANVAS: 'CANVAS',
-      Scale: {
-        FIT: 'FIT',
-        RESIZE: 'RESIZE',
+    Application: jest.fn().mockImplementation(() => ({
+      stage: mockContainer(),
+      view: { style: {} },
+      screen: { width: 800, height: 600 },
+      ticker: {
+        add: jest.fn(),
+        remove: jest.fn(),
       },
-      Physics: {
-        Arcade: {
-          ArcadePhysics: jest.fn(),
-        },
+      renderer: {
+        resize: jest.fn(),
+        width: 800,
+        height: 600,
+        resolution: 1,
       },
-      Cameras: {
-        Scene2D: {
-          Camera: jest.fn(),
-        },
-      },
-      Loader: {
-        LoaderPlugin: jest.fn(),
-      },
-      Sound: {
-        SoundManagerCreator: jest.fn(),
-      },
-      Core: {
-        Config: jest.fn(),
-      },
-      Device: {
-        OS: {},
-        Browser: {},
-        Features: {},
-        Input: {},
-        Audio: {},
-        Video: {},
-      },
-    },
+      destroy: jest.fn(),
+    })),
+    Container: jest.fn().mockImplementation(mockContainer),
+    Graphics: jest.fn().mockImplementation(mockGraphics),
+    Text: jest.fn().mockImplementation(mockText),
   };
 });
 
