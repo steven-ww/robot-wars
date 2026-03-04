@@ -118,9 +118,7 @@ defineFeature(feature, test => {
       );
       // Wait for the arena to render
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
 
@@ -167,45 +165,35 @@ defineFeature(feature, test => {
     then('the battle results should be displayed', async () => {
       // With Phaser canvas rendering, battle completion is handled internally
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
 
     then('the winner should be announced', async () => {
       // With Phaser canvas rendering, winner announcements are handled internally
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
 
     then('the battle summary should show final statistics', async () => {
       // With Phaser canvas rendering, battle statistics are handled internally
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
 
     then('the final robot status should be displayed', async () => {
       // With Phaser canvas rendering, robot status is handled internally
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
 
     then('the winner robot should be highlighted on the arena', async () => {
       // With Phaser canvas rendering, winner highlighting is handled internally
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
   });
@@ -223,9 +211,7 @@ defineFeature(feature, test => {
       );
       // Wait for the arena to render
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
 
@@ -270,18 +256,14 @@ defineFeature(feature, test => {
     then('the battle results should be displayed', async () => {
       // With Phaser canvas rendering, battle completion is handled internally
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
 
     then('a no winner message should be shown', async () => {
       // With Phaser canvas rendering, no winner messages are handled internally
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
   });
@@ -295,9 +277,7 @@ defineFeature(feature, test => {
       );
       // Wait for the arena to render
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
 
@@ -331,9 +311,7 @@ defineFeature(feature, test => {
     then('the battle state badge should show IN_PROGRESS', async () => {
       // With Phaser canvas rendering, battle state badges are handled internally
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
 
@@ -369,9 +347,7 @@ defineFeature(feature, test => {
     then('the battle state badge should show COMPLETED', async () => {
       // With Phaser canvas rendering, battle state badges are handled internally
       await waitFor(() => {
-        expect(
-          screen.getByTestId('arena-container')
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('arena-container')).toBeInTheDocument();
       });
     });
   });

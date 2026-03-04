@@ -16,10 +16,7 @@ const ArenaComponent: React.FC<ArenaComponentProps> = ({ battleId }) => {
     (renderer: ArenaRenderer) => {
       try {
         const backendUrl = getBackendUrl();
-        const wsUrl = getWebSocketUrl(
-          backendUrl,
-          `/battle-state/${battleId}`
-        );
+        const wsUrl = getWebSocketUrl(backendUrl, `/battle-state/${battleId}`);
 
         console.log(`Connecting to WebSocket: ${wsUrl}`);
         const ws = new WebSocket(wsUrl);

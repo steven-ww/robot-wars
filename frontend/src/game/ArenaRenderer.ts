@@ -438,13 +438,7 @@ export class ArenaRenderer {
     const barY = radius + 8;
     const healthBarBg = new PIXI.Graphics();
     healthBarBg.beginFill(COLORS.healthBarBg);
-    healthBarBg.drawRoundedRect(
-      -barWidth / 2,
-      barY,
-      barWidth,
-      barHeight,
-      1
-    );
+    healthBarBg.drawRoundedRect(-barWidth / 2, barY, barWidth, barHeight, 1);
     healthBarBg.endFill();
     container.addChild(healthBarBg as any);
 
@@ -549,16 +543,12 @@ export class ArenaRenderer {
       Math.sin(angle) * arrowLen
     );
     sprite.dirArrow.lineTo(
-      Math.cos(angle + 2.6) * arrowWidth +
-        Math.cos(angle) * (arrowLen - 6),
-      Math.sin(angle + 2.6) * arrowWidth +
-        Math.sin(angle) * (arrowLen - 6)
+      Math.cos(angle + 2.6) * arrowWidth + Math.cos(angle) * (arrowLen - 6),
+      Math.sin(angle + 2.6) * arrowWidth + Math.sin(angle) * (arrowLen - 6)
     );
     sprite.dirArrow.lineTo(
-      Math.cos(angle - 2.6) * arrowWidth +
-        Math.cos(angle) * (arrowLen - 6),
-      Math.sin(angle - 2.6) * arrowWidth +
-        Math.sin(angle) * (arrowLen - 6)
+      Math.cos(angle - 2.6) * arrowWidth + Math.cos(angle) * (arrowLen - 6),
+      Math.sin(angle - 2.6) * arrowWidth + Math.sin(angle) * (arrowLen - 6)
     );
     sprite.dirArrow.endFill();
 
@@ -588,9 +578,7 @@ export class ArenaRenderer {
 
     // Winner crown
     if (isWinner) {
-      const hasCrown = sprite.container.children.some(
-        (c: any) => c._isCrown
-      );
+      const hasCrown = sprite.container.children.some((c: any) => c._isCrown);
       if (!hasCrown) {
         const crown = new PIXI.Text('\uD83D\uDC51', {
           fontSize: 16,
@@ -725,8 +713,7 @@ export class ArenaRenderer {
       particle.y = y;
       this.effectLayer.addChild(particle as any);
 
-      const angle =
-        (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
       const speed = 40 + Math.random() * 60;
       const vx = Math.cos(angle) * speed;
       const vy = Math.sin(angle) * speed;
