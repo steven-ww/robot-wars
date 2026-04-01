@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import PhaserArenaComponent from './PhaserArenaComponent';
+import ArenaComponent from './ArenaComponent';
 import { buildApiUrl } from '../utils/apiConfig';
 
 // Define interfaces for battles and robots
@@ -263,7 +263,7 @@ const BattleManagement: React.FC = () => {
           Back to Battle List
         </button>
         <div data-testid="arena-component">
-          <PhaserArenaComponent battleId={selectedBattleId} />
+          <ArenaComponent battleId={selectedBattleId} />
         </div>
       </div>
     );
