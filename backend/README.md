@@ -174,13 +174,15 @@ The automated deployment process:
 3. Builds the native binary and native Docker image
 4. Authenticates to AWS using OIDC
 5. Pushes `latest` and `<commit-sha>` tags to ECR
-6. Uses SSM Run Command on the configured EC2 instance to:
+6. Installs the Route 53 self-healing systemd service on the instance (idempotent)
+7. Uses SSM Run Command on the configured EC2 instance to:
    - log in to ECR
    - pull latest backend image
    - stop/remove existing container
    - start the updated container with restart policy
    - prune old images
-7. Updates the Route 53 A record for `api.rwars.steven-webber.com`
+8. Runs a post-deploy health check via SSM: calls `GET /q/health` on the instance. If the app is unhealthy, the pipeline fails and dumps the last 50 lines of container logs.
+9. Updates the Route 53 A record for `api.rwars.steven-webber.com`
 
 ## API Documentation
 
@@ -328,3 +330,33 @@ without manual intervention. Certbot is configured with a deploy hook in
 
 This hook runs only when a certificate is actually renewed; it validates the nginx configuration and reloads
 nginx so the updated certificate is picked up immediately.
+
+## Route 53 Self-Healing on Reboot
+
+The EC2 instance does not have an Elastic IP. Instead, the Route 53 A record for `api.rwars.steven-webber.com`
+is kept current by two complementary mechanisms:
+
+1. **On deploy** — the `deploy` job in `.github/workflows/backend-ci.yml` upserts the Route 53 record with the
+   instance's current public IP after each successful deployment.
+
+2. **On reboot** — a systemd service (`route53-update.service`) runs on every instance boot and updates the
+   Route 53 record automatically, so the DNS self-heals after an unexpected reboot or AWS maintenance event
+   without requiring a new deployment.
+
+### How it is installed
+
+The CI pipeline installs the service once via SSM during each deploy (idempotent — safe to re-run):
+
+- **Script**: `/usr/local/bin/update-route53.sh` — fetches the public IP from EC2 instance metadata
+  (`http://169.254.169.254/latest/meta-data/public-ipv4`) and calls `aws route53 change-resource-record-sets`.
+- **Unit file**: `/etc/systemd/system/route53-update.service` — `Type=oneshot`, runs after `network-online.target`.
+
+The source files live in `.github/scripts/` and are base64-encoded by the CI step before being sent to the
+instance via SSM, avoiding shell-escaping issues.
+
+### Required IAM permissions on the EC2 instance role
+
+The `EC2-RobotWars-SSM-Role` has an inline policy (`Route53SelfHealing`) granting:
+- `route53:ChangeResourceRecordSets` on `arn:aws:route53:::hostedzone/*`
+- `route53:ListResourceRecordSets` on `arn:aws:route53:::hostedzone/*`
+- `ec2:DescribeInstances` on `*`
