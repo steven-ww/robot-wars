@@ -132,37 +132,55 @@ docker run -i --rm -p 8080:8080 quarkus/robot-wars-backend-native
 
 ## Deployment
 
-### AWS ECR Deployment
+### AWS ECR + EC2 Deployment (via SSM)
 
-The application is automatically deployed to AWS Elastic Container Registry (ECR) in the `af-south-1` region when code is pushed to the main branch. The deployment uses:
+The backend workflow (`.github/workflows/backend-ci.yml`) deploys on pushes to `main` (for backend/workflow path changes). Deployment is now done via **AWS Systems Manager (SSM)** instead of SSH.
 
-- **OIDC Authentication**: GitHub Actions authenticates with AWS using OpenID Connect (OIDC) for secure, token-based authentication without storing long-lived credentials
-- **AWS ECR**: Container images are pushed to AWS Elastic Container Registry
-- **Regional Deployment**: Deployed to the `af-south-1` (Africa - Cape Town) region
+The deployment uses:
+
+- **OIDC Authentication**: GitHub Actions assumes an AWS IAM role via OpenID Connect (OIDC), without long-lived static credentials
+- **AWS ECR**: Container images are pushed to Elastic Container Registry
+- **AWS SSM Run Command**: The EC2 deploy step sends shell commands to the instance via SSM (no SSH key or SSH host required)
+- **Route 53 update**: The API DNS A record is upserted to the EC2 instance public IP
+- **Regional deployment**: AWS region `af-south-1`
 
 #### Required GitHub Secrets
 
-The following secrets must be configured in the GitHub repository:
+- `AWS_ROLE_ARN`: IAM role ARN assumed by GitHub Actions
 
-- `AWS_ROLE_ARN`: The ARN of the AWS IAM role that GitHub Actions will assume
-- `AWS_ACCOUNT_ID`: The AWS account ID (referenced in the workflow configuration)
+#### Required GitHub Repository Variables
+
+- `EC2_INSTANCE_ID`: Target EC2 instance for SSM deployment
+- `ROUTE53_HOSTED_ZONE_ID`: Hosted zone containing `api.rwars.steven-webber.com`
+
+#### Optional GitHub Repository Variables
+
+- `CONTAINER_NAME`: Docker container name on EC2 (defaults to `robot-wars-backend`)
+- `CONTAINER_PORT`: Host port for the backend container (defaults to `8080`)
 
 #### ECR Repository
 
-The Docker images are pushed to the ECR repository: `robot-wars-backend`
+Docker images are pushed to ECR repository `robot-wars-backend`.
 
 Images are tagged with:
-- `latest`: Always points to the most recent build
-- `<commit-sha>`: Specific commit hash for version tracking
+- `latest`: most recent build on `main`
+- `<commit-sha>`: exact build provenance
 
 #### CI/CD Pipeline
 
 The automated deployment process:
 1. Builds and tests the application
 2. Runs code quality checks (Checkstyle)
-3. Creates a native Docker image
-4. Authenticates with AWS using OIDC
-5. Pushes the image to AWS ECR in af-south-1 region
+3. Builds the native binary and native Docker image
+4. Authenticates to AWS using OIDC
+5. Pushes `latest` and `<commit-sha>` tags to ECR
+6. Uses SSM Run Command on the configured EC2 instance to:
+   - log in to ECR
+   - pull latest backend image
+   - stop/remove existing container
+   - start the updated container with restart policy
+   - prune old images
+7. Updates the Route 53 A record for `api.rwars.steven-webber.com`
 
 ## API Documentation
 
