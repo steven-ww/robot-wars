@@ -1,0 +1,12 @@
+[Unit]
+Description=Update Route53 A record on boot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/update-route53.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
