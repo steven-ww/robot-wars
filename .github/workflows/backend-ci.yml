@@ -151,7 +151,7 @@ jobs:
           --instance-ids "$INSTANCE_ID" \
           --document-name "AWS-RunShellScript" \
           --region "$AWS_REGION" \
-          --parameters commands=["echo '$SCRIPT_B64' | base64 -d > /usr/local/bin/update-route53.sh","chmod +x /usr/local/bin/update-route53.sh","echo '$UNIT_B64' | base64 -d > /etc/systemd/system/route53-update.service","systemctl daemon-reload","systemctl enable route53-update.service","systemctl start route53-update.service"] \
+          --parameters "{\"commands\":[\"echo '$SCRIPT_B64' | base64 -d > /usr/local/bin/update-route53.sh\",\"chmod +x /usr/local/bin/update-route53.sh\",\"echo '$UNIT_B64' | base64 -d > /etc/systemd/system/route53-update.service\",\"systemctl daemon-reload\",\"systemctl enable route53-update.service\",\"systemctl start route53-update.service\"]}" \
           --query "Command.CommandId" \
           --output text)
 
@@ -217,7 +217,7 @@ jobs:
           --instance-ids "$INSTANCE_ID" \
           --document-name "AWS-RunShellScript" \
           --region "$AWS_REGION" \
-          --parameters commands=["curl -sf http://localhost:${CONTAINER_PORT}/q/health || (echo 'Health check failed'; docker logs --tail 50 ${CONTAINER_NAME:-robot-wars-backend}; exit 1)"] \
+          --parameters "{\"commands\":[\"curl -sf http://localhost:${CONTAINER_PORT}/q/health || (echo 'Health check failed'; docker logs --tail 50 ${CONTAINER_NAME:-robot-wars-backend}; exit 1)\"]}" \
           --query "Command.CommandId" \
           --output text)
 
